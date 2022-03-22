@@ -45,21 +45,20 @@ export default function Login({ navigation, route }) {
 
             <Pressable onPress={() => navigation.reset({
               index: 0,
-              routes: [{ name: route.params.staff ? 'DoctorHomePage' : 'Patient' }],
+              routes: [{ name: route.params.staff ? 'ReceptHomePage' : 'Patient' }],
             })}>
               <Text style={styles.RegisterButton}>Sign In</Text>
             </Pressable>
+            {!route.params.staff ?
+              <View style={{ flexDirection: 'row', margin: '5%' }}>
+                <Text style={styles.QuestionText}>Don't have an account yet? </Text>
 
-            <View style={{ flexDirection: 'row', margin: '5%' }}>
-              <Text style={styles.QuestionText}>Don't have an account yet? </Text>
-
-              {!route.params.staff ?
                 <Pressable onPress={() => navigation.navigate('SignUp')}>
                   <Text style={{ color: '#0d259e', textDecorationLine: 'underline' }}>Sign Up</Text>
-                </Pressable> : null
-              }
+                </Pressable>
 
-            </View>
+              </View> : null
+            }
           </View>
         </View>
       </View>
