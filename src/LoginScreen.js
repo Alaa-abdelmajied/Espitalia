@@ -45,7 +45,7 @@ export default function Login({ navigation, route }) {
 
             <Pressable onPress={() => navigation.reset({
               index: 0,
-              routes: [{ name: route.params.staff ? 'ReceptHomePage' : 'Patient' }],
+              routes: [{ name: route.params.staff ? 'HosptialAdminHomePage' : 'Patient' }],
             })}>
               <Text style={styles.RegisterButton}>Sign In</Text>
             </Pressable>

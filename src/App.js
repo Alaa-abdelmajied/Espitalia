@@ -37,6 +37,15 @@ import ReceptNotification from './receptionistPages/Notifications';
 import ReceptBloodReq from './receptionistPages/BloodReq';
 import ReceptDoctorDetails from './receptionistPages/ReceptDoctorDetails';
 
+//Hosptial admin pages
+import AddDoctorPage from './hospitalAdminPages/AddDoctorPage';
+import AddReceptionistPage from './hospitalAdminPages/AddReceptionist';
+import HospitalAdminDoctorsPage from './hospitalAdminPages/Doctorspage';
+import HospitalAdminReceptionistPage from './hospitalAdminPages/ReceptionistPage';
+import HospitalAdminProfilepage from './hospitalAdminPages/Profilepage';
+import HospitalAdminHomePage from './hospitalAdminPages/Homepage';
+import MyProfileHospitalPage from './hospitalAdminPages/MyProfileHospitalPage';
+
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 const bottomTab = createMaterialBottomTabNavigator();
@@ -104,6 +113,45 @@ function DoctorStackNav() {
       />
     </Stack.Navigator>
   )
+}
+
+function HosptialAdminStackView() {
+  return (
+    <Stack.Navigator initialRouteName='Home'>
+      <Stack.Screen
+        name='Home'
+        component={HospitalAdminHomePage}
+      />
+      <Stack.Screen
+        name='Profile'
+        component={HospitalAdminProfilepage}
+      />
+      <Stack.Screen
+        name='Doctors'
+        component={HospitalAdminDoctorsPage}
+      />
+      <Stack.Screen
+        name='Reciptionist'
+        component={HospitalAdminReceptionistPage}
+        options={{ title: 'Receptionists' }}
+      />
+      <Stack.Screen
+        name='AddnewDoctor'
+        component={AddDoctorPage}
+        options={{ title: 'Add Doctor' }}
+      />
+      <Stack.Screen
+        name='AddnewReceptionist'
+        component={AddReceptionistPage}
+        options={{ title: 'Add Receptionist' }}
+      />
+      <Stack.Screen
+        name='MyProfileHospitalPage'
+        component={MyProfileHospitalPage}
+        options={{ title: 'Edit Data' }}
+      />
+    </Stack.Navigator>
+  );
 }
 
 function PatientNavBar() {
@@ -355,6 +403,10 @@ export default function App() {
         <Stack.Screen
           name="ReceptHomePage"
           component={ReceptNavBar}
+        />
+        <Stack.Screen
+          name="HosptialAdminHomePage"
+          component={HosptialAdminStackView}
         />
       </Stack.Navigator>
     </NavigationContainer>
