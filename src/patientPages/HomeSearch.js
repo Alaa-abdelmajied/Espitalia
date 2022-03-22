@@ -15,7 +15,7 @@ export default function Search({ navigation }) {
     const updateSearch = (search) => {
         setSearch(search);
     };
-
+ 
 
     return (
         <View style={styles.container}>

@@ -1,97 +1,70 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
-
 import React, { useState } from 'react';
 import Svg, { Path } from 'react-native-svg';
 
-
-// import type { Node } from 'react';
 import {
-  Button,
-  ScrollView,
   StyleSheet,
   Text,
   View,
-  Image,
-  SectionList,
-  FlatList,
-  RefreshControl,
   TextInput,
-  Alert,
-  ImageBackground,
   Pressable,
-  Dimensions
 } from 'react-native';
-
-
-
-
-import {
-  Colors,
-  DebugInstructions,
-  LearnMoreLinks,
-  Header,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-
-
-
 
 
 export default function Login({ navigation, route }) {
 
 
   return (
-    <ScrollView>
-      <View style={styles.body}>
-        <Svg
-          height={200}
-          width={Dimensions.get('screen').width}
-        >
+    // <ScrollView>
+    <View style={styles.Body}>
 
+      <View style={styles.WaveHeader}>
+        <Svg
+        // height={200}
+        // width={Dimensions.get('screen').width}
+        >
           <Path
             fill="#0d259e"
             d='M0,192L60,170.7C120,149,240,107,360,112C480,117,600,171,720,197.3C840,224,960,224,1080,208C1200,192,1320,160,1380,144L1440,128L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z'
           />
-          {/* <Text style={styles.MainText}>
-                         Sign Up
-                     </Text> */}
 
         </Svg>
-        {/* <Image style={styles.Image} source={require('../images/applogo-removebg-preview.png')}></Image> */}
-        <View style={styles.view}>
-          <Text style={{ color: '#000', fontSize: 25, fontWeight: 'bold', margin: 20 }}>
+      </View>
+
+      <View style={styles.RegisterRegion}>
+        <View style={styles.RegisterCard}>
+          <Text style={styles.TitleText}>
             Sign In
           </Text>
+          <View style={styles.InputsRegion}>
+            <TextInput style={styles.Input} placeholder="Enter your username or email"></TextInput>
+            <TextInput style={styles.Input} placeholder="Enter your password"></TextInput>
 
-          <TextInput style={styles.input} placeholder="Enter your username or email"></TextInput>
-          <TextInput style={styles.input} placeholder="Enter your password"></TextInput>
+            <Pressable>
+              <Text style={styles.QuestionText}>Forgot password?</Text>
+            </Pressable>
 
-          <Pressable>
-            <Text style={styles.QuestionText}>Forgot password?</Text>
-          </Pressable>
+            <Pressable onPress={() => navigation.reset({
+              index: 0,
+              routes: [{ name: route.params.staff ? 'DoctorHomePage' : 'Patient' }],
+            })}>
+              <Text style={styles.RegisterButton}>Sign In</Text>
+            </Pressable>
 
-          <Pressable onPress={() => navigation.reset({
-            index: 0,
-            routes: [{ name: route.params.staff ? 'DoctorHomePage' : 'Patient' }],
-          })}>
-            <Text style={styles.SignInButton}>Sign In</Text>
-          </Pressable>
+            <View style={{ flexDirection: 'row', margin: '5%' }}>
+              <Text style={styles.QuestionText}>Don't have an account yet? </Text>
 
-          <View>{!route.params.staff ?
-            <Pressable onPress={() => navigation.navigate('SignUp')}>
-              <Text style={styles.QuestionText}>Don't have an account yet? Sign Up</Text>
-            </Pressable> : null
-          }
+              {!route.params.staff ?
+                <Pressable onPress={() => navigation.navigate('SignUp')}>
+                  <Text style={{ color: '#0d259e', textDecorationLine: 'underline' }}>Sign Up</Text>
+                </Pressable> : null
+              }
+
+            </View>
           </View>
         </View>
       </View>
-    </ScrollView>
+    </View>
+    // </ScrollView>
     // </ImageBackground>
   )
 }
@@ -99,20 +72,38 @@ export default function Login({ navigation, route }) {
 
 
 const styles = StyleSheet.create({
-  body: {
+  Body: {
     flex: 1,
     flexDirection: 'column',
     backgrundColor: '#ffffff',
     alignItems: 'center',
-    justifyContent: 'center',
+    // justifyContent: 'center',
   },
 
-  view: {
-    flex: 2,
-    width: 350,
-    height: '100%',
-    margin: 10,
-    marginBottom: 70,
+  WaveHeader: {
+    // flex: 1,
+    height: 200,
+    width: '100%',
+  },
+
+  RegisterRegion: {
+    // flex: 2,
+    marginTop: '10%',
+    // backgroundColor: '#0e3de8'
+  },
+
+  TitleText: {
+    color: '#000',
+    fontSize: 25,
+    margin: '5%',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    justifyContent: 'center'
+  },
+
+  RegisterCard: {
+    // flex: 1,
+    width: '85%',
     alignSelf: 'center',
     borderRadius: 25,
     backgroundColor: '#f0f0f0',
@@ -123,53 +114,53 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 6,
     justifyContent: 'center',
+    overflow: 'hidden'
   },
 
-
-
-  MainText: {
-    color: '#000',
-    fontSize: 20,
-    margin: 10,
-    textAlign: 'center',
-    justifyContent: 'center'
-    // fontWeight: 'bold'
-  },
-  Image: {
-    width: 80,
-    height: 80,
-    // marginTop:10,
-  },
-
-  QuestionText: {
-    color: '#000',
-    margin: 10,
-  },
-
-  SignInButton: {
-    width: 130,
-    marginTop: 30,
-    paddingTop: 15,
-    paddingBottom: 15,
-    marginLeft: 30,
-    marginRight: 30,
-    borderRadius: 30,
-    backgroundColor: '#0d259e',
-    borderWidth: 1,
+  InputsRegion: {
+    // backgroundColor: '#7a94f0',
     alignItems: 'center',
-    textAlign: 'center',
-    borderColor: '#fff',
-    color: '#fff'
+    justifyContent: 'center'
   },
 
-  input: {
+  Input: {
     width: 330,
     borderRadius: 45,
     borderWidth: 1,
     textAlign: 'center',
     borderColor: '#fff',
-    margin: 10,
+    margin: '3%',
     backgroundColor: '#fff',
-  }
+    shadowColor: '#000000',
+    shadowOffset: { width: -1, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1,
+    elevation: 2,
+  },
+
+  Image: {
+    width: 80,
+    height: 80,
+  },
+
+  QuestionText: {
+    color: '#000',
+    // fontSize: 15,
+    // marginRight: '1%',
+  },
+
+  RegisterButton: {
+    width: 130,
+    margin: '5%',
+    // marginTop: 30,
+    paddingTop: 15,
+    paddingBottom: 15,
+    borderRadius: 30,
+    backgroundColor: '#0d259e',
+    alignItems: 'center',
+    textAlign: 'center',
+    color: '#fff'
+  },
+
 });
 
