@@ -64,7 +64,7 @@ function DoctorStackNav() {
       }}>
       <Stack.Screen
         name="HomePage"
-        component={DoctorHome}
+        component={DoctorNavBar}
       />
       <Stack.Screen
         name="History"
@@ -141,7 +141,7 @@ function DoctorNavBar() {
       tabBarActiveTintColor: '#0d259e',
       tabBarInactiveTintColor: '#000',
     })}>
-      <Tab.Screen name="Home" component={DoctorStackNav} />
+      <Tab.Screen name="Home" component={DoctorHome} />
       <Tab.Screen name="Profile" component={DoctorProfile} />
       <Tab.Screen name="Upcoming" component={UpcomingReservations} />
     </Tab.Navigator>
@@ -178,7 +178,7 @@ export default function App() {
         />
         <Stack.Screen
           name="DoctorHomePage"
-          component={DoctorNavBar}
+          component={DoctorStackNav}
         />
       </Stack.Navigator>
     </NavigationContainer>
