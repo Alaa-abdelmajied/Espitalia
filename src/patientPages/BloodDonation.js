@@ -30,9 +30,9 @@ export default function DonateBlood({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
+      {/* <View style={styles.header}>
         <Image style={styles.Image} source={require('../../images/app_logo-removebg-preview.png')}></Image>
-      </View>
+      </View> */}
       <FlatList
         data={Items}
         renderItem={({ item }) => (
@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
   buttonView: {
     alignItems: 'center',
     justifyContent: 'center',
-    margin:'2%',
+    margin:'2%', 
   },
   buttonText: {
     color: '#fff',
@@ -128,3 +128,4 @@ const styles = StyleSheet.create({
     color: '#fff'
   }
 })
+

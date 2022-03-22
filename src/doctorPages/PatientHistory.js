@@ -36,7 +36,7 @@ export default function PatientHistory() {
   // }
 
   return (
-    <View>
+    <View style={{ flex: 1 }}>
       <View style={styles.header_}>
         <Image style={styles.Image} source={require('../../images/app_logo-removebg-preview.png')}></Image>
       </View>

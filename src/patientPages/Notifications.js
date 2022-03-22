@@ -43,6 +43,7 @@ export default function Notification({ navigation }) {
 
 
   return (
+
     <FlatList
       data={Items}
       renderItem={({ item }) => (
@@ -56,8 +57,8 @@ export default function Notification({ navigation }) {
         //  </View>
         <TouchableOpacity style={{ alignItems: 'center' }} onPress={showDialog}>
           <View style={styles.buttonContainer}>
-            <Text style={{ color: '#5f9ea0', fontSize: 15, marginLeft: 10 }}>{item.name}    </Text>
-            <Text>{item.msg}</Text>
+            <Text style={{ color: '#0d259e', fontSize: 15, marginLeft: '2%' }}>{item.name}    </Text>
+            <Text style={{color:'#000',fontSize: 15,}}>{item.msg}</Text>
             <Dialog.Container visible={visible}>
               <Dialog.Title>Blood Rquest</Dialog.Title>
               <Dialog.Description>
@@ -94,6 +95,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     width: "100%",
     borderRadius: 15,
-    backgroundColor: "#f0f8ff",
+    backgroundColor: "#fff",
   },
 })

@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import Accordion from 'react-native-collapsible/Accordion';
 import {
-    ScrollView,
-    StyleSheet,
-    Text,
-    View,
-    TouchableOpacity,
-    Button,
-    Modal,
-    TextInput
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  Button,
+  Modal,
+  TextInput,
+  Image
 } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 // import NestedListView, { NestedRow } from 'react-native-nested-listview';
@@ -31,119 +32,142 @@ import * as Animatable from 'react-native-animatable';
 // // ];
 
 const data = [
-    {
-        title: '17/3',
-        items: ['Alaa','Maram']
-    },
-    {
-        title: '18/3',
-        items: ['Alaa','Nadeen']
-    },
-    {
-        title: '19/3',
-        items: ['Shalaby']
-    }
+  {
+    title: '17/3',
+    items: ['Alaa', 'Maram']
+  },
+  {
+    title: '18/3',
+    items: ['Alaa', 'Nadeen']
+  },
+  {
+    title: '19/3',
+    items: ['Shalaby']
+  }
 ]
 
 export default function UpcomingReservations() {
 
-    const [activeSections, setActiveSections] = useState([]);
+  const [activeSections, setActiveSections] = useState([]);
 
-    const setSections = (sections) => {
-        setActiveSections(sections.includes(undefined) ? [] : sections);
-    }
+  const setSections = (sections) => {
+    setActiveSections(sections.includes(undefined) ? [] : sections);
+  }
 
-    const renderHeader = (section, _, isActive) => {
-        return (
-            <Animatable.View
-                duration={400}
-                style={[styles.header, isActive ? styles.active : styles.inactive]}
-                transition="backgroundColor"
-            >
-                <Text style={styles.headerText}>{section.title}</Text>
-            </Animatable.View>
-        );
-    }
-
-    const renderContent = (section, _, isActive) => {
-        return (
-            <Animatable.View
-                duration={400}
-                style={[styles.content, isActive ? styles.active : styles.inactive]}
-                transition="backgroundColor"
-            >
-                {section.items.map(name => <Text>{name}</Text>)}
-            </Animatable.View>
-        );
-    }
-
+  const renderHeader = (section, _, isActive) => {
     return (
-        <View style={styles.container}>
-            <ScrollView>
-                <Text style={styles.pageHeader}>UpcomingReservations</Text>
-                <Text style={styles.title}>Upcoming appointments</Text>
-                <Accordion
-                    activeSections={activeSections}
-                    sections={data}
-                    touchableComponent={TouchableOpacity}
-                    expandMultiple={false}
-                    renderHeader={renderHeader}
-                    renderContent={renderContent}
-                    duration={400}
-                    onChange={setSections}
-                    renderAsFlatList={false}
-                />
-            </ScrollView>
-        </View>
+      <Animatable.View
+        duration={400}
+        style={[styles.header, isActive ? styles.active : styles.inactive]}
+        transition="backgroundColor"
+        flexDirection="row"
+      >
+        <Text style={{ color: '#000',fontSize:18 }}>Date: </Text>
+
+        <Text style={styles.headerText}>{section.title}</Text>
+      </Animatable.View >
     );
 }
 
+const renderContent = (section, _, isActive) => {
+  return (
+    <Animatable.View
+      duration={400}
+      style={[styles.content, isActive ? styles.active : styles.inactive]}
+      transition="backgroundColor"
+    >
+      {section.items.map(name => <Text style={{ color: '#000', fontSize: 15 }}>{name}</Text>)}
+    </Animatable.View>
+  );
+}
+
+return (
+  <View style={styles.container}>
+    <View style={styles.header_}>
+      <Image style={styles.Image} source={require('../../images/app_logo-removebg-preview.png')}></Image>
+    </View>
+    <ScrollView>
+      {/* <Text style={styles.pageHeader}>UpcomingReservations</Text> */}
+      <Text style={styles.title}>Upcoming appointments</Text>
+      <Accordion
+        activeSections={activeSections}
+        sections={data}
+        touchableComponent={TouchableOpacity}
+        expandMultiple={false}
+        renderHeader={renderHeader}
+        renderContent={renderContent}
+        duration={400}
+        onChange={setSections}
+        renderAsFlatList={false}
+      />
+    </ScrollView>
+  </View>
+);
+}
+
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#F5FCFF',
-    },
-    pageHeader: {
-        textAlign: 'center',
-        fontSize: 22,
-        fontWeight: '700',
-        marginBottom: 20,
-        backgroundColor: '#00ffff'
-    },
-    title: {
-        textAlign: 'left',
-        fontSize: 22,
-        fontWeight: '700',
-        marginBottom: 20,
-    },
-    header: {
-        backgroundColor: '#F5FCFF',
-        padding: 10,
-    },
-    headerText: {
-        //textAlign: 'center',
-        fontSize: 16,
-        fontWeight: '500',
-    },
-    content: {
-        padding: 20,
-        backgroundColor: '#fff',
-    },
-    active: {
-        backgroundColor: 'rgba(100,255,255,1)',
-    },
-    inactive: {
-        backgroundColor: 'rgba(245,252,255,1)',
-    },
-    selectors: {
-        marginBottom: 10,
-        flexDirection: 'row',
-        justifyContent: 'center',
-    },
-    selector: {
-        backgroundColor: '#F5FCFF',
-        padding: 10,
-    }
+  container: {
+    flex: 1,
+    backgroundColor: '#F5FCFF',
+  },
+  header_: {
+    height: '8%',
+    backgroundColor: '#0d159e',
+    justifyContent: 'center'
+  },
+
+  Image: {
+    width: 50,
+    height: 50,
+    alignSelf: 'center'
+    // marginTop:10,
+  },
+  pageHeader: {
+    textAlign: 'center',
+    fontSize: 22,
+    fontWeight: '700',
+    marginBottom: 20,
+    backgroundColor: '#00ffff'
+  },
+  title: {
+    textAlign: 'center',
+    fontSize: 25,
+    fontWeight: '700',
+    color: 'bold',
+    color: '#000',
+    margin: '2%'
+
+    // marginBottom: 20,
+  },
+  header: {
+    backgroundColor: '#F5FCFF',
+    padding: 10,
+  },
+  headerText: {
+    //textAlign: 'center',
+    fontSize: 18,
+    fontWeight: '500',
+    color: '#0d159e'
+  },
+  content: {
+    padding: 20,
+    backgroundColor: '#fff',
+  },
+  active: {
+    backgroundColor: 'rgba(100,255,255,1)',
+  },
+  inactive: {
+    backgroundColor: 'rgba(245,252,255,1)',
+  },
+  selectors: {
+    marginBottom: 10,
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  selector: {
+    backgroundColor: '#F5FCFF',
+    padding: 10,
+  }
 });
 
 
