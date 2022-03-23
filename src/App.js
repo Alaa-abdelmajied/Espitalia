@@ -23,6 +23,7 @@ import DoctorDetails from './patientPages/DoctorDetails';
 import BloodDonation from './patientPages/BloodDonation';
 import PatientNotification from './patientPages/Notifications';
 import Search from './patientPages/HomeSearch';
+import Report from './patientPages/Report';
 
 //Doctor pages
 import DoctorHome from './doctorPages/DoctorHome';
@@ -73,8 +74,27 @@ function PatientStackNav() {
         name="DoctorDetails"
         component={DoctorDetails}
       />
+      
     </ Stack.Navigator>
   );
+}
+
+function PatientProfileStackNav(){
+  return(
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false
+      }}>
+        <Stack.Screen
+        name="PatientProfile"
+        component={PatientProfile}
+      />
+       <Stack.Screen
+        name="Report"
+        component={Report}
+      />
+    </Stack.Navigator>
+  )
 }
 
 function ReceptStackView() {
@@ -203,7 +223,7 @@ function PatientNavBar() {
       />
       <bottomTab.Screen
         name="Profile"
-        component={PatientProfile}
+        component={PatientProfileStackNav}
       />
       <bottomTab.Screen
         name="Notifications"
@@ -424,6 +444,7 @@ export default function App() {
           name="HosptialAdminHomePage"
           component={HosptialAdminStackView}
         />
+       
       </Stack.Navigator>
     </NavigationContainer>
   )

@@ -10,7 +10,11 @@ import {
   Pressable
 } from 'react-native';
 
-export default function Profile() {
+export default function Profile({ navigation }) {
+
+  const onPressReport = () => {
+    navigation.navigate('Report');
+  };
 
   const [Items, setItems] = useState([
     { key: '1', Hname: 'Middle East Hospital', doctor: "Ahmed", date: "15/3/2022", resNum: 1 },
@@ -46,7 +50,7 @@ export default function Profile() {
           <Text style={styles.subtitle}>OLD RESERVATIONS</Text>
           {Items.map((item, itemIndex) => {
             return (
-              <TouchableOpacity style={styles.appointmentsCard} key={itemIndex}>
+              <TouchableOpacity style={styles.appointmentsCard} key={itemIndex} onPress={onPressReport}>
                 {/* <View style={styles.infoView}> */}
                 <Text style={styles.infoText}>Hospital Name: {item.Hname} </Text>
                 {/* <View style={styles.lineStyle} /> */}
