@@ -43,11 +43,11 @@ export default function Login({ navigation, route }) {
               <Text style={styles.QuestionText}>Forgot password?</Text>
             </Pressable>
 
-            <Pressable onPress={() => navigation.reset({
+            <Pressable style={styles.RegisterButton} onPress={() => navigation.reset({
               index: 0,
               routes: [{ name: route.params.staff ? 'HosptialAdminHomePage' : 'Patient' }],
             })}>
-              <Text style={styles.RegisterButton}>Sign In</Text>
+              <Text style={[styles.buttonText, { color: '#fff' }]}>Sign In</Text>
             </Pressable>
             {!route.params.staff ?
               <View style={{ flexDirection: 'row', margin: '5%' }}>
@@ -158,8 +158,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#0d259e',
     alignItems: 'center',
     textAlign: 'center',
-    color: '#fff'
+    // color: '#fff'
   },
+
+  // buttonText: {
+  //   // color: '#000',
+  //   textAlign: 'center',
+  //   fontSize: 15,
+  //   fontWeight: 'bold'
+  // },
+
 
 });
 

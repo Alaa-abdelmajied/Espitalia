@@ -132,11 +132,11 @@ export default function Questions({ navigation }) {
                             </Picker>
                         </View>
                     </View>
-                    <Pressable onPress={() => navigation.reset({
+                    <Pressable style={styles.SignInButton} onPress={() => navigation.reset({
                         index: 0,
                         routes: [{ name: 'Patient' }],
                     })}>
-                        <Text style={styles.SignInButton}>Sign up</Text>
+                        <Text style={{ color: '#fff' }}>Sign up</Text>
                     </Pressable>
                 </View>
                 {/* </LinearGradient> */}

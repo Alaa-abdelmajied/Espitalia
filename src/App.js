@@ -156,49 +156,64 @@ function HosptialAdminStackView() {
 
 function PatientNavBar() {
   return (
-    <Tab.Navigator screenOptions={({ route }) => ({
+    <bottomTab.Navigator screenOptions={({ route }) => ({
       tabBarIcon: ({ focused, color, size }) => {
         let iconName;
 
         if (route.name === 'Home') {
-          iconName = focused ? 'home-sharp' : 'home-outline';
+          iconName = focused ? 'home' : 'home-outline';
+          size = focused ? 25 : 23;
         }
         else if (route.name === 'Profile') {
           iconName = focused ? 'person-circle' : 'person-circle-outline';
+          size = focused ? 25 : 23;
+
         }
         else if (route.name == 'Notifications') {
           iconName = focused ? 'notifications' : 'notifications-outline';
+          size = focused ? 25 : 23;
+
         }
         else if (route.name == 'Reservations') {
           iconName = focused ? 'list' : 'list-outline';
+          size = focused ? 25 : 23;
+
         }
         else if (route.name == 'Search') {
           iconName = focused ? 'search' : 'search-outline';
+          size = focused ? 25 : 23;
+
         }
 
         return <Ionicons name={iconName} size={size} color={color} />;
       },
       header: () => null,
-      tabBarActiveTintColor: '#0d259e',
-      tabBarInactiveTintColor: '#000',
-    })}>
-      <Tab.Screen
+      // tabBarActiveTintColor: '#0d259e',
+      // tabBarInactiveTintColor: '#000',
+    })}
+      activeColor='#fff'
+      inactiveColor='#fff'
+      barStyle={{ backgroundColor: '#0d259e' }}
+
+
+    >
+      <bottomTab.Screen
         name="Home"
         component={PatientStackNav}
       />
-      <Tab.Screen
+      <bottomTab.Screen
         name="Profile"
         component={PatientProfile}
       />
-      <Tab.Screen
+      <bottomTab.Screen
         name="Notifications"
         component={PatientNotificationsTabNav}
       />
-      <Tab.Screen
+      <bottomTab.Screen
         name="Reservations"
         component={PatientReservations}
       />
-      <Tab.Screen
+      <bottomTab.Screen
         name="Search"
         component={Search}
       />
@@ -206,7 +221,7 @@ function PatientNavBar() {
         name="BloodDonation"
         component={BloodDonation}
       /> */}
-    </Tab.Navigator>
+    </bottomTab.Navigator>
   );
 }
 
@@ -342,15 +357,16 @@ function PatientNotificationsTabNav() {
           )
         }
       })}
-      tabBarOptions={{
-        activeTintColor: '#0d259e',
-        inactiveTintColor: '#000',
-        activeBackgroundColor: '#fff',
-        inactiveBackgroundColor: '#999',
-        showLabel: true,
-        labelStyle: { fontSize: 14 },
-        showIcon: true,
-      }}
+    // tabBarOptions={{
+    //   activeTintColor: '#0d259e',
+    //   inactiveTintColor: '#000',
+    //   activeBackgroundColor: '#fff',
+    //   inactiveBackgroundColor: '#999',
+    //   showLabel: true,
+    //   labelStyle: { fontSize: 14 },
+    //   showIcon: true,
+    // }}
+
     // activeColor='#f0edf6'
     // inactiveColor='#3e2465'
     // barStyle={{ backgroundColor: '#694fad' }}

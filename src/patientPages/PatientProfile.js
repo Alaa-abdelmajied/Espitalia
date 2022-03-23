@@ -44,10 +44,9 @@ export default function Profile() {
           </View>
           <View style={styles.lineStyle} />
           <Text style={styles.subtitle}>OLD RESERVATIONS</Text>
-          <FlatList
-            data={Items}
-            renderItem={({ item }) => (
-              <View style={styles.appointmentsCard}>
+          {Items.map((item, itemIndex) => {
+            return (
+              <TouchableOpacity style={styles.appointmentsCard} key={itemIndex}>
                 {/* <View style={styles.infoView}> */}
                 <Text style={styles.infoText}>Hospital Name: {item.Hname} </Text>
                 {/* <View style={styles.lineStyle} /> */}
@@ -57,9 +56,9 @@ export default function Profile() {
                 {/* <View style={styles.lineStyle} /> */}
                 {/* <Text style={styles.infoText}>Reservation Number: {item.resNum} </Text> */}
                 {/* </View> */}
-              </View>
-            )}
-          />
+              </TouchableOpacity>
+            )
+          })}
         </View>
       </View>
     </ScrollView>
@@ -70,6 +69,7 @@ export default function Profile() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    // backgroundColor:'#fff'
   },
   header: {
     backgroundColor: "#0d259e",
@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
 
   name: {
     fontSize: 30,
-    color:'#000',
+    color: '#000',
     fontWeight: 'bold',
     alignItems: 'center',
   },

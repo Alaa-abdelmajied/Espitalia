@@ -15,7 +15,8 @@ import {
   Alert,
   ImageBackground,
   Pressable,
-  Dimensions
+  Dimensions, 
+  TouchableOpacity
 } from 'react-native';
 
 
@@ -27,9 +28,29 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 import LinearGradient from 'react-native-linear-gradient';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import OutlineInput from 'react-native-outline-input';
 
 export default function SignUp({ navigation }) {
+  const today = new Date();
+  const [text, setText] = useState('📅 DD/MM/YYYY');
+  const [show, setShow] = useState(false);
+  const [date, setDate] = useState(new Date());
 
+  const OpenDateWindow = () => {
+    setShow(true);
+  }
+  const handleDate = (event, selectedDate) => {
+    const currentDate = selectedDate || new Date(1999, 11, 31);
+    setShow(false);
+    setDate(currentDate);
+
+    let tmpDate = new Date(currentDate);
+    let fullDate = "📅 " + tmpDate.getDate() + "/" + (tmpDate.getMonth() + 1) + "/" + tmpDate.getFullYear();
+    setText(fullDate);
+  }
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   return (
 
     // <ScrollView style={{ backgroundColor: '#fff' }}>
@@ -56,15 +77,34 @@ export default function SignUp({ navigation }) {
             Sign Up
           </Text>
           <View style={styles.InputsRegion}>
-
-            <TextInput style={styles.Input} placeholder="Enter your email"></TextInput>
+          
+            <TextInput style={styles.Input} placeholder="Enter your email">
+            </TextInput>
             <TextInput style={styles.Input} placeholder="Enter your username"></TextInput>
             <TextInput style={styles.Input} placeholder="Enter your password"></TextInput>
             <TextInput style={styles.Input} placeholder="Confirm your password"></TextInput>
-
-            <Pressable onPress={() => navigation.navigate('SignUpQuestions')}>
-              <Text style={styles.RegisterButton}>Next</Text>
+            <View style={styles.view}>
+              <Text style={styles.label}>Date of Birth:</Text>
+              <View style={[{ justifyContent: 'center', width: 200 }]}>
+                <Button
+                  title={text}
+                  color={'#1c1bad'}
+                  onPress={OpenDateWindow}
+                />
+                {show && (
+                  <DateTimePicker
+                    mode='date'
+                    value={date}
+                    maximumDate={new Date((today.getFullYear() - 25), 11, 31)}
+                    onChange={handleDate}
+                    isDatePickerVisible
+                  />)}
+              </View>
+            </View>
+            <Pressable style={styles.RegisterButton} onPress={() => navigation.navigate('SignUpQuestions')}>
+              <Text style={{ color: '#fff' }}>Next</Text>
             </Pressable>
+            
             {/* <Pressable onPress={() => navigation.navigate('LoginScreen')}>
             <Text style={styles.QuestionText}>Already have an account? Sign In</Text>
           </Pressable> */}
@@ -145,9 +185,18 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
 
-  Image: {
-    width: 80,
-    height: 80,
+  view: {
+    flexDirection: 'row',
+    padding: 5,
+    alignItems: 'center',
+  },
+  label: {
+    flex: 1,
+    color: '#000',
+    fontSize: 15,
+    marginLeft:'3%',
+    // marginLeft:'%3'
+    // padding: 10,
   },
 
   QuestionText: {

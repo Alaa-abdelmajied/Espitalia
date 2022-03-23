@@ -14,9 +14,9 @@ import {
   Alert,
   ImageBackground,
   Pressable,
-  Dimensions
+  Dimensions,
+  TouchableOpacity
 } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import Svg, { Path } from 'react-native-svg';
 
 
@@ -26,16 +26,16 @@ export default function HomeScreen({ navigation }) {
   return (
 
     <View style={styles.body}>
-      <Image style={styles.logo} source={require('../images/applogo-removebg-preview.png')}></Image>
+      <Image style={styles.logo} source={require('../images/logo_withoutBG.png')}></Image>
       <Text style={{ fontSize: 40, fontWeight: 'bold', color: '#0d259e' }}>eSpitalia</Text>
       <View style={styles.main}>
-        <Pressable onPress={() => navigation.navigate({
+        <Pressable style={styles.userButton} onPress={() => navigation.navigate({
           name: 'Login',
           params: {
             staff: false,
           },
-        })} style={styles.userButton} >
-          <Text style={styles.buttonText}> USER </Text>
+        })}>
+          <Text style={[styles.buttonText, { color: '#000' }]}> USER </Text>
         </Pressable>
         <Pressable style={styles.staffButton} onPress={() => navigation.navigate({
           name: 'Login',
@@ -43,7 +43,7 @@ export default function HomeScreen({ navigation }) {
             staff: true,
           },
         })}>
-          <Text style={styles.buttonText2}> STAFF </Text>
+          <Text style={[styles.buttonText, { color: '#fff' }]}> STAFF </Text>
         </Pressable>
       </View>
     </View>
@@ -81,17 +81,7 @@ const styles = StyleSheet.create({
     color: '#fff'
   },
 
-
-
   buttonText: {
-    color: '#000',
-    textAlign: 'center',
-    fontSize: 15,
-    fontWeight: 'bold'
-  },
-
-  buttonText2: {
-    color: '#fff',
     textAlign: 'center',
     fontSize: 15,
     fontWeight: 'bold'
@@ -121,7 +111,6 @@ const styles = StyleSheet.create({
     marginLeft: 30,
     marginRight: 30,
     borderRadius: 30,
-    backgroundColor: 'transparent',
     borderWidth: 1,
     borderColor: '#000',
     alignItems: 'center'
@@ -139,7 +128,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#fff',
     alignItems: 'center',
-    // borderColor:'#000'
+    borderColor: '#1b1bad'
   },
   customRatingBar: {
     justifyContent: 'center',
