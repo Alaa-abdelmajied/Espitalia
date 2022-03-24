@@ -37,7 +37,7 @@ export default function PatientHome({ navigation }) {
   };
 
   const doctors = [
-    { key: 1, drName: 'Maram Ghazal', speciality: 'Dermatologist', hName: 'Al Andalusia Hospital', address: '6 smouha st.', color: "#0d159e" },
+    { key: 1, drName: 'Alaa Abdelmajied', speciality: 'Dermatologist', hName: 'Al Andalusia Hospital', address: '6 smouha st.', color: "#0d159e" },
     { key: 2, drName: 'Ali Ghazal', speciality: 'Psychiatrist', hName: 'German Hospital', address: '6 gleem st.', color: "#0d369e" },
     { key: 3, drName: 'Mayar Adel', speciality: 'Dentist', hName: 'Royal Hospital', address: '6 ibrahmia st.', color: "#0d589e" },
     { key: 4, drName: 'Omar Shalaby', speciality: 'Cardiologist', hName: 'Alex Hospital', address: '6 camp shizar st.', color: "#0d789e" },
@@ -52,29 +52,30 @@ export default function PatientHome({ navigation }) {
         <Text style={styles.headerText}>espitalia</Text>
       </View>
 
-      <View style={styles.hospitalScroll}></View>
+      <View style={styles.hospitalScroll}>
 
-      <Text style={styles.titleText}> Hospitals</Text>
+        <Text style={styles.titleText}> Hospitals</Text>
 
-      <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}
-      >
-        {doctors.map((card, cardIndex) => {
-          return (
-            <TouchableOpacity style={styles.cards} key={cardIndex} onPress={onPressHospitals}>
-              <View style={styles.card_header}>
-                <View style={styles.textView}>
-                  <Text style={styles.name}> {card.hName} </Text>
+        <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}
+        >
+          {doctors.map((card, cardIndex) => {
+            return (
+              <TouchableOpacity style={styles.cards} key={cardIndex} onPress={onPressHospitals}>
+                <View style={styles.card_header}>
+                  <View style={styles.textView}>
+                    <Text style={styles.name}> {card.hName} </Text>
+                  </View>
                 </View>
-              </View>
-              <View style={styles.hospital_content}>
-                <Image style={styles.hospitalImg} source={{ uri: 'https://d2tm09s6lgn3z4.cloudfront.net/2016/07/PZUMOwhs-1468329684_762_86406_-512x435.png' }}></Image>
-                <Text style={styles.hospital}>Info about the hospital</Text>
-              </View>
-            </TouchableOpacity>
-          );
-        })}
+                <View style={styles.hospital_content}>
+                  <Image style={styles.hospitalImg} source={{ uri: 'https://d2tm09s6lgn3z4.cloudfront.net/2016/07/PZUMOwhs-1468329684_762_86406_-512x435.png' }}></Image>
+                  <Text style={styles.hospital}>Info about the hospital</Text>
+                </View>
+              </TouchableOpacity>
+            );
+          })}
 
-      </ScrollView>
+        </ScrollView>
+      </View>
       <View style={styles.lineStyle} />
       <View style={styles.doctorsScroll}>
         <Text style={styles.titleText}> Top Doctors</Text>
@@ -145,11 +146,11 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderColor: '#000',
     margin: '2%',
-    backgroundColor: '#000'
+    backgroundColor: '#000',
   },
 
   hospitalScroll: {
-    // flex: 1,
+    flex: 1,
     flexDirection: 'column',
   },
 
@@ -201,7 +202,7 @@ const styles = StyleSheet.create({
       width: 3,
       height: 3,
     },
-    elevation: 5,
+    elevation: 2,
     // marginleft: 10,
     // marginRight: 10,
   },

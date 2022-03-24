@@ -65,14 +65,22 @@ export default function Speciality({ navigation }) {
         }}
         renderItem={({ item }) => {
           return (
-            <TouchableOpacity style={styles.specializationBox} onPress={onPress}>
-              <Image style={styles.image}
-                source={{ uri: item.icon }} />
-              <Text style={styles.speciality}>{item.description}</Text>
+            <TouchableOpacity style={styles.specializationCard} onPress={onPress}>
+              {/* <View style={styles.specializationContainer} > */}
+              <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                <Image style={styles.image}
+                  source={{ uri: item.icon }} />
+              </View>
+              <View style={{ flex: 2, justifyContent: 'center' }}>
+
+                <Text style={styles.speciality}>{item.description}</Text>
+              </View>
+
+              {/* </View> */}
             </TouchableOpacity>
           )
         }} />
-    </View>
+    </View >
   );
 
 }
@@ -82,89 +90,41 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 
-  formContent: {
-    flexDirection: 'row',
-    marginTop: 10,
-  },
-
-  header: {
-    marginBottom: 5,
-    height: '11%',
-    backgroundColor: '#0d259e',
-  },
-
-  Image: {
-    width: 80,
-    height: 80,
-    alignSelf: 'center'
-    // marginTop:10,
-  },
-
-
-  inputContainer: {
-    borderBottomColor: '#F5FCFF',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    borderBottomWidth: 1,
-    height: 45,
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-    margin: 10,
-  },
-
-  icon: {
-    width: 30,
-    height: 30,
-  },
-
-  iconBtnSearch: {
-    alignSelf: 'center'
-  },
-
-  inputs: {
-    height: 45,
-    marginLeft: 16,
-    borderBottomColor: '#FFFFFF',
-    flex: 1,
-  },
-
-  inputIcon: {
-    marginLeft: 15,
-    justifyContent: 'center'
-  },
-
-  // notificationList: {
-  //   marginTop: 0,
-  //   padding: 0,
-  // },
-
-  specializationBox: {
-    paddingTop: '2%',
-    paddingBottom: '2%',
-    // marginTop: 5,
-    margin: '1%',
+  specializationCard: {
+    // width: '100%',
+    paddingTop: 5,
+    paddingBottom: 5,
+    // margin: '1%',
+    margin: 3,
     backgroundColor: '#FFFFFF',
     flexDirection: 'row',
     borderRadius: 10,
+    shadowColor: '#000',
+    shadowOpacity: 1,
+    shadowOffset: {
+      width: 3,
+      height: 3,
+    },
+    elevation: 2,
   },
 
+  specializationContainer:
+  {
+    flexDirection: 'row',
+    width: '98%',
+    justifyContent: 'center',
+  }
+  ,
   image: {
     width: 45,
     height: 45,
     borderRadius: 20,
-    marginLeft: 20
+    margin: '3%'
   },
 
   speciality: {
     fontSize: 20,
-    color: "#000000",
-    marginLeft: 10,
-    alignSelf: 'center'
+    color: "#000",
   },
 
-  search: {
-    borderRadius: 20,
-    height: 50,
-  }
 });

@@ -68,14 +68,14 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     backgroundColor: "#fff",
     alignSelf: 'center',
-    margin: '1.5%',
+    margin: 4,
     shadowColor: '#000',
     shadowOpacity: 1,
     shadowOffset: {
       width: 3,
       height: 3,
     },
-    elevation: 5,
+    elevation: 2,
     overflow: 'hidden',
   },
 

@@ -27,7 +27,7 @@ export default function HomeScreen({ navigation }) {
 
     <View style={styles.body}>
       <Image style={styles.logo} source={require('../images/logo_withoutBG.png')}></Image>
-      <Text style={{ fontSize: 40, fontWeight: 'bold', color: '#0d259e' }}>eSpitalia</Text>
+      <Text style={{ fontSize: 40, fontWeight: 'bold', color: '#1c1bad' }}>eSpitalia</Text>
       <View style={styles.main}>
         <Pressable style={styles.userButton} onPress={() => navigation.navigate({
           name: 'Login',
@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
     // marginLeft: 30,
     // marginRight: 30,
     borderRadius: 30,
-    backgroundColor: '#0d259e',
+    backgroundColor: '#1c1bad',
     borderWidth: 1,
     alignItems: 'center',
     textAlign: 'center',
@@ -123,12 +123,12 @@ const styles = StyleSheet.create({
     paddingBottom: 15,
     marginLeft: 30,
     marginRight: 30,
-    backgroundColor: '#1b1bad',
+    backgroundColor: '#1c1bad',
     borderRadius: 30,
     borderWidth: 1,
     borderColor: '#fff',
     alignItems: 'center',
-    borderColor: '#1b1bad'
+    borderColor: '#1c1bad'
   },
   customRatingBar: {
     justifyContent: 'center',

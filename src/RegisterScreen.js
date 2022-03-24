@@ -15,8 +15,8 @@ import {
   Alert,
   ImageBackground,
   Pressable,
-  Dimensions, 
-  TouchableOpacity
+  Dimensions,
+  TouchableOpacity,
 } from 'react-native';
 
 
@@ -30,10 +30,15 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import OutlineInput from 'react-native-outline-input';
+import DatePicker from 'react-native-date-picker';
+import SelectDropdown from 'react-native-select-dropdown'
+import { Picker } from '@react-native-picker/picker';
+import { Icon } from 'react-native-paper/lib/typescript/components/Avatar/Avatar';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 export default function SignUp({ navigation }) {
   const today = new Date();
-  const [text, setText] = useState('📅 DD/MM/YYYY');
+  const [text, setText] = useState('📅 Date of Birth');
   const [show, setShow] = useState(false);
   const [date, setDate] = useState(new Date());
 
@@ -51,25 +56,18 @@ export default function SignUp({ navigation }) {
   }
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  // const [date, setDate] = useState(new Date())
+  const [open, setOpen] = useState(false)
+
+  const gender = ["Female", "Male"]
+  const [selectedValue, setSelectedValue] = useState("no");
+
+
   return (
 
-    // <ScrollView style={{ backgroundColor: '#fff' }}>
     <View style={styles.Body}>
 
-      <View style={styles.WaveHeader}>
-        <Svg
-        // height={200}
-        // width={Dimensions.get('screen').width}
-        >
-          <Path
-            fill="#0d259e"
-            d='M0,192L60,170.7C120,149,240,107,360,112C480,117,600,171,720,197.3C840,224,960,224,1080,208C1200,192,1320,160,1380,144L1440,128L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z'
-          />
-
-        </Svg>
-      </View>
-      {/* <Image style={styles.Image} source={require('../images/applogo-removebg-preview.png')}></Image> */}
-      {/* <LinearGradient start={{x: 0, y: 0.75}} end={{x: 1, y: 0}} colors={[ '#09344d' , '#09344d' , '#09344d' , '#3096d1', '#3096d1']} style={styles.cards}> */}
 
       <View style={styles.RegisterRegion}>
         <View style={styles.RegisterCard}>
@@ -77,38 +75,50 @@ export default function SignUp({ navigation }) {
             Sign Up
           </Text>
           <View style={styles.InputsRegion}>
-          
-            <TextInput style={styles.Input} placeholder="Enter your email">
+            <TextInput style={styles.Input} placeholder="Enter your email" placeholderTextColor={'#a1a1a1'} >
             </TextInput>
-            <TextInput style={styles.Input} placeholder="Enter your username"></TextInput>
-            <TextInput style={styles.Input} placeholder="Enter your password"></TextInput>
-            <TextInput style={styles.Input} placeholder="Confirm your password"></TextInput>
+            <TextInput style={styles.Input} placeholder="Enter your username" placeholderTextColor={'#a1a1a1'}></TextInput>
+            <TextInput style={styles.Input} placeholder="Enter your password" placeholderTextColor={'#a1a1a1'}></TextInput>
+            <TextInput style={styles.Input} placeholder="Confirm your password" placeholderTextColor={'#a1a1a1'}></TextInput>
             <View style={styles.view}>
-              <Text style={styles.label}>Date of Birth:</Text>
-              <View style={[{ justifyContent: 'center', width: 200 }]}>
-                <Button
-                  title={text}
-                  color={'#1c1bad'}
-                  onPress={OpenDateWindow}
-                />
-                {show && (
-                  <DateTimePicker
-                    mode='date'
-                    value={date}
-                    maximumDate={new Date((today.getFullYear() - 25), 11, 31)}
-                    onChange={handleDate}
-                    isDatePickerVisible
-                  />)}
+              <View style={{ flex: 1, alignItems: 'flex-start' }}>
+                <Pressable onPress={OpenDateWindow} style={styles.dateInput}>
+                  <Text style={{ textAlign: 'center', color: '#a1a1a1' }}>{text}</Text>
+                  {show && (
+                    <DateTimePicker
+                      mode='date'
+                      value={date}
+                      maximumDate={new Date((today.getFullYear() - 25), 11, 31)}
+                      onChange={handleDate}
+                      isDatePickerVisible
+                    />)}
+                </Pressable>
               </View>
+              <View style={{ flex: 1, alignItems: 'flex-end' }}>
+                <SelectDropdown renderDropdownIcon={() => <Ionicons
+                  name={'chevron-down'}
+                  size={20}
+                  color={'#000'}
+
+                />} dropdownBackgroundColor='#fff' dropdownOverlayColor='transparent' buttonStyle={styles.dateInput} defaultButtonText='Gender' buttonTextStyle={{ color: '#a1a1a1', fontSize: 16 }}
+                  data={gender}
+                  onSelect={(selectedItem, index) => {
+                    console.log(selectedItem, index)
+                  }}
+                  buttonTextAfterSelection={(selectedItem, index) => {
+                    return selectedItem
+                  }}
+                  rowTextForSelection={(item, index) => {
+                    return item
+                  }}
+                />
+              </View>
+
             </View>
+
             <Pressable style={styles.RegisterButton} onPress={() => navigation.navigate('SignUpQuestions')}>
               <Text style={{ color: '#fff' }}>Next</Text>
             </Pressable>
-            
-            {/* <Pressable onPress={() => navigation.navigate('LoginScreen')}>
-            <Text style={styles.QuestionText}>Already have an account? Sign In</Text>
-          </Pressable> */}
-            {/* </LinearGradient> */}
 
           </View>
         </View>
@@ -120,6 +130,7 @@ export default function SignUp({ navigation }) {
 const styles = StyleSheet.create({
 
   Body: {
+
     flex: 1,
     flexDirection: 'column',
     backgrundColor: '#ffffff',
@@ -135,8 +146,11 @@ const styles = StyleSheet.create({
 
   RegisterRegion: {
     // flex: 2,
-    marginTop: '10%',
-    // backgroundColor: '#0e3de8'
+    height: '100%',
+    width: '100%',
+    // marginTop: '10%',
+    justifyContent: 'center',
+    backgroundColor: '#f0f0f0'
   },
 
   TitleText: {
@@ -153,14 +167,14 @@ const styles = StyleSheet.create({
     width: '85%',
     alignSelf: 'center',
     justifyContent: 'center',
-    borderRadius: 25,
-    backgroundColor: '#f0f0f0',
-    alignItems: 'center',
-    shadowColor: '#000000',
-    shadowOffset: { width: -2, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 6,
+    // borderRadius: 25,
+    // backgroundColor: '#f0f0f0',
+    // alignItems: 'center',
+    // shadowColor: '#000000',
+    // shadowOffset: { width: -2, height: 2 },
+    // shadowOpacity: 0.2,
+    // shadowRadius: 3,
+    // elevation: 6,
     overflow: 'hidden'
   },
 
@@ -171,12 +185,30 @@ const styles = StyleSheet.create({
   },
 
   Input: {
-    width: 330,
-    borderRadius: 45,
-    borderWidth: 1,
+    width: '95%',
+    borderRadius: 10,
+    // borderWidth: 1,
     textAlign: 'center',
-    borderColor: '#fff',
-    margin: '3%',
+    // borderColor: '#fff',
+    margin: 10,
+    backgroundColor: '#fff',
+    shadowColor: '#000000',
+    shadowOffset: { width: -1, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1,
+    elevation: 2,
+  },
+
+  dateInput: {
+    width: '95%',
+    height: 55,
+    // height: '30%',
+    borderRadius: 10,
+    padding: 15,
+    // borderWidth: 1,
+    justifyContent: 'center',
+    // borderColor: '#fff',
+    // margin: 10,
     backgroundColor: '#fff',
     shadowColor: '#000000',
     shadowOffset: { width: -1, height: 1 },
@@ -187,35 +219,19 @@ const styles = StyleSheet.create({
 
   view: {
     flexDirection: 'row',
-    padding: 5,
-    alignItems: 'center',
-  },
-  label: {
-    flex: 1,
-    color: '#000',
-    fontSize: 15,
-    marginLeft:'3%',
-    // marginLeft:'%3'
-    // padding: 10,
+    width: '95%',
+    margin: 10
   },
 
-  QuestionText: {
-    color: '#000',
-    // fontSize: 15,
-    // marginRight: '1%',
-  },
 
   RegisterButton: {
-    width: 130,
-    margin: '5%',
-    // marginTop: 30,
+    width: '95%',
+    margin: 10,
     paddingTop: 15,
     paddingBottom: 15,
-    borderRadius: 30,
-    backgroundColor: '#0d259e',
+    borderRadius: 10,
+    backgroundColor: '#1c1bad',
     alignItems: 'center',
-    textAlign: 'center',
-    color: '#fff'
   },
 
 });

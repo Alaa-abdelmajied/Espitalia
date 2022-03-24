@@ -74,22 +74,22 @@ function PatientStackNav() {
         name="DoctorDetails"
         component={DoctorDetails}
       />
-      
+
     </ Stack.Navigator>
   );
 }
 
-function PatientProfileStackNav(){
-  return(
+function PatientProfileStackNav() {
+  return (
     <Stack.Navigator
       screenOptions={{
         headerShown: false
       }}>
-        <Stack.Screen
+      <Stack.Screen
         name="PatientProfile"
         component={PatientProfile}
       />
-       <Stack.Screen
+      <Stack.Screen
         name="Report"
         component={Report}
       />
@@ -228,6 +228,7 @@ function PatientNavBar() {
       <bottomTab.Screen
         name="Notifications"
         component={PatientNotificationsTabNav}
+        options={{ tabBarBadge: 10 }}
       />
       <bottomTab.Screen
         name="Reservations"
@@ -361,11 +362,13 @@ function PatientNotificationsTabNav() {
           let iconName;
           if (route.name === 'Notification') {
             iconName = 'notifications';
+            // size = 25;
             size = focused ? 25 : 20;
             color = focused ? '#0d259e' : '#000';
-          } else if (route.name === 'BloodDonation') {
+          } else if (route.name === 'Blood Donation') {
             iconName = 'water';
             size = focused ? 25 : 20;
+            // size = 25;
             color = focused ? '#0d259e' : '#000';
           }
           return (
@@ -376,16 +379,19 @@ function PatientNotificationsTabNav() {
             />
           )
         }
-      })}
-    // tabBarOptions={{
-    //   activeTintColor: '#0d259e',
-    //   inactiveTintColor: '#000',
-    //   activeBackgroundColor: '#fff',
-    //   inactiveBackgroundColor: '#999',
-    //   showLabel: true,
-    //   labelStyle: { fontSize: 14 },
-    //   showIcon: true,
-    // }}
+      })
+      }
+      tabBarOptions={{
+        activeTintColor: '#0d259e',
+        inactiveTintColor: '#000',
+        activeBackgroundColor: '#fff',
+        inactiveBackgroundColor: '#999',
+        showLabel: true,
+        labelStyle: { textTransform: "none", fontSize: 15 },
+        showIcon: true,
+
+        // tabBarLabel: 'Notification'.toLowerCase(),
+      }}
 
     // activeColor='#f0edf6'
     // inactiveColor='#3e2465'
@@ -397,7 +403,7 @@ function PatientNotificationsTabNav() {
 
       />
       <TopTabs.Screen
-        name="BloodDonation"
+        name="Blood Donation"
         component={BloodDonation}
       />
     </TopTabs.Navigator>
@@ -444,7 +450,7 @@ export default function App() {
           name="HosptialAdminHomePage"
           component={HosptialAdminStackView}
         />
-       
+
       </Stack.Navigator>
     </NavigationContainer>
   )

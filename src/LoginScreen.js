@@ -23,7 +23,7 @@ export default function Login({ navigation, route }) {
         // width={Dimensions.get('screen').width}
         >
           <Path
-            fill="#0d259e"
+            fill="#0d159e"
             d='M0,192L60,170.7C120,149,240,107,360,112C480,117,600,171,720,197.3C840,224,960,224,1080,208C1200,192,1320,160,1380,144L1440,128L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z'
           />
 
@@ -54,7 +54,7 @@ export default function Login({ navigation, route }) {
                 <Text style={styles.QuestionText}>Don't have an account yet? </Text>
 
                 <Pressable onPress={() => navigation.navigate('SignUp')}>
-                  <Text style={{ color: '#0d259e', textDecorationLine: 'underline' }}>Sign Up</Text>
+                  <Text style={{ color: '#1c1bad', textDecorationLine: 'underline' }}>Sign Up</Text>
                 </Pressable>
 
               </View> : null
@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: -2, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 3,
-    elevation: 6,
+    elevation: 3,
     justifyContent: 'center',
     overflow: 'hidden'
   },
@@ -124,10 +124,10 @@ const styles = StyleSheet.create({
 
   Input: {
     width: 330,
-    borderRadius: 45,
-    borderWidth: 1,
+    borderRadius: 10,
+    // borderWidth: 1,
     textAlign: 'center',
-    borderColor: '#fff',
+    // borderColor: '#fff',
     margin: '3%',
     backgroundColor: '#fff',
     shadowColor: '#000000',
@@ -154,8 +154,8 @@ const styles = StyleSheet.create({
     // marginTop: 30,
     paddingTop: 15,
     paddingBottom: 15,
-    borderRadius: 30,
-    backgroundColor: '#0d259e',
+    borderRadius: 10,
+    backgroundColor: '#1c1bad',
     alignItems: 'center',
     textAlign: 'center',
     // color: '#fff'

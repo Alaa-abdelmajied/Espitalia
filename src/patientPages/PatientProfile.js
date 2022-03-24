@@ -51,15 +51,9 @@ export default function Profile({ navigation }) {
           {Items.map((item, itemIndex) => {
             return (
               <TouchableOpacity style={styles.appointmentsCard} key={itemIndex} onPress={onPressReport}>
-                {/* <View style={styles.infoView}> */}
                 <Text style={styles.infoText}>Hospital Name: {item.Hname} </Text>
-                {/* <View style={styles.lineStyle} /> */}
                 <Text style={styles.infoText}>Doctor Name: {item.doctor} </Text>
-                {/* <View style={styles.lineStyle} /> */}
                 <Text style={styles.infoText}>Date: {item.date} </Text>
-                {/* <View style={styles.lineStyle} /> */}
-                {/* <Text style={styles.infoText}>Reservation Number: {item.resNum} </Text> */}
-                {/* </View> */}
               </TouchableOpacity>
             )
           })}
@@ -148,14 +142,14 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     alignSelf: 'center',
     // marginLeft: 10,
-    margin: 5,
+    margin: 4,
     shadowColor: '#000',
     shadowOpacity: 1,
     shadowOffset: {
       width: 3,
       height: 3,
     },
-    elevation: 5,
+    elevation: 2,
     overflow: 'hidden',
     // margin: '2%'
   },

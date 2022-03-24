@@ -94,9 +94,10 @@ const styles = StyleSheet.create({
       width: 3,
       height: 3,
     },
-    elevation: 5,
+    elevation: 2,
     // borderColor:'#000',
-    margin: '1.5%',
+    // margin: '1%',
+    margin: 4,
     alignSelf: 'center'
 
 

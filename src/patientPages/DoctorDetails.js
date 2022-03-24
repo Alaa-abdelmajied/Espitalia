@@ -91,13 +91,13 @@ export default function ProfileScreen({ navigation }) {
                   style={{ width: windowWidth, }}
                   key={cardIndex}
                 >
-                  <View style={styles.cards} key={cardIndex}>
+                  <View style={styles.scheduleCard} key={cardIndex}>
                     <View style={styles.dateHeader} ><Text style={{ color: '#fff', fontSize: 20 }}>{card.date}</Text></View>
                     <View style={{ margin: 30, alignItems: 'center' }}>
                       <Text style={{ color: '#000', fontSize: 20 }}>From: {card.from}</Text>
                       <Text style={{ color: '#000', fontSize: 20 }}>To: {card.to}</Text>
                     </View>
-                    <Pressable style={styles.SignUpButton} >
+                    <Pressable style={styles.bookButton} >
                       <Text style={{ color: '#fff' }} >Book</Text>
                     </Pressable>
                   </View>
@@ -131,11 +131,12 @@ export default function ProfileScreen({ navigation }) {
           }
         </View>
         {/* </View> */}
-        <View style={styles.reviews}>
+        <View style={styles.reviewsArea}>
           <Text style={styles.title}>Ratings and Reviews</Text>
           {review.map((reviewCard, cardIndex) => {
             return (
-              <View style={{ height: 150, width: '97%' }} key={cardIndex}>
+
+              <View style={{ height: 150, width: '97%', alignSelf: 'center' }} key={cardIndex}>
                 <View style={{ flexDirection: 'row' }}>
                   <Text style={styles.name}>{reviewCard.reviewer_name}</Text>
                   <Text style={styles.name}>{reviewCard.date}</Text>
@@ -159,9 +160,9 @@ export default function ProfileScreen({ navigation }) {
                 </View>
                 <Text style={styles.review}>{reviewCard.review}</Text>
               </View>
+
             );
           })}
-
         </View>
         <View style={{ backgroundColor: '#05f6f0', width: '100%', height: 100 }}><Text style={styles.title}>Comments Section + fi 7aga bayza fl header :) *angry*</Text></View>
       </View>
@@ -180,7 +181,7 @@ const styles = StyleSheet.create({
   },
 
   headerContainer: {
-    // flex: 1,
+    flex: 1,
     flexDirection: 'column',
     width: '100%',
     // backgroundColor: "#fff0f0",
@@ -213,6 +214,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     // backgroundColor:'#ff0ff0',
   },
+
 
   // bodyContent: {
   //   // flex: 1,
@@ -250,30 +252,24 @@ const styles = StyleSheet.create({
     marginTop: 10,
     textAlign: 'center'
   },
+
   review: {
     fontSize: 16,
     color: "#000",
     marginLeft: '3%'
   },
 
-  scheduleContainer:
-  {
-    height: 280,
-    margin: '2%',
-    flexDirection: 'column',
-    // backgroundColor: '#ff0fff',
-
-    // justifyContent: 'space-evenly'
-  },
+  // scheduleContainer:
+  // {
+  //   height: 280,
+  //   margin: '2%',
+  //   flexDirection: 'column',
+  //   // backgroundColor: '#ff0fff',
+  //   // justifyContent: 'space-evenly'
+  // },
 
   appointmentsContainer: {
     height: 280,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 10,
-      height: -10,
-    },
-    shadowOpacity: 1,
     // backgroundColor: '#ff0',
     // marginTop: -50,
     // alignItems: 'center'
@@ -285,7 +281,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     // marginBottom: 20,
     // backgroundColor: '#ff0fff',
-
   },
 
   normalDots: {
@@ -295,16 +290,13 @@ const styles = StyleSheet.create({
     marginHorizontal: 4,
   },
 
-  cards: {
+  scheduleCard: {
     flex: 1,
-    margin: 10,
-    // marginTop: 10,
-    // marginBottom: 10,
+    margin: 8,
     width: 200,
     height: 250,
     overflow: "hidden",
     alignSelf: "center",
-    // justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#fff',
     borderRadius: 35,
@@ -312,7 +304,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: -2, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 3,
-    elevation: 6,
+    elevation: 2,
   },
 
   dateHeader: {
@@ -323,41 +315,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 
-  textAreaContainer: {
-    width: "100%",
-    marginBottom: 10,
-  },
-
-  textView: {
-    position: "absolute",
-    fontSize: 22,
-    // fontFamily: "Avenir",
-    // fontWeight: "600",
-    // textAlign: "center",
-    // width: "100%"
-    color: '#000', fontSize: 20, margin: 40,
-  },
-
-  buttonContainer: {
-    marginTop: 10,
-    height: 45,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 20,
-    width: 250,
-    borderRadius: 30,
-    backgroundColor: "#0d259e",
-  },
-
-  SignUpButton: {
+  bookButton: {
     width: 100,
-    // marginTop:-30,
-    // margin:40,
-    paddingTop: 15,
-    paddingBottom: 15,
-    // marginLeft: 30,
-    // marginRight: 30,
+    paddingTop: '6%',
+    paddingBottom: '6%',
     borderRadius: 30,
     backgroundColor: '#0d259e',
     borderWidth: 1,
@@ -373,6 +334,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
 
   },
+
   starImg: {
     width: 25,
     height: 25,
@@ -389,7 +351,7 @@ const styles = StyleSheet.create({
     marginLeft: '1%'
   },
 
-  reviews: {
+  reviewsArea: {
     width: '100%',
     // backgroundColor:'#f0f'
   }

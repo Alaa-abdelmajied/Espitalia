@@ -76,26 +76,22 @@ const styles = StyleSheet.create({
   },
 
   appointmentsCard: {
-    // flex: 1,
-    // alignItems:'center',
     flexDirection: 'row',
-    // justifyContent: 'center',
-    // alignItems: 'flex-start',
-    // marginBottom: 10,
     width: '95%',
     height: 230,
     borderRadius: 15,
     backgroundColor: "#fff",
     alignSelf: 'center',
     // marginLeft: 10,
-    margin: '1.5%',
+    // margin: '1%',
+    margin: 4,
     shadowColor: '#000',
     shadowOpacity: 1,
     shadowOffset: {
       width: 3,
       height: 3,
     },
-    elevation: 5,
+    elevation: 2,
     overflow: 'hidden'
   },
 
