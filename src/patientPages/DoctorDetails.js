@@ -13,6 +13,8 @@ import {
   TouchableOpacity,
 } from "react-native";
 
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+
 const appointments = [
   { key: 1, date: 'Thurs. 9/3/2022', from: '14:00', to: '16:00', color: "#0d259e" },
   { key: 2, date: 'Sat. 11/3/2022', from: '11:00', to: '17:00', color: "#0d259e" },
@@ -39,9 +41,6 @@ export default function ProfileScreen({ navigation }) {
   const [defaultRating, setDefaultRating] = useState(2);
   const [maxRating, setMaxRating] = useState([1, 2, 3, 4, 5]);
 
-  const starImgCorner = 'https://raw.githubusercontent.com/tranhonghan/images/main/star_corner.png'
-  const starImgFilled = 'https://raw.githubusercontent.com/tranhonghan/images/main/star_filled.png'
-
 
   return (
 
@@ -62,8 +61,7 @@ export default function ProfileScreen({ navigation }) {
                     <TouchableOpacity activeOpacity={0.7}
                       key={key}
                       onPress={() => setDefaultRating(item)}>
-                      <Image style={styles.starImg} source={item <= defaultRating ? { uri: starImgFilled } : { uri: starImgCorner }}></Image>
-                      {/* <Text> Rate is {item} / 5</Text> */}
+                      <FontAwesome name={item <= defaultRating ? "star" : "star-o"} size={25} color="#FDCC0D" />
                     </TouchableOpacity>
                   )
                 })
@@ -151,8 +149,7 @@ export default function ProfileScreen({ navigation }) {
                         <TouchableOpacity activeOpacity={0.7}
                           key={key}
                           onPress={() => setDefaultRating(item)}>
-                          <Image style={{ height: 20, width: 20 }} source={item <= defaultRating ? { uri: starImgFilled } : { uri: starImgCorner }}></Image>
-                          {/* <Text> Rate is {item} / 5</Text> */}
+                          <FontAwesome name={item <= defaultRating ? "star" : "star-o"} size={25} color="#FDCC0D" />
                         </TouchableOpacity>
                       )
                     })

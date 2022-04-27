@@ -1,38 +1,21 @@
 import React, { useState } from 'react';
 import {
-  Button,
   ScrollView,
   StyleSheet,
-  Text,
   View,
-  Image,
-  SectionList,
-  FlatList,
-  RefreshControl,
-  TouchableOpacity,
 
 } from 'react-native';
 import DoctorsCard from '../../utils/DoctorsCard'
-
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-// import SearchBar from 'react-native-search-bar';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { SearchBar } from 'react-native-elements';
 
-/***************** List *********************/
 
-
-export default function Doctors({navigation}) {
+export default function Doctors({ navigation }) {
 
   const [defaultRating, setDefaultRating] = useState(2);
   const [maxRating, setMaxRating] = useState([1, 2, 3, 4, 5]);
-  const starImgCorner = 'https://raw.githubusercontent.com/tranhonghan/images/main/star_corner.png'
-  const starImgFilled = 'https://raw.githubusercontent.com/tranhonghan/images/main/star_filled.png'
+  // const starImgCorner = 'https://raw.githubusercontent.com/tranhonghan/images/main/star_corner.png'
+  // const starImgFilled = 'https://raw.githubusercontent.com/tranhonghan/images/main/star_filled.png'
 
   const [search, setSearch] = useState("");
 
@@ -72,7 +55,7 @@ export default function Doctors({navigation}) {
       <ScrollView>
         {doctors.map((card, cardIndex) => {
           return (
-            <DoctorsCard card={card} cardIndex={cardIndex} maxRating={maxRating} defaultRating={defaultRating} starImgCorner={starImgCorner} starImgFilled={starImgFilled} navigation={navigation}/>
+            <DoctorsCard card={card} cardIndex={cardIndex} maxRating={maxRating} defaultRating={defaultRating} navigation={navigation} />
           );
         })}
       </ScrollView >

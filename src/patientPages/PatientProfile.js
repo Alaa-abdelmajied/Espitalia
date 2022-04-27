@@ -6,9 +6,10 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
-  FlatList,
-  Pressable
+  Modal,
 } from 'react-native';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 export default function Profile({ navigation }) {
 
@@ -17,34 +18,45 @@ export default function Profile({ navigation }) {
   };
 
   const [Items, setItems] = useState([
-    { key: '1', Hname: 'Middle East Hospital', doctor: "Ahmed", date: "15/3/2022", resNum: 1 },
-    { key: '2', Hname: 'ICC Hospital', doctor: "Maram", date: "16/3/2022", resNum: 2 },
-    { key: '3', Hname: 'Al Andalusia Hospital', doctor: "Ali", date: "19/3/2022", resNum: 3 },
-    { key: '4', Hname: 'Royal Hospital', doctor: "Alaa", date: "25/3/2022", resNum: 4 },
-    { key: '5', Hname: 'German Hospital', doctor: "Mayar", date: "5/4/2022", resNum: 5 },
-    { key: '6', Hname: 'Alexandria International Hospital', doctor: "Nadeen", date: "15/4/2022", resNum: 6 },
-    // { key: '7', Hname: 'Item 7', doctor: "Omar", date: "15/3/2022", resNum: 7 },
-    // { key: '8', Hname: 'Item 8', doctor: "John", date: "15/3/2022", resNum: 8 },
-    // { key: '9', Hname: 'Item 999', doctor: "Jessica", date: "15/3/2022", resNum: 9 },
-    // { key: '10', Hname: 'Item 999', doctor: "Mohamed", date: "15/3/2022", resNum: 9 },
+    { key: '1', Hname: 'Middle East Hospital', doctor: "Ahmed", specialization: "dermatology", date: "15/3/2022", resNum: 1 },
+    { key: '2', Hname: 'ICC Hospital', doctor: "Maram", specialization: "physiotherapy", date: "16/3/2022", resNum: 2 },
+    { key: '3', Hname: 'Al Andalusia Hospital', doctor: "Ali", specialization: "cardiology", date: "19/3/2022", resNum: 3 },
+    { key: '4', Hname: 'Royal Hospital', doctor: "Alaa", specialization: "allergy", date: "25/3/2022", resNum: 4 },
+    { key: '5', Hname: 'German Hospital', doctor: "Mayar", specialization: "chest", date: "5/4/2022", resNum: 5 },
+    { key: '6', Hname: 'Alexandria International Hospital', doctor: "Nadeen", specialization: "dermatology", date: "15/4/2022", resNum: 6 },
 
   ])
 
+  // const [showModal, setShowModal] = useState(false);
+
+  // const onPress = () => {
+  //   setShowModal(false)
+  // }
+
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView>
       <View style={styles.header}></View>
       <Image style={styles.avatar} source={{ uri: 'https://bootdey.com/img/Content/avatar/avatar6.png' }} />
+      <View style={{ position: "absolute", alignSelf: 'flex-end', marginTop: 15 }}>
+        <TouchableOpacity>
+          <Ionicons name="ellipsis-vertical" size={30} color="#fff"></Ionicons>
+        </TouchableOpacity>
+      </View>
       <View style={styles.body}>
         <View style={styles.bodyContent}>
           <Text style={styles.name}>Alaa Abdelmajied</Text>
           <Text style={styles.subtitle}>BASIC DATA</Text>
+          <TouchableOpacity>
+            <FontAwesome name="edit" size={25} color="#000"></FontAwesome>
+          </TouchableOpacity>
           <View style={styles.description}>
-            {/* <Text style={styles.mainText}>Name: Maram Ghazal</Text> */}
             <Text style={styles.mainText}>Email: alaa@gmail.com</Text>
             <Text style={styles.mainText}>Username: alaa_300 </Text>
             <Text style={styles.mainText}>Age: 22</Text>
+            <Text style={styles.mainText}>Blood Type: A+</Text>
             <Text style={styles.mainText}>Diabetic: No</Text>
-            <Text style={styles.mainText}>Allergic: No</Text>
+            <Text style={styles.mainText}>Diabetic: No</Text>
+            <Text style={styles.mainText}>Blood Pressure Problems: No</Text>
           </View>
           <View style={styles.lineStyle} />
           <Text style={styles.subtitle}>OLD RESERVATIONS</Text>
@@ -53,22 +65,20 @@ export default function Profile({ navigation }) {
               <TouchableOpacity style={styles.appointmentsCard} key={itemIndex} onPress={onPressReport}>
                 <Text style={styles.infoText}>Hospital Name: {item.Hname} </Text>
                 <Text style={styles.infoText}>Doctor Name: {item.doctor} </Text>
+                <Text style={styles.infoText}>Specialization: {item.specialization} </Text>
                 <Text style={styles.infoText}>Date: {item.date} </Text>
               </TouchableOpacity>
             )
           })}
         </View>
       </View>
-    </ScrollView>
+    </ScrollView >
   );
 
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    // backgroundColor:'#fff'
-  },
+
   header: {
     backgroundColor: "#0d259e",
     height: 100,
@@ -104,11 +114,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 30,
   },
+  dataView: {
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
   subtitle: {
     fontSize: 16,
     color: "#0d259e",
-    marginTop: 10,
-    marginBottom: 5,
+    margin: 5,
+    // marginTop: 10,
+    // marginBottom: 5,
     fontWeight: 'bold'
 
   },

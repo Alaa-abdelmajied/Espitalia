@@ -3,23 +3,17 @@ import {
   StyleSheet,
   Text,
   View,
-  Button,
-  Linking,
-  SectionList,
-  RefreshControl,
   ScrollView,
   TouchableOpacity,
   Image,
-  TextInput
 } from 'react-native';
-import { SearchBar } from 'react-native-elements';
-//type SearchBarComponentProps = {};
+
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+
 
 export default function PatientHome({ navigation }) {
   const [defaultRating, setDefaultRating] = useState(2);
-  const [maxRating, setMaxRating] = useState([1, 2, 3, 4, 5]);
-  const starImgCorner = 'https://raw.githubusercontent.com/tranhonghan/images/main/star_corner.png'
-  const starImgFilled = 'https://raw.githubusercontent.com/tranhonghan/images/main/star_filled.png'
+  const [maxRating] = useState([1, 2, 3, 4, 5]);
 
 
   const onPressHospitals = () => {
@@ -68,7 +62,7 @@ export default function PatientHome({ navigation }) {
                 </View>
                 <View style={styles.hospital_content}>
                   <Image style={styles.hospitalImg} source={{ uri: 'https://d2tm09s6lgn3z4.cloudfront.net/2016/07/PZUMOwhs-1468329684_762_86406_-512x435.png' }}></Image>
-                  <Text style={styles.hospital}>Info about the hospital</Text>
+                  <Text style={styles.hospital}>Hospital Address</Text>
                 </View>
               </TouchableOpacity>
             );
@@ -78,8 +72,7 @@ export default function PatientHome({ navigation }) {
       </View>
       <View style={styles.lineStyle} />
       <View style={styles.doctorsScroll}>
-        <Text style={styles.titleText}> Top Doctors</Text>
-
+        <Text style={styles.titleText}> Doctors</Text>
         <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
           {doctors.map((card, cardIndex) => {
             return (
@@ -106,8 +99,11 @@ export default function PatientHome({ navigation }) {
                         return (
                           <TouchableOpacity activeOpacity={0.7}
                             key={item}
-                            onPress={() => setDefaultRating(item)}>
-                            <Image style={styles.starImg} source={item <= defaultRating ? { uri: starImgFilled } : { uri: starImgCorner }}></Image>
+                            disabled={true}
+                          // onPress={() => setDefaultRating(item)} 
+                          >
+                            <FontAwesome name={item <= defaultRating ? "star" : "star-o"} size={26} color="#FDCC0D" />
+                            {/* <Image style={styles.starImg} source={item <= defaultRating ? { uri: starImgFilled } : { uri: starImgCorner }}></Image> */}
                             {/* <Text> Rate is {item} / 5</Text> */}
                           </TouchableOpacity>
                         )

@@ -1,20 +1,17 @@
 import React from 'react';
 import {
-  Button,
-  ScrollView,
   StyleSheet,
   Text,
   View,
   Image,
-  SectionList,
-  FlatList,
-  RefreshControl,
   TouchableOpacity,
 
 } from 'react-native';
 
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
-const DoctorsCard = ({ card, cardIndex, maxRating, defaultRating, starImgCorner, starImgFilled, navigation }) => {
+
+const DoctorsCard = ({ card, cardIndex, maxRating, defaultRating, navigation }) => {
 
   const onPress = () => {
     navigation.navigate('DoctorDetails');
@@ -46,7 +43,7 @@ const DoctorsCard = ({ card, cardIndex, maxRating, defaultRating, starImgCorner,
                 <TouchableOpacity activeOpacity={0.7}
                   key={item}
                   onPress={() => setDefaultRating(item)}>
-                  <Image style={styles.starImg} source={item <= defaultRating ? { uri: starImgFilled } : { uri: starImgCorner }}></Image>
+                  <FontAwesome name={item <= defaultRating ? "star" : "star-o"} size={25} color="#FDCC0D" />
                   {/* <Text> Rate is {item} / 5</Text> */}
                 </TouchableOpacity>
               )

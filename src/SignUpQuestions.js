@@ -1,212 +1,171 @@
 import React, { useState } from 'react';
 
 import {
-    Button,
-    ScrollView,
     StyleSheet,
     Text,
     View,
-    Image,
-    SectionList,
-    FlatList,
-    RefreshControl,
-    TextInput,
-    Alert,
-    ImageBackground,
     Pressable,
-    Dimensions
+    TextInput
 } from 'react-native';
 
 import { Picker } from '@react-native-picker/picker';
 import Svg, { Path } from 'react-native-svg';
-import { NavigationContainer } from '@react-navigation/native';
-
-import {
-    Colors,
-    DebugInstructions,
-    LearnMoreLinks,
-    Header,
-    ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-import LinearGradient from 'react-native-linear-gradient';
-
-
-/***************** List *********************/
+import { ScrollView } from 'react-native-gesture-handler';
 
 
 export default function Questions({ navigation }) {
-    // const onPressHandler = () => {
-    //     navigation.goBack();
-    // }
 
-    const [selectedValue, setSelectedValue] = useState("no");
+    const [diabetic, setDiabetic] = useState("no");
+    const [bloodPressure, setBloodPressure] = useState("no");
+    const [allergic, setAllergic] = useState("no");
     const [bloodType, setBloodType] = useState("a+");
 
-
     return (
-        <View style={styles.body}>
-            {/* <Svg
-                    height={200}
-                    width={Dimensions.get('screen').width}
-                >
-
+        <ScrollView>
+            <View style={styles.WaveHeader}>
+                <Svg>
                     <Path
-                        fill="#0d259e"
+                        fill="#0d159e"
                         d='M0,192L60,170.7C120,149,240,107,360,112C480,117,600,171,720,197.3C840,224,960,224,1080,208C1200,192,1320,160,1380,144L1440,128L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z'
                     />
 
-
-                </Svg> */}
-            {/* <Image style={styles.Image} source={require('../images/applogo-removebg-preview.png')}></Image> */}
-            <View style={styles.cards}>
-                {/* <LinearGradient start={{x: 0, y: 0.75}} end={{x: 1, y: 0}} colors={[ '#09344d' , '#09344d' , '#09344d' , '#3096d1', '#3096d1']} style={styles.cards}> */}
-                <Text style={styles.MainText}>
-                    Sign Up
-                </Text>
-                <View style={styles.QuestionsView}>
-                    <View style={styles.container}>
-                        <Text style={styles.PickerText}>Diabetic?</Text>
-                        <Picker
-                            selectedValue={selectedValue}
-                            style={{ height: 50, width: 150 }}
-                            onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}
-                        >
-                            <Picker.Item label="Yes" value="yes" />
-                            <Picker.Item label="No" value="no" />
-                            <Picker.Item label="I don't know" value="idk" />
-                        </Picker>
-                    </View>
-
-                    <View style={styles.container}>
-                        <Text style={styles.PickerText}>Blood Type</Text>
-
-                        <Picker
-                            bloodType={bloodType}
-                            style={{ height: 50, width: 150 }}
-                            onValueChange={(itemValue, itemIndex) => setBloodType(itemValue)}
-                        >
-                            <Picker.Item label="A+" value="a+" />
-                            <Picker.Item label="A-" value="a-" />
-                            <Picker.Item label="B+" value="b+" />
-                            <Picker.Item label="B-" value="b-" />
-                            <Picker.Item label="O+" value="o+" />
-                            <Picker.Item label="O-" value="o-" />
-                            <Picker.Item label="AB+" value="ab+" />
-                            <Picker.Item label="AB-" value="ab-" />
-                            <Picker.Item label="Unknown" value="unknown" />
-                        </Picker>
-                    </View>
-                </View>
-                <View style={styles.QuestionsView}>
-                    <View style={styles.container}>
-                        <Text style={styles.PickerText}>Allergic?</Text>
-                        <Picker
-                            selectedValue={selectedValue}
-                            style={{ height: 50, width: 150 }}
-                            onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}
-                        >
-                            <Picker.Item label="Yes" value="yes" />
-                            <Picker.Item label="No" value="no" />
-                            <Picker.Item label="I don't know" value="idk" />
-                        </Picker>
-                    </View>
-
-                    <View style={styles.container}>
-                        <Text style={styles.PickerText}>High Blood Pressure?</Text>
-
-                        <Picker
-                            selectedValue={selectedValue}
-                            style={{ height: 50, width: 150 }}
-                            onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}
-                        >
-                            <Picker.Item label="Yes" value="yes" />
-                            <Picker.Item label="No" value="no" />
-                            <Picker.Item label="I don't know" value="idk" />
-                        </Picker>
-                    </View>
-                </View>
-                <Pressable style={styles.SignInButton} onPress={() => navigation.reset({
-                    index: 0,
-                    routes: [{ name: 'Patient' }],
-                })}>
-                    <Text style={{ color: '#fff' }}>Sign up</Text>
-                </Pressable>
-                <Text style={styles.MainText}>To be continued</Text>
+                </Svg>
             </View>
-            {/* </LinearGradient> */}
-        </View>
+            <View style={styles.RegisterRegion}>
+                <View style={styles.RegisterCard}>
+                    <Text style={styles.TitleText}>
+                        Questions
+                    </Text>
+                    <View style={styles.QuestionsRegion}>
+                        <View style={styles.questionContainer}>
+                            <Text style={styles.PickerText}>What is your blood type?</Text>
+                            <View style={styles.pickerContainer}>
+                                <Picker
+                                    selectedValue={bloodType}
+                                    onValueChange={(itemValue, itemIndex) => setBloodType(itemValue)}
+                                >
+                                    <Picker.Item label="A+" value="a+" />
+                                    <Picker.Item label="A-" value="a-" />
+                                    <Picker.Item label="B+" value="b+" />
+                                    <Picker.Item label="B-" value="b-" />
+                                    <Picker.Item label="O+" value="o+" />
+                                    <Picker.Item label="O-" value="o-" />
+                                    <Picker.Item label="AB+" value="ab+" />
+                                    <Picker.Item label="AB-" value="ab-" />
+                                    <Picker.Item label="I don't know" value="idk" />
+                                </Picker>
+                            </View>
+                        </View>
+                        <View style={styles.questionContainer}>
+                            <Text style={styles.PickerText}>Are you diabetic?</Text>
+                            <View style={styles.pickerContainer}>
+                                <Picker
+                                    selectedValue={diabetic}
+                                    onValueChange={(itemValue, itemIndex) => setDiabetic(itemValue)}
+                                >
+                                    <Picker.Item label="Yes" value="yes" />
+                                    <Picker.Item label="No" value="no" />
+                                    <Picker.Item label="I don't know" value="idk" />
+                                </Picker>
+                            </View>
+                        </View>
+                        <View style={styles.questionContainer}>
+                            <Text style={styles.PickerText}>Do you have blood pressure problems?</Text>
+                            <View style={styles.pickerContainer}>
+                                <Picker
+                                    selectedValue={bloodPressure}
+                                    onValueChange={(itemValue, itemIndex) => setBloodPressure(itemValue)}
+                                >
+                                    <Picker.Item label="Yes" value="yes" />
+                                    <Picker.Item label="No" value="no" />
+                                    <Picker.Item label="I don't know" value="idk" />
+                                </Picker>
+                            </View>
+                        </View>
+                        <View style={styles.questionContainer}>
+                            <Text style={styles.PickerText}>Are you allergic to anything?</Text>
+                            <View style={styles.pickerContainer}>
+                                <Picker
+                                    selectedValue={allergic}
+                                    onValueChange={(itemValue, itemIndex) => setAllergic(itemValue)}
+                                >
+                                    <Picker.Item label="Yes" value="yes" />
+                                    <Picker.Item label="No" value="no" />
+                                    <Picker.Item label="I don't know" value="idk" />
+                                </Picker>
+                            </View>
+                        </View>
+                        {/* <TextInput style={[styles.pickerContainer, { width: 300, textAlign: 'center' }]} placeholder="enter your allergy">
+                        </TextInput> */}
+                    </View>
+                    <Pressable style={styles.RegisterButton} onPress={() => navigation.reset({
+                        index: 0,
+                        routes: [{ name: 'Patient' }],
+                    })}>
+                        <Text style={{ color: '#fff' }}>Sign up</Text>
+                    </Pressable>
+                </View>
+            </View>
+        </ScrollView>
     )
 }
 
 
 const styles = StyleSheet.create({
 
-    body: {
-        flex: 1,
-        flexDirection: 'column',
-        // backgrundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
+
+    WaveHeader: {
+        // flex: 1,
+        height: 200,
+        width: '100%',
     },
 
-    container: {
-        flex: 1,
+    RegisterRegion: {
+        width: '100%',
+        backgroundColor: '#f0f0f0',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+
+    TitleText: {
+        color: '#000',
+        fontSize: 25,
+        margin: '5%',
+        fontWeight: 'bold',
+        textAlign: 'center',
+        justifyContent: 'center'
+    },
+
+    QuestionsRegion: {
+        justifyContent: 'center',
+        alignItems: 'center',
+
+    },
+
+    questionContainer: {
         flexDirection: 'column',
-        alignItems: "center",
+        justifyContent: 'center',
+        alignItems: 'center',
+        margin: 5,
+    },
+
+    PickerText: {
+        color: '#000',
+        fontSize: 15,
+    },
+
+    pickerContainer: {
+        justifyContent: 'center',
         backgroundColor: '#fff',
         borderRadius: 10,
-        margin: 10,
-        height: 70,
+        margin: 5,
+        height: 50,
+        width: 200,
         shadowColor: '#000000',
         shadowOffset: { width: -2, height: 2 },
         shadowOpacity: 0.2,
         shadowRadius: 3,
         elevation: 2,
-
-    },
-    cards: {
-        flex: 2,
-        width: 350,
-        height: '100%',
-        margin: 10,
-        alignSelf: 'center',
-        // borderRadius: 25,
-        // backgroundColor: '#f0f0f0',
-        alignItems: 'center',
-        // shadowColor: '#000000',
-        // shadowOffset: { width: -2, height: 2 },
-        // shadowOpacity: 0.2,
-        // shadowRadius: 3,
-        // elevation: 6,
-        // justifyContent: 'center',
-    },
-
-
-    view: {
-        flex: 2,
-        width: 380,
-        height: '80%',
-        marginBottom: 5,
-        marginTop: 10,
-        alignSelf: 'center',
-        borderRadius: 25,
-        // backgroundColor: '#0d259e',
-        alignItems: 'center',
-        // shadowColor: '#000000',
-        // shadowOffset: { width: -2, height: 2 },
-        // shadowOpacity: 0.2,
-        // shadowRadius: 3,
-        // elevation: 6,
-        justifyContent: 'center',
-    },
-
-    QuestionsView: {
-        // flex: 1,
-        width: 350,
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-
     },
 
     MainText: {
@@ -218,57 +177,25 @@ const styles = StyleSheet.create({
         margin: 20,
         // fontWeight: 'bold'
     },
-    Image: {
-        width: 80,
-        height: 80,
-        // marginTop:10,
-    },
 
-    PickerText: {
-        color: '#000',
-        margin: 5,
-        fontSize: 13,
-    },
     QuestionText: {
         color: '#000',
         margin: 10,
         // fontSize:15,
     },
 
-    SignInButton: {
+    RegisterButton: {
         width: 130,
-        marginTop: 30,
+        margin: '5%',
         paddingTop: 15,
         paddingBottom: 15,
-        marginLeft: 30,
-        marginRight: 30,
         borderRadius: 10,
-        backgroundColor: '#0d259e',
-        borderWidth: 1,
+        backgroundColor: '#1c1bad',
         alignItems: 'center',
         textAlign: 'center',
-        borderColor: '#0d259e',
-        color: '#fff',
-        shadowColor: '#000000',
-        shadowOffset: { width: -2, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 3,
-        elevation: 1,
+        alignSelf: 'center'
+        // color: '#fff'
     },
 
-    input: {
-        width: 330,
-        borderRadius: 45,
-        borderWidth: 1,
-        textAlign: 'center',
-        borderColor: '#fff',
-        margin: 10,
-        backgroundColor: '#f0f0f0',
-        shadowColor: '#000000',
-        shadowOffset: { width: -2, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 3,
-        elevation: 1,
-    }
-});
 
+});
