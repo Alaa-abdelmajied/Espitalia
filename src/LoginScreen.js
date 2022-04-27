@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Svg, { Path } from 'react-native-svg';
+import Svg, { Path, stop, defs, linearGradient } from 'react-native-svg';
 
 import {
   StyleSheet,
@@ -100,21 +100,21 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
 
-  RegisterCard: {
-    // flex: 1,
-    width: '85%',
-    alignSelf: 'center',
-    borderRadius: 25,
-    backgroundColor: '#f0f0f0',
-    alignItems: 'center',
-    shadowColor: '#000000',
-    shadowOffset: { width: -2, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 3,
-    justifyContent: 'center',
-    overflow: 'hidden'
-  },
+  // RegisterCard: {
+  //   // flex: 1,
+  //   width: '85%',
+  //   alignSelf: 'center',
+  //   borderRadius: 25,
+  //   backgroundColor: '#f0f0f0',
+  //   alignItems: 'center',
+  //   shadowColor: '#000000',
+  //   shadowOffset: { width: -2, height: 2 },
+  //   shadowOpacity: 0.2,
+  //   shadowRadius: 3,
+  //   elevation: 3,
+  //   justifyContent: 'center',
+  //   overflow: 'hidden'
+  // },
 
   InputsRegion: {
     // backgroundColor: '#7a94f0',

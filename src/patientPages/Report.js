@@ -12,7 +12,7 @@ export default function Report({ navigation }) {
 
   const [details, setDetails] = useState(
     {
-      specialization: 'ramad', doctor: 'ahmed', hospital: "anbatakla", date: "5/8/2000",
+      specialization: 'dermatology', doctor: 'ahmed', hospital: "anbatakla", date: "5/8/2000",
       diagnosis: "hiihbdjfksshvdbmsvcn SNC nbsssss,nbsssssnbsssssnbsssssnbsssssnbsssssnbsssssnbsssssnbsssssnbsssssnbsssssnbsssssnbsssssnbsssssnbsssssnbsssssnbsssssnbsssssnbsssssnbsssssnbsssssnbsssssnbsssssnbsssssnbsssssnbsssssnbsnbsssssnbsssssnbsssssvssssnbsssssnbsssssnbsssssnbsssssvs hbjfvjvgmgcgnfcxgfxfbzfdxf jgvchc bm hbjhnvnkvjmjghcjfthxrsytstyjhbjkslrbgkalhbgklebgjklbrgjwlllrkkjjtklgvngcxfgjd dfadbdf",
       prescription: "jhbjhvfbajkvjvrjekager abhgjbvfv wefvejgbelkgwefvejgbelkgbwefvejgbelkgbwefvejgbelkgbwefvejgbelkgbwefvejgbelkgbwefvejgbelkgbwefvejgbelkgbwefvejgbelkgbb,dgblsgbdsmgb.mdbg,mdb"
     }
@@ -25,8 +25,8 @@ export default function Report({ navigation }) {
         <Image style={styles.Image} source={require('../../images/app_logo-removebg-preview.png')}></Image>
       </View>
       <View style={{ alignItems: 'center' }}>
-        <Text style={styles.infoText}>Doctor Name: {details.doctor} </Text>
         <Text style={styles.infoText}> Hospital Name: {details.hospital} </Text>
+        <Text style={styles.infoText}>Doctor Name: {details.doctor} </Text>
         <Text style={styles.infoText}>Specialization : {details.specialization} </Text>
         <Text style={styles.infoText}>date : {details.date} </Text>
       </View>

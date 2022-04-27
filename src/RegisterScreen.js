@@ -2,38 +2,15 @@ import React, { useState } from 'react';
 import Svg, { Path } from 'react-native-svg';
 
 import {
-  Button,
-  ScrollView,
   StyleSheet,
   Text,
   View,
-  Image,
-  SectionList,
-  FlatList,
-  RefreshControl,
   TextInput,
-  Alert,
-  ImageBackground,
   Pressable,
-  Dimensions,
-  TouchableOpacity,
 } from 'react-native';
 
-
-import {
-  Colors,
-  DebugInstructions,
-  LearnMoreLinks,
-  Header,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-import LinearGradient from 'react-native-linear-gradient';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import OutlineInput from 'react-native-outline-input';
-import DatePicker from 'react-native-date-picker';
 import SelectDropdown from 'react-native-select-dropdown'
-import { Picker } from '@react-native-picker/picker';
-import { Icon } from 'react-native-paper/lib/typescript/components/Avatar/Avatar';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 export default function SignUp({ navigation }) {
@@ -67,7 +44,18 @@ export default function SignUp({ navigation }) {
   return (
 
     <View style={styles.Body}>
+      <View style={styles.WaveHeader}>
+        <Svg
+        // height={200}
+        // width={Dimensions.get('screen').width}
+        >
+          <Path
+            fill="#0d159e"
+            d='M0,192L60,170.7C120,149,240,107,360,112C480,117,600,171,720,197.3C840,224,960,224,1080,208C1200,192,1320,160,1380,144L1440,128L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z'
+          />
 
+        </Svg>
+      </View>
 
       <View style={styles.RegisterRegion}>
         <View style={styles.RegisterCard}>
@@ -99,7 +87,6 @@ export default function SignUp({ navigation }) {
                   name={'chevron-down'}
                   size={20}
                   color={'#000'}
-
                 />} dropdownBackgroundColor='#fff' dropdownOverlayColor='transparent' buttonStyle={styles.dateInput} defaultButtonText='Gender' buttonTextStyle={{ color: '#a1a1a1', fontSize: 16 }}
                   data={gender}
                   onSelect={(selectedItem, index) => {
@@ -113,10 +100,9 @@ export default function SignUp({ navigation }) {
                   }}
                 />
               </View>
-
             </View>
 
-            <Pressable style={styles.RegisterButton} onPress={() => navigation.navigate('SignUpQuestions')}>
+            <Pressable style={styles.nextButton} onPress={() => navigation.navigate('SignUpQuestions')}>
               <Text style={{ color: '#fff' }}>Next</Text>
             </Pressable>
 
@@ -146,10 +132,10 @@ const styles = StyleSheet.create({
 
   RegisterRegion: {
     // flex: 2,
-    height: '100%',
+    // height: '100%',
     width: '100%',
     // marginTop: '10%',
-    justifyContent: 'center',
+    // justifyContent: 'center',
     backgroundColor: '#f0f0f0'
   },
 
@@ -163,18 +149,9 @@ const styles = StyleSheet.create({
   },
 
   RegisterCard: {
-    // flex: 1,
-    width: '85%',
-    alignSelf: 'center',
-    justifyContent: 'center',
-    // borderRadius: 25,
-    // backgroundColor: '#f0f0f0',
-    // alignItems: 'center',
-    // shadowColor: '#000000',
-    // shadowOffset: { width: -2, height: 2 },
-    // shadowOpacity: 0.2,
-    // shadowRadius: 3,
-    // elevation: 6,
+    // width: '85%',
+    marginHorizontal: 25,
+    // alignSelf: 'center',
     overflow: 'hidden'
   },
 
@@ -224,7 +201,7 @@ const styles = StyleSheet.create({
   },
 
 
-  RegisterButton: {
+  nextButton: {
     width: '95%',
     margin: 10,
     paddingTop: 15,

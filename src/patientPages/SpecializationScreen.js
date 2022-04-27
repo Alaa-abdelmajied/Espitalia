@@ -25,20 +25,20 @@ export default function Speciality({ navigation }) {
   };
 
   const data = [
-    { id: 1, icon: "https://w7.pngwing.com/pngs/996/486/png-transparent-health-care-internal-medicine-physician-family-medicine-health-logo-dentistry-medicine.png", description: "Dermatology" },
-    { id: 2, icon: "https://w7.pngwing.com/pngs/996/486/png-transparent-health-care-internal-medicine-physician-family-medicine-health-logo-dentistry-medicine.png", description: "Dentistry" },
-    { id: 3, icon: "https://w7.pngwing.com/pngs/996/486/png-transparent-health-care-internal-medicine-physician-family-medicine-health-logo-dentistry-medicine.png", description: "Psychiatry" },
-    { id: 4, icon: "https://w7.pngwing.com/pngs/996/486/png-transparent-health-care-internal-medicine-physician-family-medicine-health-logo-dentistry-medicine.png", description: "Pediatrics and New Born" },
-    { id: 5, icon: "https://w7.pngwing.com/pngs/996/486/png-transparent-health-care-internal-medicine-physician-family-medicine-health-logo-dentistry-medicine.png", description: "Neurology" },
-    { id: 6, icon: "https://w7.pngwing.com/pngs/996/486/png-transparent-health-care-internal-medicine-physician-family-medicine-health-logo-dentistry-medicine.png", description: "Orthopedics" },
-    { id: 7, icon: "https://w7.pngwing.com/pngs/996/486/png-transparent-health-care-internal-medicine-physician-family-medicine-health-logo-dentistry-medicine.png", description: "Gynaecology and Infertility" },
-    { id: 8, icon: "https://w7.pngwing.com/pngs/996/486/png-transparent-health-care-internal-medicine-physician-family-medicine-health-logo-dentistry-medicine.png", description: "Ear, Nose and Throat" },
-    { id: 9, icon: "https://w7.pngwing.com/pngs/996/486/png-transparent-health-care-internal-medicine-physician-family-medicine-health-logo-dentistry-medicine.png", description: "Cardiology and Vascular Disease" },
-    { id: 10, icon: "https://w7.pngwing.com/pngs/996/486/png-transparent-health-care-internal-medicine-physician-family-medicine-health-logo-dentistry-medicine.png", description: "Allergy and Immunology" },
-    { id: 11, icon: "https://w7.pngwing.com/pngs/996/486/png-transparent-health-care-internal-medicine-physician-family-medicine-health-logo-dentistry-medicine.png", description: "Andrology and Male Infertility" },
-    { id: 12, icon: "https://w7.pngwing.com/pngs/996/486/png-transparent-health-care-internal-medicine-physician-family-medicine-health-logo-dentistry-medicine.png", description: "Audiology" },
-    { id: 13, icon: "https://w7.pngwing.com/pngs/996/486/png-transparent-health-care-internal-medicine-physician-family-medicine-health-logo-dentistry-medicine.png", description: "Cardiology and Thoracic Surgery" },
-    { id: 14, icon: "https://w7.pngwing.com/pngs/996/486/png-transparent-health-care-internal-medicine-physician-family-medicine-health-logo-dentistry-medicine.png", description: "Chest and Respiratory" },
+    { id: 1, description: "Dermatology" },
+    { id: 2, description: "Dentistry" },
+    { id: 3, description: "Psychiatry" },
+    { id: 4, description: "Pediatrics and New Born" },
+    { id: 5, description: "Neurology" },
+    { id: 6, description: "Orthopedics" },
+    { id: 7, description: "Gynaecology and Infertility" },
+    { id: 8, description: "Ear, Nose and Throat" },
+    { id: 9, description: "Cardiology and Vascular Disease" },
+    { id: 10, description: "Allergy and Immunology" },
+    { id: 11, description: "Andrology and Male Infertility" },
+    { id: 12, description: "Audiology" },
+    { id: 13, description: "Cardiology and Thoracic Surgery" },
+    { id: 14, description: "Chest and Respiratory" },
   ]
 
   const onPress = () => {
@@ -69,7 +69,7 @@ export default function Speciality({ navigation }) {
               {/* <View style={styles.specializationContainer} > */}
               <View style={{ justifyContent: 'center', alignItems: 'center' }}>
                 <Image style={styles.image}
-                  source={{ uri: item.icon }} />
+                  source={{ uri: "https://w7.pngwing.com/pngs/996/486/png-transparent-health-care-internal-medicine-physician-family-medicine-health-logo-dentistry-medicine.png " }} />
               </View>
               <View style={{ flex: 2, justifyContent: 'center' }}>
 
