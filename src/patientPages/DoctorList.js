@@ -13,7 +13,7 @@ export default function Doctors({ navigation }) {
 
   const [defaultRating, setDefaultRating] = useState(2);
   const [maxRating, setMaxRating] = useState([1, 2, 3, 4, 5]);
-  
+
   const [search, setSearch] = useState("");
 
   const updateSearch = (search) => {
@@ -40,7 +40,7 @@ export default function Doctors({ navigation }) {
     <View style={styles.container}>
       <SearchBar
         lightTheme={true}
-        placeholder="Search"
+        placeholder="search"
         onChangeText={updateSearch}
         value={search}
         containerStyle={{ backgroundColor: '#f0f0f0' }}

@@ -49,7 +49,7 @@ export default function Speciality({ navigation }) {
     <View style={styles.container}>
       <SearchBar
         lightTheme={true}
-        placeholder="Search"
+        placeholder="search"
         onChangeText={updateSearch}
         value={search}
         containerStyle={{ backgroundColor: '#f0f0f0' }}

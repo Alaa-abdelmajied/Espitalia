@@ -15,15 +15,16 @@ export default function Search({ navigation }) {
     const updateSearch = (search) => {
         setSearch(search);
     };
- 
+
 
     return (
         <View style={styles.container}>
             <SearchBar
                 lightTheme={true}
-                placeholder="Search"
+                placeholder="search for doctor, hospital or specialization"
                 onChangeText={updateSearch}
                 value={search}
+                fontSize={15}
                 containerStyle={{ backgroundColor: '#f0f0f0' }}
                 inputContainerStyle={{ borderRadius: 50, backgroundColor: '#fff' }}
             />

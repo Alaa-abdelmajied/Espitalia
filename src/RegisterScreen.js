@@ -66,8 +66,8 @@ export default function SignUp({ navigation }) {
             <TextInput style={styles.Input} placeholder="Enter your email" placeholderTextColor={'#a1a1a1'} >
             </TextInput>
             <TextInput style={styles.Input} placeholder="Enter your username" placeholderTextColor={'#a1a1a1'}></TextInput>
-            <TextInput style={styles.Input} placeholder="Enter your password" placeholderTextColor={'#a1a1a1'}></TextInput>
-            <TextInput style={styles.Input} placeholder="Confirm your password" placeholderTextColor={'#a1a1a1'}></TextInput>
+            <TextInput secureTextEntry={true} style={styles.Input} placeholder="Enter your password" placeholderTextColor={'#a1a1a1'}></TextInput>
+            <TextInput secureTextEntry={true} style={styles.Input} placeholder="Confirm your password" placeholderTextColor={'#a1a1a1'}></TextInput>
             <View style={styles.view}>
               <View style={{ flex: 1, alignItems: 'flex-start' }}>
                 <Pressable onPress={OpenDateWindow} style={styles.dateInput}>
