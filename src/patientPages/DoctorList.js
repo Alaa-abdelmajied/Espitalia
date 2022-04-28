@@ -6,7 +6,6 @@ import {
 
 } from 'react-native';
 import DoctorsCard from '../../utils/DoctorsCard'
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { SearchBar } from 'react-native-elements';
 
 
@@ -14,9 +13,7 @@ export default function Doctors({ navigation }) {
 
   const [defaultRating, setDefaultRating] = useState(2);
   const [maxRating, setMaxRating] = useState([1, 2, 3, 4, 5]);
-  // const starImgCorner = 'https://raw.githubusercontent.com/tranhonghan/images/main/star_corner.png'
-  // const starImgFilled = 'https://raw.githubusercontent.com/tranhonghan/images/main/star_filled.png'
-
+  
   const [search, setSearch] = useState("");
 
   const updateSearch = (search) => {
@@ -25,11 +22,11 @@ export default function Doctors({ navigation }) {
 
 
   const doctors = [
-    { key: 1, drName: 'Maram Ghazal', speciality: 'Dermatologist', hName: 'Al Andalusia Hospital', address: '15 el midan st. - smouha', color: "#0d159e" },
+    { key: 1, drName: 'Alaa Abdelmajied', speciality: 'Dermatologist', hName: 'Al Andalusia Hospital', address: '15 el midan st. - smouha', color: "#0d159e" },
     { key: 2, drName: 'Mayar Adel', speciality: 'Dentist', hName: 'Royal Hospital', address: '17 abdelqader basha st.', color: "#0d589e" },
     { key: 3, drName: 'Omar Shalaby', speciality: 'Cardiologist', hName: 'Alex Hospital', address: '12 camp shizar st.', color: "#0d789e" },
     { key: 4, drName: 'Nadeen Elgazar', speciality: 'Gynaecologist', hName: 'ICC Hospital', address: '3 smouha st.', color: "#0d899e" },
-    { key: 5, drName: 'Alaa Abdelmajied', speciality: 'Cardiologist', hName: 'Alex Hospital', address: '6 camp shizar st.', color: "#0d789e" },
+    { key: 5, drName: 'Maram Ghazal', speciality: 'Cardiologist', hName: 'Alex Hospital', address: '6 camp shizar st.', color: "#0d789e" },
     { key: 6, drName: 'Omar Radwan', speciality: 'Dentist', hName: 'Alex Hospital', address: '5 camp shizar st.', color: "#0d789e" },
     { key: 7, drName: 'Verginia Ehab', speciality: 'Psychiatrist', hName: 'Alex Hospital', address: '5 camp shizar st.', color: "#0d789e" },
     { key: 8, drName: 'Omar Hisham', speciality: 'Dentist', hName: 'Al Andalusia Hospital', address: '15 el midan st. - smouha', color: "#0d789e" },
@@ -55,7 +52,7 @@ export default function Doctors({ navigation }) {
       <ScrollView>
         {doctors.map((card, cardIndex) => {
           return (
-            <DoctorsCard card={card} cardIndex={cardIndex} maxRating={maxRating} defaultRating={defaultRating} navigation={navigation} />
+            <DoctorsCard card={card} maxRating={maxRating} defaultRating={defaultRating} navigation={navigation} />
           );
         })}
       </ScrollView >

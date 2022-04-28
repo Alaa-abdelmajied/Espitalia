@@ -31,7 +31,7 @@ const review = [
   { key: 5, reviewer_name: 'Omar Shalaby', date: '15/3/2022', review: 'This is too much scrolling' },
 ]
 
-export default function ProfileScreen({ navigation }) {
+export default function ProfileScreen() {
 
   const scrollX = useRef(new Animated.Value(0)).current;
 
@@ -51,7 +51,7 @@ export default function ProfileScreen({ navigation }) {
           <Image style={styles.avatar} source={{ uri: 'https://bootdey.com/img/Content/avatar/avatar6.png' }} />
           <View style={styles.body}>
             {/* <View style={styles.bodyContent}> */}
-            <Text style={styles.dr_name}>Dr Ahmed</Text>
+            <Text style={styles.dr_name}>Dr Alaa</Text>
             <Text style={styles.info}>Dermatologist</Text>
             <Text style={styles.description}>Lorem ipsum dolor sit amet, saepe sapientem eu nam. Qui ne assum electram expetendis, omittam deseruisse consequuntur ius an,</Text>
             <View style={styles.customRatingBar}>
@@ -107,7 +107,7 @@ export default function ProfileScreen({ navigation }) {
         </View>
 
         {/* for the dots */}
-        <View style={styles.indicatorContainer}>
+        <View style={styles.indicatorContainer} >
           {
             appointments.map((card, cardIndex) => {
               const width = scrollX.interpolate({
@@ -118,12 +118,11 @@ export default function ProfileScreen({ navigation }) {
                 ],
                 outputRange: [8, 16, 8],
                 extrapolate: "clamp",
+
               })
 
               return (
-                <Animated.View style={[styles.normalDots, { width }, { backgroundColor: card.color }]} />
-
-
+                <Animated.View style={[styles.normalDots, { width }, { backgroundColor: card.color }]} key={cardIndex} />
               );
             })
           }
@@ -133,35 +132,41 @@ export default function ProfileScreen({ navigation }) {
           <Text style={styles.title}>Ratings and Reviews</Text>
           {review.map((reviewCard, cardIndex) => {
             return (
-
-              <View style={{ height: 150, width: '97%', alignSelf: 'center' }} key={cardIndex}>
-                <View style={{ flexDirection: 'row' }}>
-                  <Text style={styles.name}>{reviewCard.reviewer_name}</Text>
-                  <Text style={styles.name}>{reviewCard.date}</Text>
+              <View style={{
+                backgroundColor: '#fff', width: '95%', margin: 5, justifyContent: 'center', alignSelf: 'center', borderRadius: 10, shadowColor: '#000000',
+                shadowOffset: { width: -2, height: 2 },
+                shadowOpacity: 0.2,
+                shadowRadius: 3,
+                elevation: 2,
+              }}>
+                <View style={{ height: 150, width: '97%', alignSelf: 'center' }} key={cardIndex}>
+                  <View style={{ flexDirection: 'row' }}>
+                    <Text style={styles.name}>{reviewCard.reviewer_name}</Text>
+                    <Text style={styles.name}>{reviewCard.date}</Text>
+                  </View>
+                  <View style={{
+                    flexDirection: 'row',
+                    marginLeft: '3%'
+                  }}>
+                    {
+                      maxRating.map((item, key) => {
+                        return (
+                          <TouchableOpacity activeOpacity={0.7}
+                            key={key}
+                            onPress={() => setDefaultRating(item)}>
+                            <FontAwesome name={item <= defaultRating ? "star" : "star-o"} size={25} color="#FDCC0D" />
+                          </TouchableOpacity>
+                        )
+                      })
+                    }
+                  </View>
+                  <Text style={styles.review}>{reviewCard.review}</Text>
                 </View>
-                <View style={{
-                  flexDirection: 'row',
-                  marginLeft: '3%'
-                }}>
-                  {
-                    maxRating.map((item, key) => {
-                      return (
-                        <TouchableOpacity activeOpacity={0.7}
-                          key={key}
-                          onPress={() => setDefaultRating(item)}>
-                          <FontAwesome name={item <= defaultRating ? "star" : "star-o"} size={25} color="#FDCC0D" />
-                        </TouchableOpacity>
-                      )
-                    })
-                  }
-                </View>
-                <Text style={styles.review}>{reviewCard.review}</Text>
               </View>
-
             );
           })}
         </View>
-        <View style={{ backgroundColor: '#05f6f0', width: '100%', height: 100 }}><Text style={styles.title}>Comments Section + fi 7aga bayza fl header :) *angry*</Text></View>
+        <View style={{ backgroundColor: '#FDCC0D', width: '100%', height: 100, justifyContent: 'center', alignItems: 'center' }}><Text style={styles.title}>Comments Section - To be continued</Text></View>
       </View>
     </ScrollView >
   );
@@ -253,7 +258,7 @@ const styles = StyleSheet.create({
   review: {
     fontSize: 16,
     color: "#000",
-    marginLeft: '3%'
+    marginLeft: 5
   },
 
   // scheduleContainer:
@@ -344,8 +349,8 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: 'bold',
     color: '#000',
-    marginTop: '5%',
-    marginLeft: '1%'
+    marginTop: 15,
+    marginLeft: 10
   },
 
   reviewsArea: {

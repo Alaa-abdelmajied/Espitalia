@@ -74,6 +74,10 @@ function PatientStackNav() {
         name="DoctorDetails"
         component={DoctorDetails}
       />
+      <Stack.Screen
+        name="DoctorList"
+        component={DoctorList}
+      />
 
     </ Stack.Navigator>
   );
@@ -211,9 +215,9 @@ function PatientNavBar() {
       // tabBarActiveTintColor: '#0d259e',
       // tabBarInactiveTintColor: '#000',
     })}
-      activeColor='#fff'
-      inactiveColor='#fff'
-      barStyle={{ backgroundColor: '#0d259e' }}
+      activeColor='#0d259e'
+      inactiveColor='#000'
+      barStyle={{ backgroundColor: '#fff' }}
 
 
     >
@@ -378,11 +382,7 @@ function PatientNotificationsTabNav() {
               color={color}
             />
           )
-        }
-      })
-      }
-      tabBarOptions={{
-        activeTintColor: '#0d259e',
+        }, activeTintColor: '#0d259e',
         inactiveTintColor: '#000',
         activeBackgroundColor: '#fff',
         inactiveBackgroundColor: '#999',
@@ -390,12 +390,8 @@ function PatientNotificationsTabNav() {
         labelStyle: { textTransform: "none", fontSize: 15 },
         showIcon: true,
 
-        // tabBarLabel: 'Notification'.toLowerCase(),
-      }}
-
-    // activeColor='#f0edf6'
-    // inactiveColor='#3e2465'
-    // barStyle={{ backgroundColor: '#694fad' }}
+      })
+      }
     >
       <TopTabs.Screen
         name="Notification"

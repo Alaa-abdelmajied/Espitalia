@@ -6,7 +6,9 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
+  Pressable
 } from 'react-native';
+import style from 'react-native-datepicker/style';
 
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
@@ -24,18 +26,22 @@ export default function PatientHome({ navigation }) {
     navigation.navigate('DoctorDetails');
   };
 
-  const [search, setSearch] = useState("");
+  const seeAllDoctors = () => {
+    navigation.navigate('DoctorList');
+  }
 
-  const updateSearch = (search) => {
-    setSearch(search);
-  };
+  // const [search, setSearch] = useState("");
 
-  const doctors = [
-    { key: 1, drName: 'Alaa Abdelmajied', speciality: 'Dermatologist', hName: 'Al Andalusia Hospital', address: '6 smouha st.', color: "#0d159e" },
-    { key: 2, drName: 'Ali Ghazal', speciality: 'Psychiatrist', hName: 'German Hospital', address: '6 gleem st.', color: "#0d369e" },
-    { key: 3, drName: 'Mayar Adel', speciality: 'Dentist', hName: 'Royal Hospital', address: '6 ibrahmia st.', color: "#0d589e" },
-    { key: 4, drName: 'Omar Shalaby', speciality: 'Cardiologist', hName: 'Alex Hospital', address: '6 camp shizar st.', color: "#0d789e" },
-    { key: 5, drName: 'Nadeen Elgazar', speciality: 'Gynaecologist', hName: 'ICC Hospital', address: '6 smouha st.', color: "#0d899e" },
+  // const updateSearch = (search) => {
+  //   setSearch(search);
+  // };
+
+  const homepageData = [
+    { key: 1, drName: 'Alaa Abdelmajied', speciality: 'Dermatologist', hName: 'Al Andalusia Hospital', address: '6 smouha st.', image: require('../../images/andalusiahospital.png'), color: "#0d159e" },
+    { key: 2, drName: 'Ali Ghazal', speciality: 'Psychiatrist', hName: 'German Hospital', address: '6 gleem st.', image: require('../../images/germanhospital.jpg'), color: "#0d369e" },
+    { key: 3, drName: 'Mayar Adel', speciality: 'Dentist', hName: 'Royal Hospital', address: '6 ibrahmia st.', image: require('../../images/royalhospital.png'), color: "#0d589e" },
+    { key: 4, drName: 'Omar Shalaby', speciality: 'Cardiologist', hName: 'Alex Hospital', address: '6 camp shizar st.', image: require('../../images/alexhospital.png'), color: "#0d789e" },
+    { key: 5, drName: 'Nadeen Elgazar', speciality: 'Gynaecologist', hName: 'ICC Hospital', address: '6 smouha st.', image: require('../../images/icchospital.png'), color: "#0d899e" },
   ]
 
 
@@ -45,85 +51,76 @@ export default function PatientHome({ navigation }) {
         <Image style={styles.Image} source={require('../../images/app_logo-removebg-preview.png')}></Image>
         <Text style={styles.headerText}>espitalia</Text>
       </View>
-
-      <View style={styles.hospitalScroll}>
-
-        <Text style={styles.titleText}> Hospitals</Text>
-
-        <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}
-        >
-          {doctors.map((card, cardIndex) => {
-            return (
-              <TouchableOpacity style={styles.cards} key={cardIndex} onPress={onPressHospitals}>
-                <View style={styles.card_header}>
-                  <View style={styles.textView}>
-                    <Text style={styles.name}> {card.hName} </Text>
-                  </View>
-                </View>
-                <View style={styles.hospital_content}>
-                  <Image style={styles.hospitalImg} source={{ uri: 'https://d2tm09s6lgn3z4.cloudfront.net/2016/07/PZUMOwhs-1468329684_762_86406_-512x435.png' }}></Image>
-                  <Text style={styles.hospital}>Hospital Address</Text>
-                </View>
-              </TouchableOpacity>
-            );
-          })}
-
-        </ScrollView>
+      <View style={styles.headline}>
+        <Text style={styles.titleText}>Hospitals</Text>
+        <Pressable >
+          <Text style={{ color: '#1c1bad', textDecorationLine: 'underline' }}>See all hospitals</Text>
+        </Pressable>
       </View>
+      <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+        {homepageData.map((card, cardIndex) => {
+          return (
+            <TouchableOpacity style={styles.cards} key={cardIndex} onPress={onPressHospitals}>
+              <View style={styles.card_header}>
+                <View style={styles.textView}>
+                  <Text style={styles.name}> {card.hName} </Text>
+                </View>
+              </View>
+              <View style={styles.hospital_content}>
+                <Image style={styles.hospitalImg} source={card.image}></Image>
+                <Text style={styles.cardText}>Hospital Address</Text>
+              </View>
+            </TouchableOpacity>
+          );
+        })}
+      </ScrollView>
       <View style={styles.lineStyle} />
-      <View style={styles.doctorsScroll}>
-        <Text style={styles.titleText}> Doctors</Text>
-        <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-          {doctors.map((card, cardIndex) => {
-            return (
-              <TouchableOpacity style={styles.cards} key={cardIndex} onPress={onPressDoctors}>
-                <View style={styles.card_header}>
-                  <Image style={styles.doctorImg} source={{ uri: 'https://bootdey.com/img/Content/avatar/avatar6.png' }}></Image>
-                  <View style={styles.textView}>
-                    <Text style={styles.name}>Dr. {card.drName} </Text>
-                    <Text style={styles.speciality}>{card.speciality}</Text>
-                  </View>
-                </View>
-                <View style={styles.card_content}>
-                  <View style={styles.place}>
-                    <Image style={styles.icon} source={require('../../images/hospital.png')}></Image>
-                    <Text style={styles.hospital}>{card.hName}</Text>
-                  </View>
-                  <View style={styles.place}>
-                    <Image style={styles.icon} source={require('../../images/location.png')}></Image>
-                    <Text style={styles.hospital}>{card.address}</Text>
-                  </View>
-                  <View style={styles.customRatingBar}>
-                    {
-                      maxRating.map((item, key) => {
-                        return (
-                          <TouchableOpacity activeOpacity={0.7}
-                            key={item}
-                            disabled={true}
-                          // onPress={() => setDefaultRating(item)} 
-                          >
-                            <FontAwesome name={item <= defaultRating ? "star" : "star-o"} size={26} color="#FDCC0D" />
-                            {/* <Image style={styles.starImg} source={item <= defaultRating ? { uri: starImgFilled } : { uri: starImgCorner }}></Image> */}
-                            {/* <Text> Rate is {item} / 5</Text> */}
-                          </TouchableOpacity>
-                        )
-                      })
-                    }
-                  </View>
-                </View>
-              </TouchableOpacity>
-            );
-          })}
-
-          {/* <TouchableOpacity style={styles.buttonContainer}>
-          <Text>specialization{"\n"}Doctor{"\n"}Hospital {"\n"}Date </Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.buttonContainer}>
-          <Text>specialization{"\n"}Doctor{"\n"}Hospital {"\n"}Date </Text>
-        </TouchableOpacity> */}
-        </ScrollView>
-
+      <View style={styles.headline}>
+        <Text style={styles.titleText}>Doctors</Text>
+        <Pressable >
+          <Text style={{ color: '#1c1bad', textDecorationLine: 'underline' }} onPress={seeAllDoctors}>See all doctors</Text>
+        </Pressable>
       </View>
+      <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+        {homepageData.map((card, cardIndex) => {
+          return (
+            <TouchableOpacity style={styles.cards} key={cardIndex} onPress={onPressDoctors}>
+              <View style={styles.card_header}>
+                <Image style={styles.doctorImg} source={{ uri: 'https://bootdey.com/img/Content/avatar/avatar6.png' }}></Image>
+                <View style={styles.textView}>
+                  <Text style={styles.name}>Dr. {card.drName} </Text>
+                  <Text style={styles.speciality}>{card.speciality}</Text>
+                </View>
+              </View>
+              <View style={styles.card_content}>
+                <View style={styles.place}>
+                  <Image style={styles.icon} source={require('../../images/hospital.png')}></Image>
+                  <Text style={styles.cardText}>{card.hName}</Text>
+                </View>
+                <View style={styles.place}>
+                  <Image style={styles.icon} source={require('../../images/location.png')}></Image>
+                  <Text style={styles.cardText}>{card.address}</Text>
+                </View>
+                <View style={styles.customRatingBar}>
+                  {
+                    maxRating.map((item, key) => {
+                      return (
+                        <TouchableOpacity activeOpacity={0.7}
+                          key={item}
+                          disabled={true}
+                        // onPress={() => setDefaultRating(item)} 
+                        >
+                          <FontAwesome name={item <= defaultRating ? "star" : "star-o"} size={26} color="#FDCC0D" />
+                        </TouchableOpacity>
+                      )
+                    })
+                  }
+                </View>
+              </View>
+            </TouchableOpacity>
+          );
+        })}
+      </ScrollView>
     </View >
 
   )
@@ -131,61 +128,48 @@ export default function PatientHome({ navigation }) {
 
 const styles = StyleSheet.create({
   container: {
-    // flex: 1,
-    flexDirection: 'column',
-    // backgroundColor:'#000',
-    height: '100%',
-    // margin: 10,
+    // flexDirection: 'column',
+  },
+
+  cardScroll: {
+    // flexDirection: 'column',
+    // backgroundColor: '#f0f456'
   },
 
   lineStyle: {
-    borderWidth: 0.5,
+    borderWidth: 1,
     borderColor: '#000',
-    margin: '2%',
+    margin: 5,
     backgroundColor: '#000',
   },
 
-  hospitalScroll: {
-    flex: 1,
-    flexDirection: 'column',
-  },
-
-  doctorsScroll: {
-    // flex: 1,
-    flexDirection: 'column',
+  headline: {
+    flexDirection: 'row', alignItems: 'center',
+    // backgroundColor: '#f0f',
 
   },
-
 
   header: {
-    // flex: 1,
     flexDirection: 'row',
-    height: '7%',
+    height: 50,
     backgroundColor: '#0d259e',
     justifyContent: 'center',
-    alignItems: 'center',
   },
+
   headerText: {
     fontSize: 20,
     color: '#fff',
     fontWeight: 'bold',
-    margin: '3%'
+    alignSelf: 'center'
   },
 
   Image: {
     width: 50,
     height: 50,
     alignSelf: 'center'
-    // marginTop:10,
   },
 
   cards: {
-    // marginTop: 10,
-
-    flexDirection: 'column',
-    // justifyContent: 'center',
-    alignItems: 'center',
-    // marginBottom: 20,
     width: 250,
     height: 230,
     borderRadius: 15,
@@ -199,8 +183,6 @@ const styles = StyleSheet.create({
       height: 3,
     },
     elevation: 2,
-    // marginleft: 10,
-    // marginRight: 10,
   },
 
   hospital_content: {
@@ -211,11 +193,9 @@ const styles = StyleSheet.create({
   },
   hospitalImg: {
 
-    width: 100,
+    width: 90,
     height: 90,
     // margin: 5,
-
-
   },
   avatar: {
     width: '40%',
@@ -229,29 +209,6 @@ const styles = StyleSheet.create({
     marginTop: 40,
     marginRight: 100
 
-  },
-
-
-  /****************_MARAM_************/
-
-
-
-  card: {
-    flexDirection: 'column',
-    width: 250,
-    borderRadius: 15,
-    overflow: 'hidden',
-    backgroundColor: '#fff',
-    height: 230,
-    shadowColor: '#000',
-    shadowOpacity: 1,
-    shadowOffset: {
-      width: 3,
-      height: 3,
-    },
-    elevation: 5,
-    marginLeft: '2%'
-    // alignSelf: 'center'
   },
 
   card_header: {
@@ -272,50 +229,40 @@ const styles = StyleSheet.create({
     // margin: '2%',
   },
 
-  textView: {
-    flexDirection: 'column',
-    // justifyContent: 'center',
-    // alignItems: 'center'
-  },
-
   name: {
     color: '#fff',
     fontSize: 15,
     fontWeight: 'bold',
   },
+
   speciality: {
     color: '#fff',
     fontSize: 13,
   },
+
   card_content: {
     height: '100%',
     width: '100%',
   },
+
   place: {
     flexDirection: 'row',
     alignItems: 'center'
   },
+
   icon: {
-    margin: '3%',
+    margin: 10,
   },
-  hospital: {
+
+  cardText: {
     color: '#000',
     fontSize: 15,
     margin: 5,
   },
+
   customRatingBar: {
     justifyContent: 'center',
-    flexDirection: 'row',
-    // marginTop: 10,
-    // alignItems: 'center',
-
-
-  },
-
-  starImg: {
-    width: 25,
-    height: 25,
-    resizeMode: 'cover',
+    flexDirection: 'row'
   },
 
   titleText: {
