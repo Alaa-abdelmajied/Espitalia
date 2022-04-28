@@ -12,9 +12,9 @@ export default function Report({ navigation }) {
 
   const [details, setDetails] = useState(
     {
-      specialization: 'dermatology', doctor: 'ahmed', hospital: "anbatakla", date: "5/8/2000",
-      diagnosis: "hiihbdjfksshvdbmsvcn SNC nbsssss,nbsssssnbsssssnbsssssnbsssssnbsssssnbsssssnbsssssnbsssssnbsssssnbsssssnbsssssnbsssssnbsssssnbsssssnbsssssnbsssssnbsssssnbsssssnbsssssnbsssssnbsssssnbsssssnbsssssnbsssssnbsssssnbsnbsssssnbsssssnbsssssvssssnbsssssnbsssssnbsssssnbsssssvs hbjfvjvgmgcgnfcxgfxfbzfdxf jgvchc bm hbjhnvnkvjmjghcjfthxrsytstyjhbjkslrbgkalhbgklebgjklbrgjwlllrkkjjtklgvngcxfgjd dfadbdf",
-      prescription: "jhbjhvfbajkvjvrjekager abhgjbvfv wefvejgbelkgwefvejgbelkgbwefvejgbelkgbwefvejgbelkgbwefvejgbelkgbwefvejgbelkgbwefvejgbelkgbwefvejgbelkgbwefvejgbelkgbb,dgblsgbdsmgb.mdbg,mdb"
+      specialization: 'Chest', doctor: 'Ahmed', hospital: "Middle East Hospital", date: "15/3/2022",
+      diagnosis: "Chronic Obstructive pulmonary disease, some of your airways are blocked making it hard for you to breathe",
+      prescription: "Do not smoke. Avoid smoke, pollution, and extreme changes in temperature and humidity. Rest as needed."
     }
   )
 
@@ -28,16 +28,16 @@ export default function Report({ navigation }) {
         <Text style={styles.infoText}> Hospital Name: {details.hospital} </Text>
         <Text style={styles.infoText}>Doctor Name: {details.doctor} </Text>
         <Text style={styles.infoText}>Specialization : {details.specialization} </Text>
-        <Text style={styles.infoText}>date : {details.date} </Text>
+        <Text style={styles.infoText}>Date : {details.date} </Text>
       </View>
       <View style={styles.lineStyle} />
-      <Text style={styles.title}>Diagnosis </Text>
+      <Text style={styles.title}>Diagnosis</Text>
       <View style={styles.appointmentsCard}>
         <ScrollView>
           <Text style={styles.infoText}>{details.diagnosis} </Text>
         </ScrollView>
       </View>
-      <Text style={styles.title}>Prescription </Text>
+      <Text style={styles.title}>Prescription</Text>
       <View style={styles.appointmentsCard}>
         <ScrollView>
           <Text style={styles.infoText}>{details.prescription} </Text>

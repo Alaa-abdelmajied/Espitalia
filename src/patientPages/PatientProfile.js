@@ -18,7 +18,7 @@ export default function Profile({ navigation }) {
   };
 
   const [Items, setItems] = useState([
-    { key: '1', Hname: 'Middle East Hospital', doctor: "Ahmed", specialization: "dermatology", date: "15/3/2022", resNum: 1 },
+    { key: '1', Hname: 'Middle East Hospital', doctor: "Ahmed", specialization: "Chest", date: "15/3/2022", resNum: 1 },
     { key: '2', Hname: 'ICC Hospital', doctor: "Maram", specialization: "physiotherapy", date: "16/3/2022", resNum: 2 },
     { key: '3', Hname: 'Al Andalusia Hospital', doctor: "Ali", specialization: "cardiology", date: "19/3/2022", resNum: 3 },
     { key: '4', Hname: 'Royal Hospital', doctor: "Alaa", specialization: "allergy", date: "25/3/2022", resNum: 4 },
@@ -44,14 +44,16 @@ export default function Profile({ navigation }) {
       </View>
       <View style={styles.body}>
         <View style={styles.bodyContent}>
-          <Text style={styles.name}>Alaa Abdelmajied</Text>
+          <Text style={styles.name}>Ahmed Mohamed</Text>
           <Text style={styles.subtitle}>BASIC DATA</Text>
-          <TouchableOpacity>
+          <TouchableOpacity style={{ flexDirection: 'row' }}>
             <FontAwesome name="edit" size={25} color="#000"></FontAwesome>
+            <Text style={{ fontSize: 15, color: '#000', alignSelf: 'center', marginHorizontal: 5 }}>Edit</Text>
+
           </TouchableOpacity>
           <View style={styles.description}>
-            <Text style={styles.mainText}>Email: alaa@gmail.com</Text>
-            <Text style={styles.mainText}>Username: alaa_300 </Text>
+            <Text style={styles.mainText}>Email: ahmed.mo@gmail.com</Text>
+            <Text style={styles.mainText}>Username: ahmed_99 </Text>
             <Text style={styles.mainText}>Age: 22</Text>
             <Text style={styles.mainText}>Blood Type: A+</Text>
             <Text style={styles.mainText}>Diabetic: No</Text>

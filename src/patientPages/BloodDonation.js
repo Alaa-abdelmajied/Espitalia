@@ -17,13 +17,13 @@ import {
 
 export default function DonateBlood({ navigation }) {
   const [Items, setItems] = useState([
-    { key: '1', Hname: 'Middle East Hospital ', bloodType: "A+", amountNeeded: "1L" },
-    { key: '2', Hname: 'ICC Hospital', bloodType: "AB+", amountNeeded: "1L" },
-    { key: '3', Hname: 'German Hospital', bloodType: "O-", amountNeeded: "2L" },
-    { key: '4', Hname: 'Royal Hospital', bloodType: "O+", amountNeeded: "0.6L" },
-    { key: '5', Hname: 'Alex Scan', bloodType: "B-", amountNeeded: "3L" },
-    { key: '6', Hname: 'Bet El Ne3ma', bloodType: "AB-", amountNeeded: "0.5L" },
-    { key: '7', Hname: 'Al Andalusia Hospital', bloodType: "A-", amountNeeded: "1L" },
+    { key: '1', Hname: 'Middle East Hospital ', bloodType: "A+", date: "22/3/2022" },
+    { key: '2', Hname: 'ICC Hospital', bloodType: "AB+", date: "25/3/2022" },
+    { key: '3', Hname: 'German Hospital', bloodType: "O-", date: "28/3/2022" },
+    { key: '4', Hname: 'Royal Hospital', bloodType: "O+", date: "13/4/2022" },
+    { key: '5', Hname: 'Alex Scan', bloodType: "B-", date: "13/4/2022" },
+    { key: '6', Hname: 'Bet El Ne3ma', bloodType: "AB-", date: "20/4/2022" },
+    { key: '7', Hname: 'Al Andalusia Hospital', bloodType: "A-", date: "25/4/2022" },
 
   ])
 
@@ -40,7 +40,7 @@ export default function DonateBlood({ navigation }) {
             <View style={styles.infoView}>
               <Text style={styles.infoText}>Hospital Name: {item.Hname} </Text>
               <Text style={styles.infoText}>Blood Type: {item.bloodType} </Text>
-              <Text style={styles.infoText}>Amount Needed : {item.amountNeeded} </Text>
+              <Text style={styles.infoText}>Date : {item.date} </Text>
             </View>
             <View style={styles.buttonView}>
               <Pressable style={styles.button}>
@@ -57,8 +57,8 @@ export default function DonateBlood({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container:{
-    flex:1,
+  container: {
+    flex: 1,
   },
 
   appointmentsCard: {
@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
   buttonView: {
     alignItems: 'center',
     justifyContent: 'center',
-    margin:'2%', 
+    margin: '2%',
   },
   buttonText: {
     color: '#fff',

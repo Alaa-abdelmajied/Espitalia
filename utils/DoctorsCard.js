@@ -11,7 +11,7 @@ import {
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 
-const DoctorsCard = ({ card, cardIndex, maxRating, defaultRating, navigation }) => {
+const DoctorsCard = ({ card, maxRating, defaultRating, navigation }) => {
 
   const onPress = () => {
     navigation.navigate('DoctorDetails');
@@ -19,7 +19,7 @@ const DoctorsCard = ({ card, cardIndex, maxRating, defaultRating, navigation }) 
 
 
   return (
-    <TouchableOpacity style={styles.card} key={cardIndex} onPress={onPress}>
+    <TouchableOpacity style={styles.card} onPress={onPress}>
       <View style={styles.card_header}>
         <Image style={styles.doctorImg} source={{ uri: 'https://bootdey.com/img/Content/avatar/avatar6.png' }}></Image>
         <View style={styles.textView}>
