@@ -37,7 +37,7 @@ export default function Login({ navigation, route }) {
           </Text>
           <View style={styles.InputsRegion}>
             <TextInput style={styles.Input} placeholder="Enter your username or email"></TextInput>
-            <TextInput style={styles.Input} placeholder="Enter your password"></TextInput>
+            <TextInput secureTextEntry={true} style={styles.Input} placeholder="Enter your password" ></TextInput>
 
             <Pressable>
               <Text style={styles.QuestionText}>Forgot password?</Text>
