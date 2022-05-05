@@ -1,90 +1,69 @@
 import React, {useState} from 'react';
-import {View, FlatList} from 'react-native';
-import DoctorsCard from '../../utils/DoctorsCard';
+import {ScrollView, StyleSheet, View, FlatList} from 'react-native';
+import HospitalsCard from '../../utils/HospitalsCard';
 import {SearchBar} from 'react-native-elements';
 
-export default function Doctors({navigation}) {
-  const [defaultRating, setDefaultRating] = useState(2);
-  const [maxRating, setMaxRating] = useState([1, 2, 3, 4, 5]);
-
+export default function Hospitals({navigation}) {
   const [search, setSearch] = useState('');
 
   const updateSearch = search => {
     setSearch(search);
   };
 
-  const doctors = [
+  const hospitals = [
     {
       key: 1,
-      drName: 'Alaa Abdelmajied',
-      speciality: 'Dermatologist',
       hName: 'Al Andalusia Hospital',
       address: '15 el midan st. - smouha',
-      color: '#1c1bad',
+      image: require('../../images/andalusiahospital.png'),
     },
     {
       key: 2,
-      drName: 'Mayar Adel',
-      speciality: 'Dentist',
       hName: 'Royal Hospital',
       address: '17 abdelqader basha st.',
-      color: '#0d589e',
+      image: require('../../images/royalhospital.png'),
     },
     {
       key: 3,
-      drName: 'Omar Shalaby',
-      speciality: 'Cardiologist',
       hName: 'Alex Hospital',
       address: '12 camp shizar st.',
-      color: '#0d789e',
+      image: require('../../images/alexhospital.png'),
     },
     {
       key: 4,
-      drName: 'Nadeen Elgazar',
-      speciality: 'Gynaecologist',
       hName: 'ICC Hospital',
       address: '3 smouha st.',
-      color: '#0d899e',
+      image: require('../../images/icchospital.png'),
     },
     {
       key: 5,
-      drName: 'Maram Ghazal',
-      speciality: 'Cardiologist',
       hName: 'Alex Hospital',
       address: '6 camp shizar st.',
-      color: '#0d789e',
+      image: require('../../images/alexhospital.png'),
     },
     {
       key: 6,
-      drName: 'Omar Radwan',
-      speciality: 'Dentist',
       hName: 'Alex Hospital',
       address: '5 camp shizar st.',
-      color: '#0d789e',
+      image: require('../../images/alexhospital.png'),
     },
     {
       key: 7,
-      drName: 'Verginia Ehab',
-      speciality: 'Psychiatrist',
       hName: 'Alex Hospital',
       address: '5 camp shizar st.',
-      color: '#0d789e',
+      image: require('../../images/andalusiahospital.png'),
     },
     {
       key: 8,
-      drName: 'Omar Hisham',
-      speciality: 'Dentist',
       hName: 'Al Andalusia Hospital',
       address: '15 el midan st. - smouha',
-      color: '#0d789e',
+      image: require('../../images/andalusiahospital.png'),
     },
     {
       key: 9,
-      drName: 'Ali Ghazal',
-      speciality: 'Psychiatrist',
       hName: 'German Hospital',
       address: '6 gleem st.',
-      color: '#0d369e',
+      image: require('../../images/andalusiahospital.png'),
     },
   ];
 
@@ -99,31 +78,17 @@ export default function Doctors({navigation}) {
         inputContainerStyle={{borderRadius: 50, backgroundColor: '#fff'}}
       />
       {/* <ScrollView>
-        {doctors.map((card, cardIndex) => {
-          return (
-            <DoctorsCard
-              card={card}
-              maxRating={maxRating}
-              defaultRating={defaultRating}
-              navigation={navigation}
-            />
-          );
+        {hospitals.map(card => {
+          return <HospitalsCard card={card} navigation={navigation} />;
         })}
       </ScrollView> */}
       <FlatList
-        data={doctors}
+        data={hospitals}
         keyExtractor={item => {
           return item.key;
         }}
         renderItem={({item}) => {
-          return (
-            <DoctorsCard
-              card={item}
-              maxRating={maxRating}
-              defaultRating={defaultRating}
-              navigation={navigation}
-            />
-          );
+          return <HospitalsCard card={item} navigation={navigation} />;
         }}
       />
     </View>
