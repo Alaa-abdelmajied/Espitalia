@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
   StyleSheet,
   Text,
@@ -7,27 +7,68 @@ import {
   TouchableOpacity,
   ScrollView,
   Modal,
+  Pressable,
 } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-export default function Profile({ navigation }) {
-
+export default function Profile({navigation}) {
   const onPressReport = () => {
     navigation.navigate('Report');
   };
 
   const [Items, setItems] = useState([
-    { key: '1', Hname: 'Middle East Hospital', doctor: "Ahmed", specialization: "Chest", date: "15/3/2022", resNum: 1 },
-    { key: '2', Hname: 'ICC Hospital', doctor: "Maram", specialization: "physiotherapy", date: "16/3/2022", resNum: 2 },
-    { key: '3', Hname: 'Al Andalusia Hospital', doctor: "Ali", specialization: "cardiology", date: "19/3/2022", resNum: 3 },
-    { key: '4', Hname: 'Royal Hospital', doctor: "Alaa", specialization: "allergy", date: "25/3/2022", resNum: 4 },
-    { key: '5', Hname: 'German Hospital', doctor: "Mayar", specialization: "chest", date: "5/4/2022", resNum: 5 },
-    { key: '6', Hname: 'Alexandria International Hospital', doctor: "Nadeen", specialization: "dermatology", date: "15/4/2022", resNum: 6 },
+    {
+      key: '1',
+      Hname: 'Middle East Hospital',
+      doctor: 'Ahmed',
+      specialization: 'Chest',
+      date: '15/3/2022',
+      resNum: 1,
+    },
+    {
+      key: '2',
+      Hname: 'ICC Hospital',
+      doctor: 'Maram',
+      specialization: 'physiotherapy',
+      date: '16/3/2022',
+      resNum: 2,
+    },
+    {
+      key: '3',
+      Hname: 'Al Andalusia Hospital',
+      doctor: 'Ali',
+      specialization: 'cardiology',
+      date: '19/3/2022',
+      resNum: 3,
+    },
+    {
+      key: '4',
+      Hname: 'Royal Hospital',
+      doctor: 'Alaa',
+      specialization: 'allergy',
+      date: '25/3/2022',
+      resNum: 4,
+    },
+    {
+      key: '5',
+      Hname: 'German Hospital',
+      doctor: 'Mayar',
+      specialization: 'chest',
+      date: '5/4/2022',
+      resNum: 5,
+    },
+    {
+      key: '6',
+      Hname: 'Alexandria International Hospital',
+      doctor: 'Nadeen',
+      specialization: 'dermatology',
+      date: '15/4/2022',
+      resNum: 6,
+    },
+  ]);
 
-  ])
-
-  // const [showModal, setShowModal] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   // const onPress = () => {
   //   setShowModal(false)
@@ -35,21 +76,48 @@ export default function Profile({ navigation }) {
 
   return (
     <ScrollView>
+      <Modal visible={showModal} animationType="fade" transparent={true}>
+        <View style={styles.logoutModal}>
+          <FontAwesome
+            name={'close'}
+            size={20}
+            color={'#fff'}
+            onPress={() => setShowModal(false)}></FontAwesome>
+          <Pressable onPress={() => navigation.navigate('')}>
+            <Text style={{fontSize: 15, color: '#fff'}}>Logout</Text>
+          </Pressable>
+        </View>
+      </Modal>
       <View style={styles.header}></View>
-      <Image style={styles.avatar} source={{ uri: 'https://bootdey.com/img/Content/avatar/avatar6.png' }} />
-      <View style={{ position: "absolute", alignSelf: 'flex-end', marginTop: 15 }}>
-        <TouchableOpacity>
-          <Ionicons name="ellipsis-vertical" size={30} color="#fff"></Ionicons>
+      <Image
+        style={styles.avatar}
+        source={{uri: 'https://bootdey.com/img/Content/avatar/avatar6.png'}}
+      />
+      <View
+        style={{position: 'absolute', alignSelf: 'flex-end', marginTop: 15}}>
+        <TouchableOpacity style={{margin: 5}}>
+          <Ionicons
+            name="ellipsis-vertical"
+            size={30}
+            color="#fff"
+            onPress={() => setShowModal(true)}></Ionicons>
         </TouchableOpacity>
       </View>
       <View style={styles.body}>
         <View style={styles.bodyContent}>
           <Text style={styles.name}>Ahmed Mohamed</Text>
           <Text style={styles.subtitle}>BASIC DATA</Text>
-          <TouchableOpacity style={{ flexDirection: 'row' }}>
+          <TouchableOpacity style={{flexDirection: 'row'}}>
             <FontAwesome name="edit" size={25} color="#000"></FontAwesome>
-            <Text style={{ fontSize: 15, color: '#000', alignSelf: 'center', marginHorizontal: 5 }}>Edit</Text>
-
+            <Text
+              style={{
+                fontSize: 15,
+                color: '#000',
+                alignSelf: 'center',
+                marginHorizontal: 5,
+              }}>
+              Edit
+            </Text>
           </TouchableOpacity>
           <View style={styles.description}>
             <Text style={styles.mainText}>Email: ahmed.mo@gmail.com</Text>
@@ -64,25 +132,30 @@ export default function Profile({ navigation }) {
           <Text style={styles.subtitle}>OLD RESERVATIONS</Text>
           {Items.map((item, itemIndex) => {
             return (
-              <TouchableOpacity style={styles.appointmentsCard} key={itemIndex} onPress={onPressReport}>
-                <Text style={styles.infoText}>Hospital Name: {item.Hname} </Text>
+              <TouchableOpacity
+                style={styles.appointmentsCard}
+                key={itemIndex}
+                onPress={onPressReport}>
+                <Text style={styles.infoText}>
+                  Hospital Name: {item.Hname}{' '}
+                </Text>
                 <Text style={styles.infoText}>Doctor Name: {item.doctor} </Text>
-                <Text style={styles.infoText}>Specialization: {item.specialization} </Text>
+                <Text style={styles.infoText}>
+                  Specialization: {item.specialization}{' '}
+                </Text>
                 <Text style={styles.infoText}>Date: {item.date} </Text>
               </TouchableOpacity>
-            )
+            );
           })}
         </View>
       </View>
-    </ScrollView >
+    </ScrollView>
   );
-
 }
 
 const styles = StyleSheet.create({
-
   header: {
-    backgroundColor: "#0d259e",
+    backgroundColor: '#1c1bad',
     height: 100,
   },
   avatar: {
@@ -90,16 +163,16 @@ const styles = StyleSheet.create({
     height: 130,
     borderRadius: 63,
     borderWidth: 4,
-    borderColor: "white",
+    borderColor: 'white',
     marginBottom: 10,
     alignSelf: 'center',
     position: 'absolute',
-    marginTop: 40
+    marginTop: 40,
   },
   mainText: {
     margin: '1%',
     color: '#000',
-    fontSize: 18
+    fontSize: 18,
   },
 
   name: {
@@ -118,20 +191,19 @@ const styles = StyleSheet.create({
   },
   dataView: {
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   subtitle: {
     fontSize: 16,
-    color: "#0d259e",
+    color: '#1c1bad',
     margin: 5,
     // marginTop: 10,
     // marginBottom: 5,
-    fontWeight: 'bold'
-
+    fontWeight: 'bold',
   },
   description: {
     fontSize: 16,
-    color: "#696969",
+    color: '#696969',
     //marginTop:10,
     // marginRight: 200,
     // textAlign: 'center',
@@ -143,7 +215,7 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderColor: '#000',
     margin: '2%',
-    backgroundColor: '#000'
+    backgroundColor: '#000',
   },
 
   appointmentsCard: {
@@ -156,7 +228,7 @@ const styles = StyleSheet.create({
     width: '95%',
     height: 230,
     borderRadius: 15,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     alignSelf: 'center',
     // marginLeft: 10,
     margin: 4,
@@ -183,11 +255,23 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     margin: '1%',
     // borderRadius: 5,
-
   },
   infoText: {
     color: '#000',
     margin: 10,
     fontSize: 15,
+  },
+
+  logoutModal: {
+    height: 50,
+    backgroundColor: '#1c1bad',
+    borderRadius: 5,
+    borderWidth: 2,
+    borderColor: '#fff',
+    width: 100,
+    margin: 10,
+    alignSelf: 'flex-end',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

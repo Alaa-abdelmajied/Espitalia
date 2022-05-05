@@ -1,27 +1,21 @@
 import React from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-  Image,
-  TouchableOpacity,
-
-} from 'react-native';
+import {StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
 
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-
-
-const DoctorsCard = ({ card, maxRating, defaultRating, navigation }) => {
-
+import Ionicons from 'react-native-vector-icons/Ionicons';
+const DoctorsCard = ({card, maxRating, defaultRating, navigation}) => {
   const onPress = () => {
     navigation.navigate('DoctorDetails');
   };
 
-
   return (
     <TouchableOpacity style={styles.card} onPress={onPress}>
       <View style={styles.card_header}>
-        <Image style={styles.doctorImg} source={{ uri: 'https://bootdey.com/img/Content/avatar/avatar6.png' }}></Image>
+        <Image
+          style={styles.doctorImg}
+          source={{
+            uri: 'https://bootdey.com/img/Content/avatar/avatar6.png',
+          }}></Image>
         <View style={styles.textView}>
           <Text style={styles.name}>Dr. {card.drName}</Text>
           <Text style={styles.speciality}>{card.speciality}</Text>
@@ -29,57 +23,51 @@ const DoctorsCard = ({ card, maxRating, defaultRating, navigation }) => {
       </View>
       <View style={styles.card_content}>
         <View style={styles.place}>
-          <Image style={styles.icon} source={require('../images/hospital.png')}></Image>
+          {/* <Image
+            style={styles.icon}
+            source={require('../images/hospital.png')}></Image> */}
+          <FontAwesome
+            name={'hospital-o'}
+            size={30}
+            color="#1c1bad"
+            style={{margin: 10}}></FontAwesome>
           <Text style={styles.hospital}>{card.hName}</Text>
         </View>
         <View style={styles.place}>
-          <Image style={styles.icon} source={require('../images/location.png')}></Image>
+          {/* <Image
+            style={styles.icon}
+            source={require('../images/location.png')}></Image> */}
+          <Ionicons
+            name={'location-sharp'}
+            size={30}
+            color="#1c1bad"
+            style={{margin: 10}}></Ionicons>
           <Text style={styles.hospital}>{card.address}</Text>
         </View>
         <View style={styles.customRatingBar}>
-          {
-            maxRating.map((item, key) => {
-              return (
-                <TouchableOpacity activeOpacity={0.7}
-                  key={item}
-                  onPress={() => setDefaultRating(item)}>
-                  <FontAwesome name={item <= defaultRating ? "star" : "star-o"} size={25} color="#FDCC0D" />
-                  {/* <Text> Rate is {item} / 5</Text> */}
-                </TouchableOpacity>
-              )
-            })
-          }
+          {maxRating.map((item, key) => {
+            return (
+              <TouchableOpacity
+                activeOpacity={0.7}
+                key={item}
+                onPress={() => setDefaultRating(item)}>
+                <FontAwesome
+                  name={item <= defaultRating ? 'star' : 'star-o'}
+                  size={25}
+                  color="#FDCC0D"
+                />
+                {/* <Text> Rate is {item} / 5</Text> */}
+              </TouchableOpacity>
+            );
+          })}
         </View>
       </View>
     </TouchableOpacity>
   );
-}
-
+};
 
 const styles = StyleSheet.create({
-  container: {
-    // width:'95%',
-    flex: 1,
-    justifyContent: 'center',
-    // alignItems: 'center',
-    // margin: '1%',
-    // alignSelf: 'center',
-
-  },
-  header: {
-    height: '8%',
-    backgroundColor: '#0d159e',
-    justifyContent: 'center'
-  },
-
-  Image: {
-    width: 50,
-    height: 50,
-    alignSelf: 'center'
-    // marginTop:10,
-  },
   card: {
-    // flex:1,
     width: '95%',
     borderRadius: 15,
     overflow: 'hidden',
@@ -92,18 +80,15 @@ const styles = StyleSheet.create({
       height: 3,
     },
     elevation: 2,
-    // borderColor:'#000',
-    // margin: '1%',
     margin: 4,
-    alignSelf: 'center'
-
-
+    alignSelf: 'center',
   },
+
   card_header: {
     flexDirection: 'row',
     height: 80,
-    backgroundColor: '#0d159e',
-    alignItems: 'center'
+    backgroundColor: '#1c1bad',
+    alignItems: 'center',
   },
 
   doctorImg: {
@@ -117,8 +102,6 @@ const styles = StyleSheet.create({
 
   textView: {
     flexDirection: 'column',
-    // justifyContent: 'center',
-    // alignItems: 'center'
   },
 
   name: {
@@ -132,12 +115,12 @@ const styles = StyleSheet.create({
   },
 
   card_content: {
-    justifyContent: 'space-evenly'
+    justifyContent: 'space-evenly',
   },
 
   place: {
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   icon: {
     margin: '3%',
@@ -149,15 +132,6 @@ const styles = StyleSheet.create({
   customRatingBar: {
     justifyContent: 'center',
     flexDirection: 'row',
-    // marginTop: 10,
-    // alignItems: 'center',
-
-
-  },
-  starImg: {
-    width: 25,
-    height: 25,
-    resizeMode: 'cover',
   },
 });
 
