@@ -9,9 +9,43 @@ import {
   Pressable,
 } from 'react-native';
 
+import axios from 'axios';
+
 
 export default function Login({ navigation, route }) {
 
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const onPressHandler = () => {
+    //staff -> username -> search for keyword dr or recep or admin
+    axios.post('http://192.168.1.2:3000/patient/login', {
+      email: email,
+      password: password
+    }).then(function (response) {
+      const { verified, token } = response.data;
+      if (verified) {
+        //save token
+        navigation.reset({
+          index: 0, routes: [{ name: 'Patient' }]
+        })
+      } else {
+        //save token
+        //otp page
+      }
+    })
+      .catch(function (error) {
+        const err = error.response.data;
+        if (err == 'Incorrect email or password') {
+          //alert worng email or password
+          console.log('alert');
+        }
+      });
+    // navigation.reset({
+    //   index: 0,
+    //   routes: [{ name: route.params.staff ? 'HosptialAdminHomePage' : 'Patient' }],
+    // })
+  }
 
   return (
     // <ScrollView>
@@ -36,17 +70,16 @@ export default function Login({ navigation, route }) {
             Sign In
           </Text>
           <View style={styles.InputsRegion}>
-            <TextInput style={styles.Input} placeholder="Enter your username or email"></TextInput>
-            <TextInput secureTextEntry={true} style={styles.Input} placeholder="Enter your password" ></TextInput>
+            <TextInput style={styles.Input} placeholder="Enter your username or email"
+              onChangeText={text => setEmail(text)}></TextInput>
+            <TextInput secureTextEntry={true} style={styles.Input} placeholder="Enter your password"
+              onChangeText={text => setPassword(text)}></TextInput>
 
             <Pressable>
               <Text style={styles.QuestionText}>Forgot password?</Text>
             </Pressable>
 
-            <Pressable style={styles.RegisterButton} onPress={() => navigation.reset({
-              index: 0,
-              routes: [{ name: route.params.staff ? 'HosptialAdminHomePage' : 'Patient' }],
-            })}>
+            <Pressable style={styles.RegisterButton} onPress={onPressHandler}>
               <Text style={[styles.buttonText, { color: '#fff' }]}>Sign In</Text>
             </Pressable>
             {!route.params.staff ?
