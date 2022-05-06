@@ -50,7 +50,7 @@ export default function SignUp({ navigation }) {
         // width={Dimensions.get('screen').width}
         >
           <Path
-            fill="#0d159e"
+            fill="#1c1bad"
             d='M0,192L60,170.7C120,149,240,107,360,112C480,117,600,171,720,197.3C840,224,960,224,1080,208C1200,192,1320,160,1380,144L1440,128L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z'
           />
 
@@ -136,13 +136,13 @@ const styles = StyleSheet.create({
     width: '100%',
     // marginTop: '10%',
     // justifyContent: 'center',
-    backgroundColor: '#f0f0f0'
+    // backgroundColor: '#f0f0f0'
   },
 
   TitleText: {
     color: '#000',
     fontSize: 25,
-    margin: '5%',
+    margin: 10,
     fontWeight: 'bold',
     textAlign: 'center',
     justifyContent: 'center'

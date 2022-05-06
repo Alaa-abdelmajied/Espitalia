@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
   StyleSheet,
   Text,
@@ -6,17 +6,15 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
-  Pressable
+  Pressable,
 } from 'react-native';
-import style from 'react-native-datepicker/style';
 
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
-
-export default function PatientHome({ navigation }) {
+export default function PatientHome({navigation}) {
   const [defaultRating, setDefaultRating] = useState(2);
   const [maxRating] = useState([1, 2, 3, 4, 5]);
-
 
   const onPressHospitals = () => {
     navigation.navigate('SpecializationScreen');
@@ -28,47 +26,95 @@ export default function PatientHome({ navigation }) {
 
   const seeAllDoctors = () => {
     navigation.navigate('DoctorList');
-  }
+  };
 
-  // const [search, setSearch] = useState("");
-
-  // const updateSearch = (search) => {
-  //   setSearch(search);
-  // };
+  const seeAllHospitals = () => {
+    navigation.navigate('HospitalList');
+  };
 
   const homepageData = [
-    { key: 1, drName: 'Alaa Abdelmajied', speciality: 'Dermatologist', hName: 'Al Andalusia Hospital', address: '6 smouha st.', image: require('../../images/andalusiahospital.png'), color: "#0d159e" },
-    { key: 2, drName: 'Ali Ghazal', speciality: 'Psychiatrist', hName: 'German Hospital', address: '6 gleem st.', image: require('../../images/germanhospital.jpg'), color: "#0d369e" },
-    { key: 3, drName: 'Mayar Adel', speciality: 'Dentist', hName: 'Royal Hospital', address: '6 ibrahmia st.', image: require('../../images/royalhospital.png'), color: "#0d589e" },
-    { key: 4, drName: 'Omar Shalaby', speciality: 'Cardiologist', hName: 'Alex Hospital', address: '6 camp shizar st.', image: require('../../images/alexhospital.png'), color: "#0d789e" },
-    { key: 5, drName: 'Nadeen Elgazar', speciality: 'Gynaecologist', hName: 'ICC Hospital', address: '6 smouha st.', image: require('../../images/icchospital.png'), color: "#0d899e" },
-  ]
-
+    {
+      key: 1,
+      drName: 'Alaa Abdelmajied',
+      speciality: 'Dermatologist',
+      hName: 'Al Andalusia Hospital',
+      address: '6 smouha st.',
+      image: require('../../images/andalusiahospital.png'),
+    },
+    {
+      key: 2,
+      drName: 'Ali Ghazal',
+      speciality: 'Psychiatrist',
+      hName: 'German Hospital',
+      address: '6 gleem st.',
+      image: require('../../images/germanhospital.jpg'),
+    },
+    {
+      key: 3,
+      drName: 'Mayar Adel',
+      speciality: 'Dentist',
+      hName: 'Royal Hospital',
+      address: '6 ibrahmia st.',
+      image: require('../../images/royalhospital.png'),
+    },
+    {
+      key: 4,
+      drName: 'Omar Shalaby',
+      speciality: 'Cardiologist',
+      hName: 'Alex Hospital',
+      address: '6 camp shizar st.',
+      image: require('../../images/alexhospital.png'),
+    },
+    {
+      key: 5,
+      drName: 'Nadeen Elgazar',
+      speciality: 'Gynaecologist',
+      hName: 'ICC Hospital',
+      address: '6 smouha st.',
+      image: require('../../images/icchospital.png'),
+    },
+  ];
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Image style={styles.Image} source={require('../../images/app_logo-removebg-preview.png')}></Image>
+        <Image
+          style={styles.Image}
+          source={require('../../images/app_logo-removebg-preview.png')}></Image>
         <Text style={styles.headerText}>espitalia</Text>
       </View>
       <View style={styles.headline}>
         <Text style={styles.titleText}>Hospitals</Text>
-        <Pressable >
-          <Text style={{ color: '#1c1bad', textDecorationLine: 'underline' }}>See all hospitals</Text>
+        <Pressable>
+          <Text
+            style={{color: '#1c1bad', textDecorationLine: 'underline'}}
+            onPress={seeAllHospitals}>
+            See all hospitals
+          </Text>
         </Pressable>
       </View>
       <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
         {homepageData.map((card, cardIndex) => {
           return (
-            <TouchableOpacity style={styles.cards} key={cardIndex} onPress={onPressHospitals}>
+            <TouchableOpacity
+              style={styles.cards}
+              key={cardIndex}
+              onPress={onPressHospitals}>
               <View style={styles.card_header}>
-                <View style={styles.textView}>
-                  <Text style={styles.name}> {card.hName} </Text>
-                </View>
+                {/* <View style={styles.textView}> */}
+                <Text style={styles.name}> {card.hName} </Text>
+                {/* </View> */}
               </View>
               <View style={styles.hospital_content}>
                 <Image style={styles.hospitalImg} source={card.image}></Image>
-                <Text style={styles.cardText}>Hospital Address</Text>
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                  <Ionicons
+                    name={'location-sharp'}
+                    size={25}
+                    color="#1c1bad"
+                    style={{margin: 10}}></Ionicons>
+                  <Text style={styles.cardText}>{card.address}</Text>
+                </View>
               </View>
             </TouchableOpacity>
           );
@@ -77,16 +123,27 @@ export default function PatientHome({ navigation }) {
       <View style={styles.lineStyle} />
       <View style={styles.headline}>
         <Text style={styles.titleText}>Doctors</Text>
-        <Pressable >
-          <Text style={{ color: '#1c1bad', textDecorationLine: 'underline' }} onPress={seeAllDoctors}>See all doctors</Text>
+        <Pressable>
+          <Text
+            style={{color: '#1c1bad', textDecorationLine: 'underline'}}
+            onPress={seeAllDoctors}>
+            See all doctors
+          </Text>
         </Pressable>
       </View>
       <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
         {homepageData.map((card, cardIndex) => {
           return (
-            <TouchableOpacity style={styles.cards} key={cardIndex} onPress={onPressDoctors}>
+            <TouchableOpacity
+              style={styles.cards}
+              key={cardIndex}
+              onPress={onPressDoctors}>
               <View style={styles.card_header}>
-                <Image style={styles.doctorImg} source={{ uri: 'https://bootdey.com/img/Content/avatar/avatar6.png' }}></Image>
+                <Image
+                  style={styles.doctorImg}
+                  source={{
+                    uri: 'https://bootdey.com/img/Content/avatar/avatar6.png',
+                  }}></Image>
                 <View style={styles.textView}>
                   <Text style={styles.name}>Dr. {card.drName} </Text>
                   <Text style={styles.speciality}>{card.speciality}</Text>
@@ -94,47 +151,50 @@ export default function PatientHome({ navigation }) {
               </View>
               <View style={styles.card_content}>
                 <View style={styles.place}>
-                  <Image style={styles.icon} source={require('../../images/hospital.png')}></Image>
+                  <FontAwesome
+                    name={'hospital-o'}
+                    size={30}
+                    color="#1c1bad"
+                    style={{margin: 10}}></FontAwesome>
                   <Text style={styles.cardText}>{card.hName}</Text>
                 </View>
                 <View style={styles.place}>
-                  <Image style={styles.icon} source={require('../../images/location.png')}></Image>
+                  <Ionicons
+                    name={'location-sharp'}
+                    size={30}
+                    color="#1c1bad"
+                    style={{margin: 10}}></Ionicons>
                   <Text style={styles.cardText}>{card.address}</Text>
                 </View>
                 <View style={styles.customRatingBar}>
-                  {
-                    maxRating.map((item, key) => {
-                      return (
-                        <TouchableOpacity activeOpacity={0.7}
-                          key={item}
-                          disabled={true}
-                        // onPress={() => setDefaultRating(item)} 
-                        >
-                          <FontAwesome name={item <= defaultRating ? "star" : "star-o"} size={26} color="#FDCC0D" />
-                        </TouchableOpacity>
-                      )
-                    })
-                  }
+                  {maxRating.map((item, key) => {
+                    return (
+                      <TouchableOpacity
+                        activeOpacity={0.7}
+                        key={item}
+                        disabled={true}
+                        // onPress={() => setDefaultRating(item)}
+                      >
+                        <FontAwesome
+                          name={item <= defaultRating ? 'star' : 'star-o'}
+                          size={26}
+                          color="#FDCC0D"
+                        />
+                      </TouchableOpacity>
+                    );
+                  })}
                 </View>
               </View>
             </TouchableOpacity>
           );
         })}
       </ScrollView>
-    </View >
-
-  )
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    // flexDirection: 'column',
-  },
-
-  cardScroll: {
-    // flexDirection: 'column',
-    // backgroundColor: '#f0f456'
-  },
+  container: {flex: 1, justifyContent: 'center'},
 
   lineStyle: {
     borderWidth: 1,
@@ -144,15 +204,15 @@ const styles = StyleSheet.create({
   },
 
   headline: {
-    flexDirection: 'row', alignItems: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
     // backgroundColor: '#f0f',
-
   },
 
   header: {
     flexDirection: 'row',
     height: 50,
-    backgroundColor: '#0d259e',
+    backgroundColor: '#1c1bad',
     justifyContent: 'center',
   },
 
@@ -160,13 +220,13 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: '#fff',
     fontWeight: 'bold',
-    alignSelf: 'center'
+    alignSelf: 'center',
   },
 
   Image: {
     width: 50,
     height: 50,
-    alignSelf: 'center'
+    alignSelf: 'center',
   },
 
   cards: {
@@ -174,7 +234,7 @@ const styles = StyleSheet.create({
     height: 230,
     borderRadius: 15,
     overflow: 'hidden',
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     margin: 5,
     shadowColor: '#000',
     shadowOpacity: 1,
@@ -186,13 +246,15 @@ const styles = StyleSheet.create({
   },
 
   hospital_content: {
-    flexDirection: 'row',
+    // width:'80%',
+    // flexDirection: 'row',
+    // justifyContent:'center',
     justifyContent: 'space-evenly',
     alignItems: 'center',
     margin: 20,
+    // backgroundColor:'#0f0'
   },
   hospitalImg: {
-
     width: 90,
     height: 90,
     // margin: 5,
@@ -202,20 +264,19 @@ const styles = StyleSheet.create({
     height: 130,
     borderRadius: 10,
     borderWidth: 4,
-    borderColor: "white",
+    borderColor: 'white',
     marginBottom: 20,
     alignSelf: 'stretch',
     position: 'relative',
     marginTop: 40,
-    marginRight: 100
-
+    marginRight: 100,
   },
 
   card_header: {
     flexDirection: 'row',
     width: '100%',
     height: '30%',
-    backgroundColor: '#0d259e',
+    backgroundColor: '#1c1bad',
     alignItems: 'center',
     justifyContent: 'space-evenly',
   },
@@ -247,7 +308,7 @@ const styles = StyleSheet.create({
 
   place: {
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
   },
 
   icon: {
@@ -262,7 +323,7 @@ const styles = StyleSheet.create({
 
   customRatingBar: {
     justifyContent: 'center',
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
 
   titleText: {
@@ -271,5 +332,4 @@ const styles = StyleSheet.create({
     fontSize: 25,
     fontWeight: 'bold',
   },
-
 });

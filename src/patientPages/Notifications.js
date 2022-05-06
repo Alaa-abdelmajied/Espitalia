@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
   StyleSheet,
   Text,
@@ -10,26 +10,90 @@ import {
   FlatList,
   TouchableOpacity,
 } from 'react-native';
-import Dialog from "react-native-dialog";
+import Dialog from 'react-native-dialog';
 
-
-export default function Notification({ navigation }) {
+export default function Notification({navigation}) {
   const [visible, setVisible] = useState(false);
   const [Items, setItems] = useState([
-    { key: '1', name: 'Royal Hospital', msg: "notification content", date: "22/3/2022" },
-    { key: '2', name: 'Al Andalusia', msg: "notification content", date: "22/3/2022" },
-    { key: '3', name: 'Alex Sydney', msg: "notification content", date: "22/3/2022" },
-    { key: '4', name: 'German Hospital', msg: "notification content", date: "22/3/2022" },
-    { key: '5', name: 'Middle East Hospital', msg: "notification content", date: "22/3/2022" },
-    { key: '6', name: 'Hospital Name', msg: "notification content", date: "22/3/2022" },
-    { key: '7', name: 'Hospital Name', msg: "notification content", date: "22/3/2022" },
-    { key: '8', name: 'Hospital Name', msg: "notification content", date: "22/3/2022" },
-    { key: '9', name: 'Hospital Name', msg: "notification content", date: "22/3/2022" },
-    { key: '10', name: 'Hospital Name', msg: "notification content", date: "22/3/2022" },
-    { key: '11', name: 'Hospital Name', msg: "notification content", date: "22/3/2022" },
-    { key: '12', name: 'Hospital Name', msg: "notification content", date: "22/3/2022" },
-    { key: '13', name: 'Hospital Name', msg: "notification content", date: "22/3/2022" },
-  ])
+    {
+      key: '1',
+      name: 'Royal Hospital',
+      msg: 'notification content',
+      date: '22/3/2022',
+    },
+    {
+      key: '2',
+      name: 'Al Andalusia',
+      msg: 'notification content',
+      date: '22/3/2022',
+    },
+    {
+      key: '3',
+      name: 'Alex Sydney',
+      msg: 'notification content',
+      date: '22/3/2022',
+    },
+    {
+      key: '4',
+      name: 'German Hospital',
+      msg: 'notification content',
+      date: '22/3/2022',
+    },
+    {
+      key: '5',
+      name: 'Middle East Hospital',
+      msg: 'notification content',
+      date: '22/3/2022',
+    },
+    {
+      key: '6',
+      name: 'Hospital Name',
+      msg: 'notification content',
+      date: '22/3/2022',
+    },
+    {
+      key: '7',
+      name: 'Hospital Name',
+      msg: 'notification content',
+      date: '22/3/2022',
+    },
+    {
+      key: '8',
+      name: 'Hospital Name',
+      msg: 'notification content',
+      date: '22/3/2022',
+    },
+    {
+      key: '9',
+      name: 'Hospital Name',
+      msg: 'notification content',
+      date: '22/3/2022',
+    },
+    {
+      key: '10',
+      name: 'Hospital Name',
+      msg: 'notification content',
+      date: '22/3/2022',
+    },
+    {
+      key: '11',
+      name: 'Hospital Name',
+      msg: 'notification content',
+      date: '22/3/2022',
+    },
+    {
+      key: '12',
+      name: 'Hospital Name',
+      msg: 'notification content',
+      date: '22/3/2022',
+    },
+    {
+      key: '13',
+      name: 'Hospital Name',
+      msg: 'notification content',
+      date: '22/3/2022',
+    },
+  ]);
 
   const showDialog = () => {
     setVisible(true);
@@ -43,45 +107,40 @@ export default function Notification({ navigation }) {
     setVisible(false);
   };
 
-
   return (
     <View style={styles.container}>
       <FlatList
         data={Items}
-        renderItem={({ item }) => (
-          //  <View style={StyleSheet.container} >
-          //    <View style={{flexDirection:'row',marginLeft:10}}>
-          //      <Text style={{color:'#1B6ADF',fontSize:15}}>{item.name /n}</Text>
-          //     <View>
-          //      <Text style={{color:'#646768'}}>{item.msg}</Text>
-          //      </View>
-          //    </View>
-          //  </View>
-          <TouchableOpacity style={styles.notificationsCard} onPress={showDialog}>
+        renderItem={({item}) => (
+          <TouchableOpacity
+            style={styles.notificationsCard}
+            onPress={showDialog}>
             {/* <View style={styles.textContainer}> */}
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-              <Text style={{ color: '#0d259e', fontSize: 17, margin: '3%' }}>{item.name}</Text>
-              <Text style={{ color: '#000', fontSize: 13 }}>Date: {item.date}</Text>
+            <View
+              style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+              <Text style={{color: '#1c1bad', fontSize: 17, margin: '3%'}}>
+                {item.name}
+              </Text>
+              <Text style={{color: '#000', fontSize: 13}}>
+                Date: {item.date}
+              </Text>
             </View>
-            <View style={{ flex: 2, justifyContent: 'center', alignItems: 'center' }}>
-              <Text style={{ color: '#000', fontSize: 17 }}>{item.msg}</Text>
+            <View
+              style={{flex: 2, justifyContent: 'center', alignItems: 'center'}}>
+              <Text style={{color: '#000', fontSize: 17}}>{item.msg}</Text>
             </View>
             <Dialog.Container visible={visible}>
               <Dialog.Title>Blood Rquest</Dialog.Title>
-              <Dialog.Description>
-                notification details
-              </Dialog.Description>
+              <Dialog.Description>notification details</Dialog.Description>
               <Dialog.Button label="Accept" onPress={handleAccept} />
               <Dialog.Button label="Ignore" onPress={handleIgnore} />
             </Dialog.Container>
             {/* </View> */}
           </TouchableOpacity>
         )}
-
-
       />
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -119,6 +178,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '98%',
     borderRadius: 15,
-    backgroundColor: "#ff0f",
+    backgroundColor: '#ff0f',
   },
-})
+});

@@ -1,41 +1,32 @@
+import React, {useState} from 'react';
+import {StyleSheet, Text, View, FlatList, Pressable} from 'react-native';
 
-import React, { useState } from 'react';
-import {
-
-  StyleSheet,
-  Text,
-  View,
-  Button,
-  Linking,
-  SectionList,
-  RefreshControl,
-  FlatList,
-  TouchableOpacity,
-  Image,
-  Pressable
-} from 'react-native';
-
-export default function DonateBlood({ navigation }) {
+export default function DonateBlood({navigation}) {
   const [Items, setItems] = useState([
-    { key: '1', Hname: 'Middle East Hospital ', bloodType: "A+", date: "22/3/2022" },
-    { key: '2', Hname: 'ICC Hospital', bloodType: "AB+", date: "25/3/2022" },
-    { key: '3', Hname: 'German Hospital', bloodType: "O-", date: "28/3/2022" },
-    { key: '4', Hname: 'Royal Hospital', bloodType: "O+", date: "13/4/2022" },
-    { key: '5', Hname: 'Alex Scan', bloodType: "B-", date: "13/4/2022" },
-    { key: '6', Hname: 'Bet El Ne3ma', bloodType: "AB-", date: "20/4/2022" },
-    { key: '7', Hname: 'Al Andalusia Hospital', bloodType: "A-", date: "25/4/2022" },
-
-  ])
-
+    {
+      key: '1',
+      Hname: 'Middle East Hospital ',
+      bloodType: 'A+',
+      date: '22/3/2022',
+    },
+    {key: '2', Hname: 'ICC Hospital', bloodType: 'AB+', date: '25/3/2022'},
+    {key: '3', Hname: 'German Hospital', bloodType: 'O-', date: '28/3/2022'},
+    {key: '4', Hname: 'Royal Hospital', bloodType: 'O+', date: '13/4/2022'},
+    {key: '5', Hname: 'Alex Scan', bloodType: 'B-', date: '13/4/2022'},
+    {key: '6', Hname: 'Bet El Ne3ma', bloodType: 'AB-', date: '20/4/2022'},
+    {
+      key: '7',
+      Hname: 'Al Andalusia Hospital',
+      bloodType: 'A-',
+      date: '25/4/2022',
+    },
+  ]);
 
   return (
     <View style={styles.container}>
-      {/* <View style={styles.header}>
-        <Image style={styles.Image} source={require('../../images/app_logo-removebg-preview.png')}></Image>
-      </View> */}
       <FlatList
         data={Items}
-        renderItem={({ item }) => (
+        renderItem={({item}) => (
           <View style={styles.appointmentsCard}>
             <View style={styles.infoView}>
               <Text style={styles.infoText}>Hospital Name: {item.Hname} </Text>
@@ -48,12 +39,10 @@ export default function DonateBlood({ navigation }) {
               </Pressable>
             </View>
           </View>
-
         )}
-
       />
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -66,7 +55,7 @@ const styles = StyleSheet.create({
     width: '95%',
     height: 230,
     borderRadius: 15,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     alignSelf: 'center',
     margin: 4,
     shadowColor: '#000',
@@ -78,7 +67,6 @@ const styles = StyleSheet.create({
     elevation: 2,
     overflow: 'hidden',
   },
-
 
   infoView: {
     flex: 1,
@@ -98,16 +86,10 @@ const styles = StyleSheet.create({
   },
   header: {
     height: '8%',
-    backgroundColor: '#0d159e',
-    justifyContent: 'center'
+    backgroundColor: '#1c1bad',
+    justifyContent: 'center',
   },
 
-  Image: {
-    width: 50,
-    height: 50,
-    alignSelf: 'center'
-    // marginTop:10,
-  },
   buttonView: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -125,7 +107,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 5,
     width: 160,
-    color: '#fff'
-  }
-})
-
+    color: '#fff',
+  },
+});

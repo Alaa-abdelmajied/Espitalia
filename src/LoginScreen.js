@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import Svg, { Path, stop, defs, linearGradient } from 'react-native-svg';
 
@@ -47,28 +48,25 @@ export default function Login({ navigation, route }) {
     // })
   }
 
+export default function Login({navigation, route}) {
   return (
     // <ScrollView>
     <View style={styles.Body}>
-
       <View style={styles.WaveHeader}>
         <Svg
         // height={200}
         // width={Dimensions.get('screen').width}
         >
           <Path
-            fill="#0d159e"
-            d='M0,192L60,170.7C120,149,240,107,360,112C480,117,600,171,720,197.3C840,224,960,224,1080,208C1200,192,1320,160,1380,144L1440,128L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z'
+            fill="#1c1bad"
+            d="M0,192L60,170.7C120,149,240,107,360,112C480,117,600,171,720,197.3C840,224,960,224,1080,208C1200,192,1320,160,1380,144L1440,128L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z"
           />
-
         </Svg>
       </View>
 
       <View style={styles.RegisterRegion}>
         <View style={styles.RegisterCard}>
-          <Text style={styles.TitleText}>
-            Sign In
-          </Text>
+          <Text style={styles.TitleText}>Sign In</Text>
           <View style={styles.InputsRegion}>
             <TextInput style={styles.Input} placeholder="Enter your username or email"
               onChangeText={text => setEmail(text)}></TextInput>
@@ -82,26 +80,28 @@ export default function Login({ navigation, route }) {
             <Pressable style={styles.RegisterButton} onPress={onPressHandler}>
               <Text style={[styles.buttonText, { color: '#fff' }]}>Sign In</Text>
             </Pressable>
-            {!route.params.staff ?
-              <View style={{ flexDirection: 'row', margin: '5%' }}>
-                <Text style={styles.QuestionText}>Don't have an account yet? </Text>
+            {!route.params.staff ? (
+              <View style={{flexDirection: 'row', margin: '5%'}}>
+                <Text style={styles.QuestionText}>
+                  Don't have an account yet?{' '}
+                </Text>
 
                 <Pressable onPress={() => navigation.navigate('SignUp')}>
-                  <Text style={{ color: '#1c1bad', textDecorationLine: 'underline' }}>Sign Up</Text>
+                  <Text
+                    style={{color: '#1c1bad', textDecorationLine: 'underline'}}>
+                    Sign Up
+                  </Text>
                 </Pressable>
-
-              </View> : null
-            }
+              </View>
+            ) : null}
           </View>
         </View>
       </View>
     </View>
     // </ScrollView>
     // </ImageBackground>
-  )
+  );
 }
-
-
 
 const styles = StyleSheet.create({
   Body: {
@@ -120,17 +120,22 @@ const styles = StyleSheet.create({
 
   RegisterRegion: {
     // flex: 2,
-    marginTop: '10%',
+    // marginTop: '10%',
+    width: '100%',
+
+    // justifyContent:'center',
+    // alignSelf: 'center',
+    // alignItems: 'center',
     // backgroundColor: '#0e3de8'
   },
 
   TitleText: {
     color: '#000',
     fontSize: 25,
-    margin: '5%',
+    margin: 10,
     fontWeight: 'bold',
     textAlign: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
 
   // RegisterCard: {
@@ -152,7 +157,7 @@ const styles = StyleSheet.create({
   InputsRegion: {
     // backgroundColor: '#7a94f0',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
 
   Input: {
@@ -164,7 +169,7 @@ const styles = StyleSheet.create({
     margin: '3%',
     backgroundColor: '#fff',
     shadowColor: '#000000',
-    shadowOffset: { width: -1, height: 1 },
+    shadowOffset: {width: -1, height: 1},
     shadowOpacity: 0.2,
     shadowRadius: 1,
     elevation: 2,
@@ -200,7 +205,4 @@ const styles = StyleSheet.create({
   //   fontSize: 15,
   //   fontWeight: 'bold'
   // },
-
-
 });
-
