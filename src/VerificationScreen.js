@@ -1,14 +1,18 @@
-import React, {useState} from 'react';
-import {useRef} from 'react';
+import React, { useState } from 'react';
+import { useRef } from 'react';
 import {
   StyleSheet,
   Text,
   View,
 } from 'react-native';
 import OTPTextInput from 'react-native-otp-textinput';
-import Svg, {Path, stop, defs, linearGradient} from 'react-native-svg';
+import Svg, { Path, stop, defs, linearGradient } from 'react-native-svg';
 import Ioinicons from 'react-native-vector-icons/Ionicons';
-export default function OTP({navigation}) {
+export default function OTP({ navigation }) {
+  const [OTP, setOTP] = useState('');
+  const onPressHandler = () => {
+    console.log(OTP);
+  };
 
   return (
     <View style={styles.body}>
@@ -23,15 +27,17 @@ export default function OTP({navigation}) {
           />
         </Svg>
       </View>
-      <View style={{marginTop: '30%'}}>
+      <View style={{ marginTop: '30%' }}>
         <Text style={styles.text}> Enter the code sent to your email</Text>
-        <OTPTextInput textInputStyle={{borderWidth:2,borderRadius:251}} inputCount={5} tintColor="#1c1bad"></OTPTextInput>
+        <OTPTextInput textInputStyle={{ borderWidth: 2, borderRadius: 251 }} inputCount={5}
+          tintColor="#1c1bad" handleTextChange={text => setOTP(text)}
+        ></OTPTextInput>
         <Ioinicons
           name="checkmark-circle"
           size={55}
           color={'#1c1bad'}
-          style={{alignSelf: 'center', margin: 10}}
-          onPress={()=>navigation.navigate('Patient')}></Ioinicons>
+          style={{ alignSelf: 'center', margin: 10 }}
+          onPress={onPressHandler}></Ioinicons>
       </View>
     </View>
   );
