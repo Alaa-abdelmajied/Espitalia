@@ -1,17 +1,35 @@
-import React, { useState } from 'react';
-import { useRef } from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import React, {useState} from 'react';
+import {useRef} from 'react';
+import {StyleSheet, Text, View} from 'react-native';
 import OTPTextInput from 'react-native-otp-textinput';
-import Svg, { Path, stop, defs, linearGradient } from 'react-native-svg';
+import Svg, {Path, stop, defs, linearGradient} from 'react-native-svg';
 import Ioinicons from 'react-native-vector-icons/Ionicons';
-export default function OTP({ navigation }) {
+import axios from 'axios';
+
+export default function OTP({navigation}) {
   const [OTP, setOTP] = useState('');
+
   const onPressHandler = () => {
-    console.log(OTP);
+    axios
+      .post('http://192.168.1.10:3000/patient/verify', {
+        otp: OTP,
+        token:
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyNmEyODk3YTRiOWNiZDUxMDEzMTgzYyIsImlhdCI6MTY1MTg3NzUwNH0.mV5xpRU1jZKjD2CouJzURbOYZW3qMIzR4d8k1ILyaqU',
+        forgot: false,
+      })
+      .then(function (response) {
+        navigation.reset({
+          index: 0,
+          routes: [{name: 'Patient'}],
+        });
+      })
+      .catch(function (error) {
+        const err = error.response.data;
+        if (err == 'Wrong Otp') {
+          //alert otp
+          console.log('alert');
+        }
+      });
   };
 
   return (
@@ -27,22 +45,22 @@ export default function OTP({ navigation }) {
           />
         </Svg>
       </View>
-      <View style={{ marginTop: '30%' }}>
+      <View style={{marginTop: '30%'}}>
         <Text style={styles.text}> Enter the code sent to your email</Text>
-        <OTPTextInput textInputStyle={{ borderWidth: 2, borderRadius: 251 }} inputCount={5}
-          tintColor="#1c1bad" handleTextChange={text => setOTP(text)}
-        ></OTPTextInput>
+        <OTPTextInput
+          textInputStyle={{borderWidth: 2, borderRadius: 251}}
+          inputCount={5}
+          tintColor="#1c1bad"
+          handleTextChange={text => setOTP(text)}></OTPTextInput>
         <Ioinicons
           name="checkmark-circle"
           size={55}
           color={'#1c1bad'}
-          style={{ alignSelf: 'center', margin: 10 }}
+          style={{alignSelf: 'center', margin: 10}}
           onPress={onPressHandler}></Ioinicons>
       </View>
     </View>
   );
-
-  console.log(num);
 }
 
 const styles = StyleSheet.create({
