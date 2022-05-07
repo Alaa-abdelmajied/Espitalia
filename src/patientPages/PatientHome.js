@@ -1,4 +1,5 @@
-import React, {useState} from 'react';
+import axios from 'axios';
+import React, {useState, useEffect} from 'react';
 import {
   StyleSheet,
   Text,
@@ -13,8 +14,23 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 export default function PatientHome({navigation}) {
+  
   const [defaultRating, setDefaultRating] = useState(2);
   const [maxRating] = useState([1, 2, 3, 4, 5]);
+
+  const [homepageData, setHomepageData] = useState([]);
+
+  useEffect(() => {
+    const displayHomepage = async () => {
+      await axios
+        .get('http://192.168.1.10:3000/patient/homepage')
+        .then(response => setHomepageData(response.data))
+        .catch(function (error) {
+          console.log(error.message);
+        });
+    };
+    displayHomepage();
+  }, []);
 
   const onPressHospitals = () => {
     navigation.navigate('SpecializationScreen');
@@ -27,53 +43,52 @@ export default function PatientHome({navigation}) {
   const seeAllDoctors = () => {
     navigation.navigate('DoctorList');
   };
-
   const seeAllHospitals = () => {
     navigation.navigate('HospitalList');
   };
 
-  const homepageData = [
-    {
-      key: 1,
-      drName: 'Alaa Abdelmajied',
-      speciality: 'Dermatologist',
-      hName: 'Al Andalusia Hospital',
-      address: '6 smouha st.',
-      image: require('../../images/andalusiahospital.png'),
-    },
-    {
-      key: 2,
-      drName: 'Ali Ghazal',
-      speciality: 'Psychiatrist',
-      hName: 'German Hospital',
-      address: '6 gleem st.',
-      image: require('../../images/germanhospital.jpg'),
-    },
-    {
-      key: 3,
-      drName: 'Mayar Adel',
-      speciality: 'Dentist',
-      hName: 'Royal Hospital',
-      address: '6 ibrahmia st.',
-      image: require('../../images/royalhospital.png'),
-    },
-    {
-      key: 4,
-      drName: 'Omar Shalaby',
-      speciality: 'Cardiologist',
-      hName: 'Alex Hospital',
-      address: '6 camp shizar st.',
-      image: require('../../images/alexhospital.png'),
-    },
-    {
-      key: 5,
-      drName: 'Nadeen Elgazar',
-      speciality: 'Gynaecologist',
-      hName: 'ICC Hospital',
-      address: '6 smouha st.',
-      image: require('../../images/icchospital.png'),
-    },
-  ];
+  // const homepage = [
+  //   {
+  //     key: 1,
+  //     drName: 'Alaa Abdelmajied',
+  //     speciality: 'Dermatologist',
+  //     hName: 'Al Andalusia Hospital',
+  //     address: '6 smouha st.',
+  //     image: require('../../images/andalusiahospital.png'),
+  //   },
+  //   {
+  //     key: 2,
+  //     drName: 'Ali Ghazal',
+  //     speciality: 'Psychiatrist',
+  //     hName: 'German Hospital',
+  //     address: '6 gleem st.',
+  //     image: require('../../images/germanhospital.jpg'),
+  //   },
+  //   {
+  //     key: 3,
+  //     drName: 'Mayar Adel',
+  //     speciality: 'Dentist',
+  //     hName: 'Royal Hospital',
+  //     address: '6 ibrahmia st.',
+  //     image: require('../../images/royalhospital.png'),
+  //   },
+  //   {
+  //     key: 4,
+  //     drName: 'Omar Shalaby',
+  //     speciality: 'Cardiologist',
+  //     hName: 'Alex Hospital',
+  //     address: '6 camp shizar st.',
+  //     image: require('../../images/alexhospital.png'),
+  //   },
+  //   {
+  //     key: 5,
+  //     drName: 'Nadeen Elgazar',
+  //     speciality: 'Gynaecologist',
+  //     hName: 'ICC Hospital',
+  //     address: '6 smouha st.',
+  //     image: require('../../images/icchospital.png'),
+  //   },
+  // ];
 
   return (
     <View style={styles.container}>
@@ -106,7 +121,7 @@ export default function PatientHome({navigation}) {
                 {/* </View> */}
               </View>
               <View style={styles.hospital_content}>
-                <Image style={styles.hospitalImg} source={card.image}></Image>
+                {/* <Image style={styles.hospitalImg} source={card.image}></Image> */}
                 <View style={{flexDirection: 'row', alignItems: 'center'}}>
                   <Ionicons
                     name={'location-sharp'}
