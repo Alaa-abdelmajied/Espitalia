@@ -15,11 +15,13 @@ const HospitalsCard = ({card, navigation}) => {
         colors={['#1c1bad', '#4b7af2', '#0d369e']}
         style={styles.card_header}>
         <View style={styles.textView}>
-          <Text style={styles.name}> {card.hName} </Text>
+          <Text style={styles.name}> {card.hospitalName} </Text>
         </View>
       </LinearGradient>
       <View style={styles.hospital_content}>
-        <Image style={styles.hospitalImg} source={card.image}></Image>
+        <Image
+          style={styles.hospitalImg}
+          source={require('../images/andalusiahospital.png')}></Image>
         <View style={{flexDirection: 'column', alignItems: 'center'}}>
           <Ionicons
             name={'md-location-sharp'}

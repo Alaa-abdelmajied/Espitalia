@@ -23,26 +23,20 @@ const DoctorsCard = ({card, maxRating, defaultRating, navigation}) => {
       </View>
       <View style={styles.card_content}>
         <View style={styles.place}>
-          {/* <Image
-            style={styles.icon}
-            source={require('../images/hospital.png')}></Image> */}
           <FontAwesome
             name={'hospital-o'}
             size={30}
             color="#1c1bad"
             style={{margin: 10}}></FontAwesome>
-          <Text style={styles.hospital}>{card.hName}</Text>
+          <Text style={styles.hospital}>{card.doctorHospitalName}</Text>
         </View>
         <View style={styles.place}>
-          {/* <Image
-            style={styles.icon}
-            source={require('../images/location.png')}></Image> */}
           <Ionicons
             name={'location-sharp'}
             size={30}
             color="#1c1bad"
             style={{margin: 10}}></Ionicons>
-          <Text style={styles.hospital}>{card.address}</Text>
+          <Text style={styles.hospital}>{card.doctorHospitalAddress}</Text>
         </View>
         <View style={styles.customRatingBar}>
           {maxRating.map((item, key) => {

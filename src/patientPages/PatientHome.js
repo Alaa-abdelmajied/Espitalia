@@ -14,7 +14,6 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 export default function PatientHome({navigation}) {
-  
   const [defaultRating, setDefaultRating] = useState(2);
   const [maxRating] = useState([1, 2, 3, 4, 5]);
 
@@ -117,7 +116,7 @@ export default function PatientHome({navigation}) {
               onPress={onPressHospitals}>
               <View style={styles.card_header}>
                 {/* <View style={styles.textView}> */}
-                <Text style={styles.name}> {card.hName} </Text>
+                <Text style={styles.name}> {card.hospitalName} </Text>
                 {/* </View> */}
               </View>
               <View style={styles.hospital_content}>
@@ -128,7 +127,7 @@ export default function PatientHome({navigation}) {
                     size={25}
                     color="#1c1bad"
                     style={{margin: 10}}></Ionicons>
-                  <Text style={styles.cardText}>{card.address}</Text>
+                  <Text style={styles.cardText}>{card.hospitalAddress}</Text>
                 </View>
               </View>
             </TouchableOpacity>
@@ -171,7 +170,7 @@ export default function PatientHome({navigation}) {
                     size={30}
                     color="#1c1bad"
                     style={{margin: 10}}></FontAwesome>
-                  <Text style={styles.cardText}>{card.hName}</Text>
+                  <Text style={styles.cardText}>{card.doctorHospitalName}</Text>
                 </View>
                 <View style={styles.place}>
                   <Ionicons
@@ -179,7 +178,9 @@ export default function PatientHome({navigation}) {
                     size={30}
                     color="#1c1bad"
                     style={{margin: 10}}></Ionicons>
-                  <Text style={styles.cardText}>{card.address}</Text>
+                  <Text style={styles.cardText}>
+                    {card.doctorHospitalAddress}
+                  </Text>
                 </View>
                 <View style={styles.customRatingBar}>
                   {maxRating.map((item, key) => {
