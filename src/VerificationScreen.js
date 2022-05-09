@@ -1,26 +1,28 @@
-import React, {useState} from 'react';
-import {useRef} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import React, { useState } from 'react';
+import { useRef } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 import OTPTextInput from 'react-native-otp-textinput';
-import Svg, {Path, stop, defs, linearGradient} from 'react-native-svg';
+import Svg, { Path, stop, defs, linearGradient } from 'react-native-svg';
 import Ioinicons from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import { Server_URL, Token_Secret } from "@env";
 
-export default function OTP({navigation}) {
+
+export default function OTP({ navigation }) {
   const [OTP, setOTP] = useState('');
 
-  const onPressHandler = () => {
+  const onPressHandler = async () => {
     axios
-      .post('http://192.168.1.10:3000/patient/verify', {
+      .post(Server_URL + ':3000/patient/verify', {
         otp: OTP,
-        token:
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyNmEyODk3YTRiOWNiZDUxMDEzMTgzYyIsImlhdCI6MTY1MTg3NzUwNH0.mV5xpRU1jZKjD2CouJzURbOYZW3qMIzR4d8k1ILyaqU',
+        token: JSON.parse(await EncryptedStorage.getItem(Token_Secret)).token,
         forgot: false,
       })
       .then(function (response) {
         navigation.reset({
           index: 0,
-          routes: [{name: 'Patient'}],
+          routes: [{ name: 'Patient' }],
         });
       })
       .catch(function (error) {
@@ -45,10 +47,10 @@ export default function OTP({navigation}) {
           />
         </Svg>
       </View>
-      <View style={{marginTop: '30%'}}>
+      <View style={{ marginTop: '30%' }}>
         <Text style={styles.text}> Enter the code sent to your email</Text>
         <OTPTextInput
-          textInputStyle={{borderWidth: 2, borderRadius: 251}}
+          textInputStyle={{ borderWidth: 2, borderRadius: 251 }}
           inputCount={5}
           tintColor="#1c1bad"
           handleTextChange={text => setOTP(text)}></OTPTextInput>
@@ -56,7 +58,7 @@ export default function OTP({navigation}) {
           name="checkmark-circle"
           size={55}
           color={'#1c1bad'}
-          style={{alignSelf: 'center', margin: 10}}
+          style={{ alignSelf: 'center', margin: 10 }}
           onPress={onPressHandler}></Ioinicons>
       </View>
     </View>

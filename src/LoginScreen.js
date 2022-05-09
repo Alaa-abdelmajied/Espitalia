@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import Svg, { Path, stop, defs, linearGradient } from 'react-native-svg';
 
-import { StyleSheet, Text, View, TextInput, Pressable } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Pressable, Alert, BackHandler } from 'react-native';
 
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { Server_URL, Token_Secret, Credintials_Secret } from "@env"
+import { Server_URL, Token_Secret, Credintials_Secret } from "@env";
 
 export default function Login({ navigation, route }) {
   const [email, setEmail] = useState('');
@@ -29,12 +29,8 @@ export default function Login({ navigation, route }) {
               password: password
             }));
         } catch (err) {
-          //error
+          Alert.alert('Error', err.code, [{ text: 'Exit', onPress: () => BackHandler.exitApp() }]);
         }
-        // const tokenVar = await EncryptedStorage.getItem(Token_Secret);
-        // const cred = await EncryptedStorage.getItem(Credintials_Secret);
-        // console.log(tokenVar);
-        // console.log(cred);
         if (verified) {
           navigation.reset({
             index: 0,
