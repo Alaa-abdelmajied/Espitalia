@@ -17,6 +17,8 @@ export default function Doctors({navigation, route}) {
 
   const [doctors, setDoctors] = useState([]);
   useEffect(() => {
+    console.log(Server_URL);
+
     if (isAllDoctors) {
       const seeAllDoctors = async () => {
         await axios
@@ -29,9 +31,11 @@ export default function Doctors({navigation, route}) {
       seeAllDoctors();
     } else {
       const getDoctors = async () => {
+        console.log(Server_URL);
+
         await axios
           .get(
-            `http://192.168.1.10:3000/patient/pressOnHospitalThenSpecialization/${hospitalID}/${specialization}`,
+            `${Server_URL}:3000/patient/pressOnHospitalThenSpecialization/${hospitalID}/${specialization}`,
           )
           .then(response => {
             setDoctors(response.data);
