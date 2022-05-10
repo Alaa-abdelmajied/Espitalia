@@ -16,7 +16,6 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 export default function PatientHome({navigation}) {
   const [defaultRating, setDefaultRating] = useState(2);
   const [maxRating] = useState([1, 2, 3, 4, 5]);
-
   const [homepageData, setHomepageData] = useState([]);
 
   useEffect(() => {
@@ -40,7 +39,7 @@ export default function PatientHome({navigation}) {
   };
 
   const seeAllDoctors = () => {
-    navigation.navigate('DoctorList');
+    navigation.navigate('DoctorList', {isAllDoctors: true});
   };
   const seeAllHospitals = () => {
     navigation.navigate('HospitalList');

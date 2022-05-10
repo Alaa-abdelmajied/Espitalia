@@ -102,7 +102,7 @@ export default function Hospitals({navigation}) {
           return item.hospitalID;
         }}
         renderItem={({item}) => {
-          return <HospitalsCard card={item} navigation={navigation} />;
+          return <HospitalsCard card={item} navigation={navigation}/>;
         }}
       />
     </View>

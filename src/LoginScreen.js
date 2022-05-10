@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import Svg, {Path, stop, defs, linearGradient} from 'react-native-svg';
+import Svg, {Path} from 'react-native-svg';
 
 import {StyleSheet, Text, View, TextInput, Pressable} from 'react-native';
 
@@ -25,7 +25,6 @@ export default function Login({navigation, route}) {
             routes: [{name: 'Patient'}],
           });
         } else {
-
           navigation.navigate('OTP');
           //save token
           //otp page
@@ -47,10 +46,7 @@ export default function Login({navigation, route}) {
     // <ScrollView>
     <View style={styles.Body}>
       <View style={styles.WaveHeader}>
-        <Svg
-        // height={200}
-        // width={Dimensions.get('screen').width}
-        >
+        <Svg>
           <Path
             fill="#1c1bad"
             d="M0,192L60,170.7C120,149,240,107,360,112C480,117,600,171,720,197.3C840,224,960,224,1080,208C1200,192,1320,160,1380,144L1440,128L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z"
@@ -82,7 +78,7 @@ export default function Login({navigation, route}) {
             {!route.params.staff ? (
               <View style={{flexDirection: 'row', margin: '5%'}}>
                 <Text style={styles.QuestionText}>
-                  Don't have an account yet?{' '}
+                  Don't have an account yet?
                 </Text>
 
                 <Pressable onPress={() => navigation.navigate('SignUp')}>

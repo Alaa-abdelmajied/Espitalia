@@ -1,23 +1,64 @@
 import React, {useState, useEffect} from 'react';
-import {View, FlatList} from 'react-native';
+import {View, FlatList, Pressable, Text} from 'react-native';
 import DoctorsCard from '../../utils/DoctorsCard';
 import {SearchBar} from 'react-native-elements';
 import axios from 'axios';
 
-export default function Doctors({navigation}) {
-  const [allDoctors, setAllDoctors] = useState([]);
+export default function Doctors({navigation, route}) {
+  const {
+    hospitalID,
+    specialization,
+    hospitalName,
+    hospitalAddress,
+    isAllDoctors,
+  } = route.params;
+  // const [allDoctors, setAllDoctors] = useState([]);
 
+  const [doctors, setDoctors] = useState([]);
   useEffect(() => {
-    const seeAllDoctors = async () => {
-      await axios
-        .get('http://192.168.1.10:3000/patient/allDoctors')
-        .then(response => setAllDoctors(response.data))
-        .catch(function (error) {
-          console.log(error.message);
-        });
-    };
-    seeAllDoctors();
+    if (isAllDoctors) {
+      const seeAllDoctors = async () => {
+        await axios
+          .get('http://192.168.1.10:3000/patient/allDoctors')
+          .then(response => setDoctors(response.data))
+          .catch(function (error) {
+            console.log(error.message);
+          });
+      };
+      seeAllDoctors();
+    } else {
+      const getDoctors = async () => {
+        await axios
+          .get(
+            `http://192.168.1.10:3000/patient/pressOnHospitalThenSpecialization/${hospitalID}/${specialization}`,
+          )
+          .then(response => {
+            setDoctors(response.data);
+          })
+          .catch(function (error) {
+            console.log(error.message);
+          });
+      };
+      getDoctors();
+    }
   }, []);
+
+  // useEffect(() => {
+  //   const getDoctors = async () => {
+  //     console.log(hospitalName, hospitalAddress);
+  //     await axios
+  //       .get(
+  //         `http://192.168.1.10:3000/patient/pressOnHospitalThenSpecialization/${hospitalID}/${specialization}`,
+  //       )
+  //       .then(response => {
+  //         setDoctors(response.data);
+  //       })
+  //       .catch(function (error) {
+  //         console.log(error.message);
+  //       });
+  //   };
+  //   getDoctors();
+  // }, []);
 
   const [defaultRating, setDefaultRating] = useState(2);
   const [maxRating, setMaxRating] = useState([1, 2, 3, 4, 5]);
@@ -104,7 +145,7 @@ export default function Doctors({navigation}) {
   // ];
 
   return (
-    <View style={{flex: 1, justifyContent: 'center'}}>
+    <View style={{flex: 1, justifyContent: 'center', flexDirection: 'column'}}>
       <SearchBar
         lightTheme={true}
         placeholder="search"
@@ -124,11 +165,11 @@ export default function Doctors({navigation}) {
             />
           );
         })}
-      </ScrollView> */}
+      </ScrollView>  */}
       <FlatList
-        data={allDoctors}
+        data={doctors}
         keyExtractor={item => {
-          return item.drID;
+          return item._id;
         }}
         renderItem={({item}) => {
           return (
@@ -137,6 +178,12 @@ export default function Doctors({navigation}) {
               maxRating={maxRating}
               defaultRating={defaultRating}
               navigation={navigation}
+              hospitalName={
+                isAllDoctors ? item.doctorHospitalName : hospitalName
+              }
+              hospitalAddress={
+                isAllDoctors ? item.doctorHospitalAddress : hospitalAddress
+              }
             />
           );
         }}

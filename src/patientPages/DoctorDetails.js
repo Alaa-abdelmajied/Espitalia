@@ -17,87 +17,87 @@ import {
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-const appointments = [
-  {
-    key: 1,
-    date: 'Thurs. 9/3/2022',
-    from: '14:00',
-    to: '16:00',
-    color: '#1c1bad',
-  },
-  {
-    key: 2,
-    date: 'Sat. 11/3/2022',
-    from: '11:00',
-    to: '17:00',
-    color: '#1c1bad',
-  },
-  {
-    key: 3,
-    date: 'Sun. 12/3/2022',
-    from: '11:00',
-    to: '17:00',
-    color: '#1c1bad',
-  },
-  {
-    key: 4,
-    date: 'Tues. 14/3/2022',
-    from: '16:00',
-    to: '19:00',
-    color: '#1c1bad',
-  },
-  {
-    key: 5,
-    date: 'Wed.: 15/3/2022',
-    from: '16:00',
-    to: '19:00',
-    color: '#1c1bad',
-  },
-];
-
-const review = [
-  {
-    key: 1,
-    reviewer_name: 'Maram Ghazal',
-    date: '9/3/2022',
-    review:
-      'Hello, this is my first review, why dont you try to add some important features like telegeram like: separete tabs for audio, video and photo',
-  },
-  {
-    key: 2,
-    reviewer_name: 'Alaa Abdelmajied',
-    date: '11/3/2022',
-    review:
-      'Hello, this is my first review, why dont you try to add some important features like telegeram',
-  },
-  {
-    key: 3,
-    reviewer_name: 'Mayar Adel',
-    date: '12/3/2022',
-    review: 'Hello, this is my first review',
-  },
-  {
-    key: 4,
-    reviewer_name: 'Nadeen Elgazar',
-    date: '14/3/2022',
-    review: 'I dont like this style btw',
-  },
-  {
-    key: 5,
-    reviewer_name: 'Omar Shalaby',
-    date: '15/3/2022',
-    review: 'This is too much scrolling',
-  },
-];
-
 export default function ProfileScreen() {
+  const appointments = [
+    {
+      key: 1,
+      date: 'Thurs. 9/3/2022',
+      from: '14:00',
+      to: '16:00',
+      color: '#1c1bad',
+    },
+    {
+      key: 2,
+      date: 'Sat. 11/3/2022',
+      from: '11:00',
+      to: '17:00',
+      color: '#1c1bad',
+    },
+    {
+      key: 3,
+      date: 'Sun. 12/3/2022',
+      from: '11:00',
+      to: '17:00',
+      color: '#1c1bad',
+    },
+    {
+      key: 4,
+      date: 'Tues. 14/3/2022',
+      from: '16:00',
+      to: '19:00',
+      color: '#1c1bad',
+    },
+    {
+      key: 5,
+      date: 'Wed.: 15/3/2022',
+      from: '16:00',
+      to: '19:00',
+      color: '#1c1bad',
+    },
+  ];
+
+  const review = [
+    {
+      key: 1,
+      reviewer_name: 'Maram Ghazal',
+      date: '9/3/2022',
+      review:
+        'Hello, this is my first review, why dont you try to add some important features like telegeram like: separete tabs for audio, video and photo',
+    },
+    {
+      key: 2,
+      reviewer_name: 'Alaa Abdelmajied',
+      date: '11/3/2022',
+      review:
+        'Hello, this is my first review, why dont you try to add some important features like telegeram',
+    },
+    {
+      key: 3,
+      reviewer_name: 'Mayar Adel',
+      date: '12/3/2022',
+      review: 'Hello, this is my first review',
+    },
+    {
+      key: 4,
+      reviewer_name: 'Nadeen Elgazar',
+      date: '14/3/2022',
+      review: 'I dont like this style btw',
+    },
+    {
+      key: 5,
+      reviewer_name: 'Omar Shalaby',
+      date: '15/3/2022',
+      review: 'This is too much scrolling',
+    },
+  ];
+
+  const [defaultRating, setDefaultRating] = useState(2);
+  const [maxRating, setMaxRating] = useState([1, 2, 3, 4, 5]);
+
   const scrollX = useRef(new Animated.Value(0)).current;
 
   let {width: windowWidth, height: windowHeight} = useWindowDimensions();
   windowHeight = windowHeight - 300;
-
-  const [defaultRating, setDefaultRating] = useState(2);
-  const [maxRating, setMaxRating] = useState([1, 2, 3, 4, 5]);
 
   return (
     <ScrollView>
@@ -122,12 +122,12 @@ export default function ProfileScreen() {
                 Working at Andalusia Hospital
               </Text>
             </View>
-            <View style={styles.customRatingBar}>
+            {/* <View style={styles.customRatingBar}>
               {maxRating.map((item, key) => {
                 return (
                   <TouchableOpacity
                     activeOpacity={0.7}
-                    key={key}
+                    key={i + 1}
                     onPress={() => setDefaultRating(item)}>
                     <FontAwesome
                       name={item <= defaultRating ? 'star' : 'star-o'}
@@ -137,7 +137,7 @@ export default function ProfileScreen() {
                   </TouchableOpacity>
                 );
               })}
-            </View>
+            </View> */}
           </View>
         </View>
         <View style={styles.appointmentsContainer}>
@@ -153,8 +153,8 @@ export default function ProfileScreen() {
             scrollEventThrottle={16}>
             {appointments.map((card, cardIndex) => {
               return (
-                <Animated.View style={{width: windowWidth}} key={cardIndex}>
-                  <View style={styles.scheduleCard} key={cardIndex}>
+                <Animated.View style={{width: windowWidth}} key={card.key}>
+                  <View style={styles.scheduleCard}>
                     <View style={styles.dateHeader}>
                       <Text style={{color: '#fff', fontSize: 20}}>
                         {card.date}
@@ -278,7 +278,7 @@ export default function ProfileScreen() {
                 }}>
                 <View
                   style={{height: 150, width: '97%', alignSelf: 'center'}}
-                  key={cardIndex}>
+                  key={reviewCard.key}>
                   <View style={{flexDirection: 'row'}}>
                     <Text style={styles.name}>{reviewCard.reviewer_name}</Text>
                     <Text style={styles.name}>{reviewCard.date}</Text>
