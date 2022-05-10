@@ -3,7 +3,14 @@ import {StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
 
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-const DoctorsCard = ({card, maxRating, defaultRating, navigation}) => {
+const DoctorsCard = ({
+  card,
+  maxRating,
+  defaultRating,
+  navigation,
+  hospitalName,
+  hospitalAddress,
+}) => {
   const onPress = () => {
     navigation.navigate('DoctorDetails');
   };
@@ -17,32 +24,30 @@ const DoctorsCard = ({card, maxRating, defaultRating, navigation}) => {
             uri: 'https://bootdey.com/img/Content/avatar/avatar6.png',
           }}></Image>
         <View style={styles.textView}>
-          <Text style={styles.name}>Dr. {card.drName}</Text>
-          <Text style={styles.speciality}>{card.speciality}</Text>
+          <Text style={styles.name}>Dr. {card.name}</Text>
+          <Text style={styles.speciality}>{card.specialization}</Text>
         </View>
       </View>
       <View style={styles.card_content}>
-        <View style={styles.place}>
-          {/* <Image
-            style={styles.icon}
-            source={require('../images/hospital.png')}></Image> */}
+        <View style={styles.address}>
           <FontAwesome
             name={'hospital-o'}
             size={30}
             color="#1c1bad"
             style={{margin: 10}}></FontAwesome>
-          <Text style={styles.hospital}>{card.hName}</Text>
+          <View style={{flex: 1}}>
+            <Text style={styles.hospital}>{hospitalName}</Text>
+          </View>
         </View>
-        <View style={styles.place}>
-          {/* <Image
-            style={styles.icon}
-            source={require('../images/location.png')}></Image> */}
+        <View style={styles.address}>
           <Ionicons
             name={'location-sharp'}
             size={30}
             color="#1c1bad"
             style={{margin: 10}}></Ionicons>
-          <Text style={styles.hospital}>{card.address}</Text>
+          <View style={{flex: 1}}>
+            <Text style={styles.hospital}>{hospitalAddress}</Text>
+          </View>
         </View>
         <View style={styles.customRatingBar}>
           {maxRating.map((item, key) => {
@@ -68,6 +73,7 @@ const DoctorsCard = ({card, maxRating, defaultRating, navigation}) => {
 
 const styles = StyleSheet.create({
   card: {
+    // flexDirection:'column',
     width: '95%',
     borderRadius: 15,
     overflow: 'hidden',
@@ -115,16 +121,19 @@ const styles = StyleSheet.create({
   },
 
   card_content: {
-    justifyContent: 'space-evenly',
+    flexDirection: 'column',
   },
 
-  place: {
+  address: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  icon: {
-    margin: '3%',
+
+  addressInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
+
   hospital: {
     color: '#000',
     fontSize: 15,

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   StyleSheet,
   Text,
@@ -9,64 +9,84 @@ import {
   Modal,
   Pressable,
 } from 'react-native';
+import {FlatList} from 'react-native-gesture-handler';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import axios from 'axios';
 
 export default function Profile({navigation}) {
+  const [oldAppointments, setOldAppointments] = useState([]);
+  useEffect(() => {
+    const getOldAppointments = async () => {
+      await axios
+        .get(
+          'http://192.168.1.10:3000/patient/oldAppointment/626815e4419d4e945c124cf4',
+        )
+        .then(response => setOldAppointments(response.data))
+        .catch(function (error) {
+          console.log(error.message);
+        });
+    };
+    getOldAppointments();
+  }, []);
+
   const onPressReport = () => {
-    navigation.navigate('Report');
+    navigation.navigate('Report', {
+      appointmentID: oldAppointments[1].appointmentID,
+    });
+    console.log(oldAppointments[1].appointmentID);
   };
 
-  const [Items, setItems] = useState([
-    {
-      key: '1',
-      Hname: 'Middle East Hospital',
-      doctor: 'Ahmed',
-      specialization: 'Chest',
-      date: '15/3/2022',
-      resNum: 1,
-    },
-    {
-      key: '2',
-      Hname: 'ICC Hospital',
-      doctor: 'Maram',
-      specialization: 'physiotherapy',
-      date: '16/3/2022',
-      resNum: 2,
-    },
-    {
-      key: '3',
-      Hname: 'Al Andalusia Hospital',
-      doctor: 'Ali',
-      specialization: 'cardiology',
-      date: '19/3/2022',
-      resNum: 3,
-    },
-    {
-      key: '4',
-      Hname: 'Royal Hospital',
-      doctor: 'Alaa',
-      specialization: 'allergy',
-      date: '25/3/2022',
-      resNum: 4,
-    },
-    {
-      key: '5',
-      Hname: 'German Hospital',
-      doctor: 'Mayar',
-      specialization: 'chest',
-      date: '5/4/2022',
-      resNum: 5,
-    },
-    {
-      key: '6',
-      Hname: 'Alexandria International Hospital',
-      doctor: 'Nadeen',
-      specialization: 'dermatology',
-      date: '15/4/2022',
-      resNum: 6,
-    },
-  ]);
+  // const [Items, setItems] = useState([
+  //   {
+  //     key: '1',
+  //     Hname: 'Middle East Hospital',
+  //     doctor: 'Ahmed',
+  //     specialization: 'Chest',
+  //     date: '15/3/2022',
+  //     resNum: 1,
+  //   },
+  //   {
+  //     key: '2',
+  //     Hname: 'ICC Hospital',
+  //     doctor: 'Maram',
+  //     specialization: 'physiotherapy',
+  //     date: '16/3/2022',
+  //     resNum: 2,
+  //   },
+  //   {
+  //     key: '3',
+  //     Hname: 'Al Andalusia Hospital',
+  //     doctor: 'Ali',
+  //     specialization: 'cardiology',
+  //     date: '19/3/2022',
+  //     resNum: 3,
+  //   },
+  //   {
+  //     key: '4',
+  //     Hname: 'Royal Hospital',
+  //     doctor: 'Alaa',
+  //     specialization: 'allergy',
+  //     date: '25/3/2022',
+  //     resNum: 4,
+  //   },
+  //   {
+  //     key: '5',
+  //     Hname: 'German Hospital',
+  //     doctor: 'Mayar',
+  //     specialization: 'chest',
+  //     date: '5/4/2022',
+  //     resNum: 5,
+  //   },
+  //   {
+  //     key: '6',
+  //     Hname: 'Alexandria International Hospital',
+  //     doctor: 'Nadeen',
+  //     specialization: 'dermatology',
+  //     date: '15/4/2022',
+  //     resNum: 6,
+  //   },
+  // ]);
 
   const [showModal, setShowModal] = useState(false);
 
@@ -130,23 +150,48 @@ export default function Profile({navigation}) {
           </View>
           <View style={styles.lineStyle} />
           <Text style={styles.subtitle}>OLD RESERVATIONS</Text>
-          {Items.map((item, itemIndex) => {
+          {oldAppointments.map((item, itemIndex) => {
             return (
               <TouchableOpacity
                 style={styles.appointmentsCard}
                 key={itemIndex}
                 onPress={onPressReport}>
                 <Text style={styles.infoText}>
-                  Hospital Name: {item.Hname}{' '}
+                  Hospital Name: {item.hospitalName}
                 </Text>
-                <Text style={styles.infoText}>Doctor Name: {item.doctor} </Text>
+                <Text style={styles.infoText}>Doctor Name: {item.drName} </Text>
                 <Text style={styles.infoText}>
-                  Specialization: {item.specialization}{' '}
+                  Specialization: {item.specialization}
                 </Text>
                 <Text style={styles.infoText}>Date: {item.date} </Text>
               </TouchableOpacity>
             );
           })}
+
+          {/* <FlatList
+            data={Items}
+            keyExtractor={item => {
+              return item.key;
+            }}
+            renderItem={({item}) => {
+              return (
+                <TouchableOpacity
+                  style={styles.appointmentsCard}
+                  onPress={onPressReport}>
+                  <Text style={styles.infoText}>
+                    Hospital Name: {item.Hname}{' '}
+                  </Text>
+                  <Text style={styles.infoText}>
+                    Doctor Name: {item.doctor}{' '}
+                  </Text>
+                  <Text style={styles.infoText}>
+                    Specialization: {item.specialization}{' '}
+                  </Text>
+                  <Text style={styles.infoText}>Date: {item.date} </Text>
+                </TouchableOpacity>
+              );
+            }}
+          /> */}
         </View>
       </View>
     </ScrollView>

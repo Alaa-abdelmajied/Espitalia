@@ -1,35 +1,63 @@
-import React, {useState} from 'react';
-import {StyleSheet, Text, View, FlatList, TouchableOpacity} from 'react-native';
-
+import React, {useState, useEffect} from 'react';
+import {
+  StyleSheet,
+  Text,
+  View,
+  FlatList,
+  TouchableOpacity,
+  Alert,
+} from 'react-native';
 import {SearchBar} from 'react-native-elements';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import axios from 'axios';
 
-export default function Speciality({navigation}) {
-  const [search, setSearch] = useState('');
+export default function Speciality({navigation, route}) {
+  const [specialization, setSpecialization] = useState([]);
+  const {hospitalID, hospitalName, hospitalAddress} = route.params;
 
-  const updateSearch = search => {
-    setSearch(search);
-  };
+  useEffect(() => {
+    const getSpecializations = async () => {
+      await axios
+        .get(`http://192.168.1.10:3000/patient/pressOnHospital/${hospitalID}`)
+        .then(response => {
+          setSpecialization(response.data);
+        })
+        .catch(function (error) {
+          const err = error.response.data;
+          if (err == 'No specialzations found') {
+            //alert worng email or password
+            Alert.alert(err);
+            console.log(error.message);
+          } else if (err == 'No hospitals found') {
+          }
+        });
+    };
+    getSpecializations();
+  }, []);
 
-  const data = [
-    {id: 1, description: 'Dermatology'},
-    {id: 2, description: 'Dentistry'},
-    {id: 3, description: 'Psychiatry'},
-    {id: 4, description: 'Pediatrics and New Born'},
-    {id: 5, description: 'Neurology'},
-    {id: 6, description: 'Orthopedics'},
-    {id: 7, description: 'Gynaecology and Infertility'},
-    {id: 8, description: 'Ear, Nose and Throat'},
-    {id: 9, description: 'Cardiology and Vascular Disease'},
-    {id: 10, description: 'Allergy and Immunology'},
-    {id: 11, description: 'Andrology and Male Infertility'},
-    {id: 12, description: 'Audiology'},
-    {id: 13, description: 'Cardiology and Thoracic Surgery'},
-    {id: 14, description: 'Chest and Respiratory'},
-  ];
+  // const [search, setSearch] = useState('');
+  // const updateSearch = search => {
+  //   setSearch(search);
+  // };
 
-  const onPress = () => {
-    navigation.navigate('DoctorsScreen');
+  // useEffect(() => {
+  // const searchSpecialization = text => {
+  //   axios
+  //     .get(`http://192.168.1.10:3000/patient/searchSpecialization/${text}`)
+  //     .then(response => setSearch(response.data))
+  //     .catch(function (error) {
+  //       console.log(error.message);
+  //     });
+  // };
+
+  const onPress = (item) => {
+    navigation.navigate('DoctorsScreen', {
+      hospitalID: hospitalID,
+      specialization: item,
+      hospitalName: hospitalName,
+      hospitalAddress: hospitalAddress,
+      isAllDoctors: false,
+    });
   };
 
   return (
@@ -37,32 +65,20 @@ export default function Speciality({navigation}) {
       <SearchBar
         lightTheme={true}
         placeholder="search"
-        onChangeText={updateSearch}
-        value={search}
         containerStyle={{backgroundColor: '#f0f0f0'}}
+        // onChangeText={searchSpecialization}
+        // value={search}
         inputContainerStyle={{borderRadius: 50, backgroundColor: '#fff'}}
       />
-      {/* <View style={styles.header}>
-        <Image style={styles.Image} source={require('../images/app_logo-removebg-preview.png')}></Image>
-      </View> */}
       <FlatList
-        data={data}
-        keyExtractor={item => {
-          return item.id;
-        }}
+        keyExtractor={(item, index) => index.toString()}
+        data={specialization}
         renderItem={({item}) => {
           return (
             <TouchableOpacity
               style={styles.specializationCard}
-              onPress={onPress}>
-              {/* <View style={styles.specializationContainer} > */}
+              onPress={() => onPress(item)}>
               <View style={{justifyContent: 'center', alignItems: 'center'}}>
-                {/* <Image
-                  style={styles.image}
-                  source={{
-                    uri: 'https://w7.pngwing.com/pngs/996/486/png-transparent-health-care-internal-medicine-physician-family-medicine-health-logo-dentistry-medicine.png ',
-                  }}
-                /> */}
                 <FontAwesome
                   name={'stethoscope'}
                   size={40}
@@ -70,10 +86,8 @@ export default function Speciality({navigation}) {
                   style={{margin: 10}}></FontAwesome>
               </View>
               <View style={{flex: 2, justifyContent: 'center'}}>
-                <Text style={styles.speciality}>{item.description}</Text>
+                <Text style={styles.speciality}>{item}</Text>
               </View>
-
-              {/* </View> */}
             </TouchableOpacity>
           );
         }}

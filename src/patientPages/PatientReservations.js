@@ -1,51 +1,68 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {StyleSheet, Text, View, FlatList, Pressable, Image} from 'react-native';
+import axios from 'axios';
 
 export default function Reservation({navigation}) {
-  const [Items, setItems] = useState([
-    {
-      key: '1',
-      Hname: 'Middle East Hospital',
-      doctor: 'Ahmed',
-      date: '15/3/2022',
-      resNum: 1,
-    },
-    {
-      key: '2',
-      Hname: 'ICC Hospital',
-      doctor: 'Maram',
-      date: '16/3/2022',
-      resNum: 2,
-    },
-    {
-      key: '3',
-      Hname: 'Al Andalusia Hospital',
-      doctor: 'Ali',
-      date: '19/3/2022',
-      resNum: 3,
-    },
-    {
-      key: '4',
-      Hname: 'Royal Hospital',
-      doctor: 'Alaa',
-      date: '25/3/2022',
-      resNum: 4,
-    },
-    {
-      key: '5',
-      Hname: 'German Hospital',
-      doctor: 'Mayar',
-      date: '5/4/2022',
-      resNum: 5,
-    },
-    {
-      key: '6',
-      Hname: 'Alexandria International Hospital',
-      doctor: 'Nadeen',
-      date: '15/4/2022',
-      resNum: 6,
-    },
-  ]);
+  const [upcomingAppointments, setUpcomingAppointments] = useState([]);
+
+  useEffect(() => {
+    const getUpcomingAppointments = async () => {
+      await axios
+        .get(
+          'http://192.168.1.10:3000/patient/upcomingAppointment/626815e4419d4e945c124cf4',
+        )
+        .then(response => setUpcomingAppointments(response.data))
+        .catch(function (error) {
+          console.log(error.message);
+        });
+    };
+    getUpcomingAppointments();
+  }, []);
+
+  // const [Items, setItems] = useState([
+  //   {
+  //     key: '1',
+  //     Hname: 'Middle East Hospital',
+  //     doctor: 'Ahmed',
+  //     date: '15/3/2022',
+  //     resNum: 1,
+  //   },
+  //   {
+  //     key: '2',
+  //     Hname: 'ICC Hospital',
+  //     doctor: 'Maram',
+  //     date: '16/3/2022',
+  //     resNum: 2,
+  //   },
+  //   {
+  //     key: '3',
+  //     Hname: 'Al Andalusia Hospital',
+  //     doctor: 'Ali',
+  //     date: '19/3/2022',
+  //     resNum: 3,
+  //   },
+  //   {
+  //     key: '4',
+  //     Hname: 'Royal Hospital',
+  //     doctor: 'Alaa',
+  //     date: '25/3/2022',
+  //     resNum: 4,
+  //   },
+  //   {
+  //     key: '5',
+  //     Hname: 'German Hospital',
+  //     doctor: 'Mayar',
+  //     date: '5/4/2022',
+  //     resNum: 5,
+  //   },
+  //   {
+  //     key: '6',
+  //     Hname: 'Alexandria International Hospital',
+  //     doctor: 'Nadeen',
+  //     date: '15/4/2022',
+  //     resNum: 6,
+  //   },
+  // ]);
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -55,16 +72,19 @@ export default function Reservation({navigation}) {
       </View>
 
       <FlatList
-        data={Items}
+        data={upcomingAppointments}
+        // keyExtractor={item => {
+        //   return item.appointmentID;
+        // }}
         renderItem={({item}) => (
           <View style={styles.appointmentsCard}>
             <View style={styles.infoView}>
-              <Text style={styles.infoText}>Hospital Name: {item.Hname} </Text>
-              <Text style={styles.infoText}>Doctor Name: {item.doctor} </Text>
-              <Text style={styles.infoText}>Date: {item.date} </Text>
               <Text style={styles.infoText}>
-                Reservation Number: {item.resNum}{' '}
+                Hospital Name: {item.hospitalName}
               </Text>
+              <Text style={styles.infoText}>Doctor Name: {item.drName} </Text>
+              <Text style={styles.infoText}>Date: {item.date} </Text>
+              <Text style={styles.infoText}>Reservation No: {item.resNum}</Text>
             </View>
             <View style={styles.view2}>
               <View style={styles.numberView}>

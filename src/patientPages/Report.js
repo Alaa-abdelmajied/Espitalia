@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   StyleSheet,
   Text,
@@ -13,19 +13,34 @@ import {
 } from 'react-native';
 
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import axios from 'axios';
 
-export default function Report({navigation}) {
-  const [details, setDetails] = useState({
-    specialization: 'Chest',
-    doctor: 'Ahmed',
-    hospital: 'Middle East Hospital',
-    date: '15/3/2022',
-    diagnosis:
-      'Chronic Obstructive pulmonary disease, some of your airways are blocked making it hard for you to breathe',
-    prescription:
-      'Do not smoke. Avoid smoke, pollution, and extreme changes in temperature and humidity. Rest as needed.',
-  });
+export default function Report({route}) {
+  // const [details, setDetails] = useState({
+  //   specialization: 'Chest',
+  //   doctor: 'Ahmed',
+  //   hospital: 'Middle East Hospital',
+  //   date: '15/3/2022',
+  //   diagnosis:
+  //     'Chronic Obstructive pulmonary disease, some of your airways are blocked making it hard for you to breathe',
+  //   prescription:
+  //     'Do not smoke. Avoid smoke, pollution, and extreme changes in temperature and humidity. Rest as needed.',
+  // });
+
+  const {appointmentID} = route.params;
+  const [report, setReport] = useState([]);
+
+  useEffect(() => {
+    const selectReport = async () => {
+      await axios
+        .get(`http://192.168.1.10:3000/patient/report/${appointmentID}`)
+        .then(response => setReport(response.data))
+        .catch(function (error) {
+          console.log(error.message);
+        });
+    };
+    selectReport();
+  }, []);
 
   const [showModal, setShowModal] = useState(false);
   const [defaultRating, setDefaultRating] = useState(2);
@@ -77,12 +92,14 @@ export default function Report({navigation}) {
           source={require('../../images/app_logo-removebg-preview.png')}></Image>
       </View>
       <View style={{alignItems: 'center'}}>
-        <Text style={styles.infoText}> Hospital Name: {details.hospital} </Text>
-        <Text style={styles.infoText}>Doctor Name: {details.doctor} </Text>
         <Text style={styles.infoText}>
-          Specialization : {details.specialization}{' '}
+          Hospital Name: {report.hospitalName}
         </Text>
-        <Text style={styles.infoText}>Date : {details.date} </Text>
+        <Text style={styles.infoText}>Doctor Name: {report.drName} </Text>
+        <Text style={styles.infoText}>
+          Specialization: {report.specialization}
+        </Text>
+        <Text style={styles.infoText}>Date: {report.date} </Text>
         <Pressable
           style={styles.modalButton}
           onPress={() => setShowModal(true)}>
@@ -93,13 +110,13 @@ export default function Report({navigation}) {
       <Text style={styles.title}>Diagnosis</Text>
       <View style={styles.reportCard}>
         <ScrollView>
-          <Text style={styles.infoText}>{details.diagnosis} </Text>
+          <Text style={styles.infoText}>{report.diagnosis}</Text>
         </ScrollView>
       </View>
       <Text style={styles.title}>Prescription</Text>
       <View style={styles.reportCard}>
         <ScrollView>
-          <Text style={styles.infoText}>{details.prescription} </Text>
+          <Text style={styles.infoText}>{report.prescription}</Text>
         </ScrollView>
       </View>
       {/* <Pressable style={styles.modalButton} onPress={() => setShowModal(true)}>

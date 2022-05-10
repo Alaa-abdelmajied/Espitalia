@@ -100,7 +100,7 @@ export default function Questions({navigation}) {
             onPress={() =>
               navigation.reset({
                 index: 0,
-                routes: [{name: 'OTP'}],
+                routes: [{name: 'Patient'}],
               })
             }>
             <Text style={{color: '#fff'}}>Sign up</Text>
