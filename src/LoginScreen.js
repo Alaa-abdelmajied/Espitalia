@@ -1,40 +1,54 @@
 import React, {useState} from 'react';
 import Svg, {Path} from 'react-native-svg';
 
-import { StyleSheet, Text, View, TextInput, Pressable, Alert, BackHandler } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  TextInput,
+  Pressable,
+  Alert,
+  BackHandler,
+} from 'react-native';
 
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { Server_URL, Token_Secret, Credintials_Secret } from "@env";
+import {Server_URL, Token_Secret, Credintials_Secret} from '@env';
 
-export default function Login({ navigation, route }) {
+export default function Login({navigation, route}) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const onPressHandler = () => {
     //staff -> username -> search for keyword dr or recep or admin
     axios
-      .post(Server_URL + ':3000/patient/login', {
+      .post(`${Server_URL}:3000/patient/login`, {
         email: email,
-        password: password
+        password: password,
       })
       .then(async function (response) {
-        const { verified, token } = response.data;
+        const {verified, token} = response.data;
         try {
-          await EncryptedStorage.setItem(Token_Secret,
-            JSON.stringify({ token: token }));
-          await EncryptedStorage.setItem(Credintials_Secret,
+          await EncryptedStorage.setItem(
+            Token_Secret,
+            JSON.stringify({token: token}),
+          );
+          await EncryptedStorage.setItem(
+            Credintials_Secret,
             JSON.stringify({
               email: email,
-              password: password
-            }));
+              password: password,
+            }),
+          );
         } catch (err) {
-          Alert.alert('Error', err.code, [{ text: 'Exit', onPress: () => BackHandler.exitApp() }]);
+          Alert.alert('Error', err.code, [
+            {text: 'Exit', onPress: () => BackHandler.exitApp()},
+          ]);
         }
         if (verified) {
           navigation.reset({
             index: 0,
-            routes: [{ name: 'Patient' }],
+            routes: [{name: 'Patient'}],
           });
         } else {
           navigation.navigate('OTP');
@@ -83,17 +97,17 @@ export default function Login({ navigation, route }) {
             </Pressable>
 
             <Pressable style={styles.RegisterButton} onPress={onPressHandler}>
-              <Text style={[styles.buttonText, { color: '#fff' }]}>Sign In</Text>
+              <Text style={[styles.buttonText, {color: '#fff'}]}>Sign In</Text>
             </Pressable>
             {!route.params.staff ? (
-              <View style={{ flexDirection: 'row', margin: '5%' }}>
+              <View style={{flexDirection: 'row', margin: '5%'}}>
                 <Text style={styles.QuestionText}>
                   Don't have an account yet?
                 </Text>
 
                 <Pressable onPress={() => navigation.navigate('SignUp')}>
                   <Text
-                    style={{ color: '#1c1bad', textDecorationLine: 'underline' }}>
+                    style={{color: '#1c1bad', textDecorationLine: 'underline'}}>
                     Sign Up
                   </Text>
                 </Pressable>
@@ -174,7 +188,7 @@ const styles = StyleSheet.create({
     margin: '3%',
     backgroundColor: '#fff',
     shadowColor: '#000000',
-    shadowOffset: { width: -1, height: 1 },
+    shadowOffset: {width: -1, height: 1},
     shadowOpacity: 0.2,
     shadowRadius: 1,
     elevation: 2,

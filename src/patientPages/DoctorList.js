@@ -3,6 +3,7 @@ import {View, FlatList, Pressable, Text} from 'react-native';
 import DoctorsCard from '../../utils/DoctorsCard';
 import {SearchBar} from 'react-native-elements';
 import axios from 'axios';
+import {Server_URL} from '@env';
 
 export default function Doctors({navigation, route}) {
   const {
@@ -19,7 +20,7 @@ export default function Doctors({navigation, route}) {
     if (isAllDoctors) {
       const seeAllDoctors = async () => {
         await axios
-          .get('http://192.168.1.10:3000/patient/allDoctors')
+          .get(`${Server_URL}:3000/patient/allDoctors`)
           .then(response => setDoctors(response.data))
           .catch(function (error) {
             console.log(error.message);

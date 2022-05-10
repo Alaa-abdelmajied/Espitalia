@@ -10,6 +10,7 @@ import {
 import {SearchBar} from 'react-native-elements';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import axios from 'axios';
+import { Server_URL} from "@env";
 
 export default function Speciality({navigation, route}) {
   const [specialization, setSpecialization] = useState([]);
@@ -18,7 +19,7 @@ export default function Speciality({navigation, route}) {
   useEffect(() => {
     const getSpecializations = async () => {
       await axios
-        .get(`http://192.168.1.10:3000/patient/pressOnHospital/${hospitalID}`)
+        .get(`${Server_URL}:3000/patient/pressOnHospital/${hospitalID}`)
         .then(response => {
           setSpecialization(response.data);
         })

@@ -3,6 +3,7 @@ import {ScrollView, StyleSheet, View, FlatList} from 'react-native';
 import HospitalsCard from '../../utils/HospitalsCard';
 import {SearchBar} from 'react-native-elements';
 import axios from 'axios';
+import {Server_URL} from '@env';
 
 export default function Hospitals({navigation}) {
   const [allHospitals, setAllHospitals] = useState([]);
@@ -10,7 +11,7 @@ export default function Hospitals({navigation}) {
   useEffect(() => {
     const seeAllHospitals = async () => {
       await axios
-        .get('http://192.168.1.10:3000/patient/allHospitals')
+        .get(`${Server_URL}:3000/patient/allHospitals`)
         .then(response => setAllHospitals(response.data))
         .catch(function (error) {
           console.log(error.message);
@@ -102,7 +103,7 @@ export default function Hospitals({navigation}) {
           return item.hospitalID;
         }}
         renderItem={({item}) => {
-          return <HospitalsCard card={item} navigation={navigation}/>;
+          return <HospitalsCard card={item} navigation={navigation} />;
         }}
       />
     </View>

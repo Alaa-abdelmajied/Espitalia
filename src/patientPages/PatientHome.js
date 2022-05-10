@@ -12,6 +12,7 @@ import {
 
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import {Server_URL} from '@env';
 
 export default function PatientHome({navigation}) {
   const [defaultRating, setDefaultRating] = useState(2);
@@ -21,7 +22,7 @@ export default function PatientHome({navigation}) {
   useEffect(() => {
     const displayHomepage = async () => {
       await axios
-        .get('http://192.168.1.10:3000/patient/homepage')
+        .get(`${Server_URL}:3000/patient/homepage`)
         .then(response => setHomepageData(response.data))
         .catch(function (error) {
           console.log(error.message);

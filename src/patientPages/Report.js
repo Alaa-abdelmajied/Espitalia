@@ -8,32 +8,21 @@ import {
   Pressable,
   Modal,
   TextInput,
-  Button,
   TouchableOpacity,
 } from 'react-native';
 
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import axios from 'axios';
+import {Server_URL} from '@env';
 
 export default function Report({route}) {
-  // const [details, setDetails] = useState({
-  //   specialization: 'Chest',
-  //   doctor: 'Ahmed',
-  //   hospital: 'Middle East Hospital',
-  //   date: '15/3/2022',
-  //   diagnosis:
-  //     'Chronic Obstructive pulmonary disease, some of your airways are blocked making it hard for you to breathe',
-  //   prescription:
-  //     'Do not smoke. Avoid smoke, pollution, and extreme changes in temperature and humidity. Rest as needed.',
-  // });
-
   const {appointmentID} = route.params;
   const [report, setReport] = useState([]);
 
   useEffect(() => {
     const selectReport = async () => {
       await axios
-        .get(`http://192.168.1.10:3000/patient/report/${appointmentID}`)
+        .get(`${Server_URL}:3000/patient/report/${appointmentID}`)
         .then(response => setReport(response.data))
         .catch(function (error) {
           console.log(error.message);

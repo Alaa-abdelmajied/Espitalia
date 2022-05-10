@@ -9,10 +9,10 @@ import {
   Modal,
   Pressable,
 } from 'react-native';
-import {FlatList} from 'react-native-gesture-handler';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
+import {Server_URL} from '@env';
 
 export default function Profile({navigation}) {
   const [oldAppointments, setOldAppointments] = useState([]);
@@ -20,7 +20,7 @@ export default function Profile({navigation}) {
     const getOldAppointments = async () => {
       await axios
         .get(
-          'http://192.168.1.10:3000/patient/oldAppointment/626815e4419d4e945c124cf4',
+          `${Server_URL}:3000/patient/oldAppointment/626815e4419d4e945c124cf4`,
         )
         .then(response => setOldAppointments(response.data))
         .catch(function (error) {
@@ -36,57 +36,6 @@ export default function Profile({navigation}) {
     });
     console.log(oldAppointments[1].appointmentID);
   };
-
-  // const [Items, setItems] = useState([
-  //   {
-  //     key: '1',
-  //     Hname: 'Middle East Hospital',
-  //     doctor: 'Ahmed',
-  //     specialization: 'Chest',
-  //     date: '15/3/2022',
-  //     resNum: 1,
-  //   },
-  //   {
-  //     key: '2',
-  //     Hname: 'ICC Hospital',
-  //     doctor: 'Maram',
-  //     specialization: 'physiotherapy',
-  //     date: '16/3/2022',
-  //     resNum: 2,
-  //   },
-  //   {
-  //     key: '3',
-  //     Hname: 'Al Andalusia Hospital',
-  //     doctor: 'Ali',
-  //     specialization: 'cardiology',
-  //     date: '19/3/2022',
-  //     resNum: 3,
-  //   },
-  //   {
-  //     key: '4',
-  //     Hname: 'Royal Hospital',
-  //     doctor: 'Alaa',
-  //     specialization: 'allergy',
-  //     date: '25/3/2022',
-  //     resNum: 4,
-  //   },
-  //   {
-  //     key: '5',
-  //     Hname: 'German Hospital',
-  //     doctor: 'Mayar',
-  //     specialization: 'chest',
-  //     date: '5/4/2022',
-  //     resNum: 5,
-  //   },
-  //   {
-  //     key: '6',
-  //     Hname: 'Alexandria International Hospital',
-  //     doctor: 'Nadeen',
-  //     specialization: 'dermatology',
-  //     date: '15/4/2022',
-  //     resNum: 6,
-  //   },
-  // ]);
 
   const [showModal, setShowModal] = useState(false);
 

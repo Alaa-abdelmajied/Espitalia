@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {StyleSheet, Text, View, FlatList, Pressable} from 'react-native';
 import axios from 'axios';
+import {Server_URL} from '@env';
 
 export default function DonateBlood({navigation}) {
   const [bloodRequests, setBloodRequests] = useState([]);
@@ -8,7 +9,7 @@ export default function DonateBlood({navigation}) {
   useEffect(() => {
     const getRequests = async () => {
       await axios
-        .get('http://192.168.1.10:3000/patient/getBloodRequests')
+        .get(`${Server_URL}:3000/patient/getBloodRequests`)
         .then(response => setBloodRequests(response.data))
         .catch(function (error) {
           console.log(error.message);

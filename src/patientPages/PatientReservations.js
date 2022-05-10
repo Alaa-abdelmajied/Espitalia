@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {StyleSheet, Text, View, FlatList, Pressable, Image} from 'react-native';
 import axios from 'axios';
+import {Server_URL} from '@env';
 
 export default function Reservation({navigation}) {
   const [upcomingAppointments, setUpcomingAppointments] = useState([]);
@@ -9,7 +10,7 @@ export default function Reservation({navigation}) {
     const getUpcomingAppointments = async () => {
       await axios
         .get(
-          'http://192.168.1.10:3000/patient/upcomingAppointment/626815e4419d4e945c124cf4',
+          `${Server_URL}:3000/patient/upcomingAppointment/626815e4419d4e945c124cf4`,
         )
         .then(response => setUpcomingAppointments(response.data))
         .catch(function (error) {
