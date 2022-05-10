@@ -1,12 +1,29 @@
 import React, {useState} from 'react';
-import {StyleSheet, View} from 'react-native';
+import {StyleSheet, View, TouchableOpacity, FlatList} from 'react-native';
 import {SearchBar} from 'react-native-elements';
+import {Server_URL} from '@env';
+import axios from 'axios';
 
 export default function Search({navigation}) {
   const [search, setSearch] = useState('');
 
   const updateSearch = search => {
     setSearch(search);
+    // generalSearch(search);
+  };
+
+  const [searchResult, setSearchResult] = useState([]);
+
+  const generalSearch = search => {
+    axios
+      .get(`${Server_URL}:3000/patient/searchSpecialization/${search}`)
+      .then(response => {
+        setSearchResult(response.data);
+        console.log(search);
+      })
+      .catch(function (error) {
+        console.log(error.message);
+      });
   };
 
   return (
@@ -14,11 +31,34 @@ export default function Search({navigation}) {
       <SearchBar
         lightTheme={true}
         placeholder="search for doctor, hospital or specialization"
-        onChangeText={updateSearch}
+        onChangeText={generalSearch}
         value={search}
         fontSize={15}
         containerStyle={{backgroundColor: '#f0f0f0'}}
         inputContainerStyle={{borderRadius: 50, backgroundColor: '#fff'}}
+      />
+      <FlatList
+        data={searchResult}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={({item}) => {
+          return (
+            <TouchableOpacity
+              style={styles.specializationCard}
+              // onPress={() => onPress(item)}
+            >
+              <View style={{justifyContent: 'center', alignItems: 'center'}}>
+                <FontAwesome
+                  name={'stethoscope'}
+                  size={40}
+                  color="#1c1bad"
+                  style={{margin: 10}}></FontAwesome>
+              </View>
+              <View style={{flex: 2, justifyContent: 'center'}}>
+                <Text style={styles.speciality}>{item}</Text>
+              </View>
+            </TouchableOpacity>
+          );
+        }}
       />
     </View>
   );
@@ -93,6 +133,24 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     flexDirection: 'row',
     borderRadius: 10,
+  },
+
+  specializationCard: {
+    // width: '100%',
+    paddingTop: 5,
+    paddingBottom: 5,
+    // margin: '1%',
+    margin: 3,
+    backgroundColor: '#FFFFFF',
+    flexDirection: 'row',
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOpacity: 1,
+    shadowOffset: {
+      width: 3,
+      height: 3,
+    },
+    elevation: 2,
   },
 
   image: {
