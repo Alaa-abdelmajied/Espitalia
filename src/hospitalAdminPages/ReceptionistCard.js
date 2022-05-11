@@ -27,16 +27,13 @@ const styles = StyleSheet.create({
   receptionistCard: {
     padding: 15,
     backgroundColor: 'white',
-    borderWidth: 1,
-    borderRightWidth: 1,
-    borderRadius: 10,
     borderRadius: 10,
     borderColor: 'gray',
     margin: 5,
-    shadowOffset: {height:5, width:5},
     elevation: 5,
   },
   receptionistView: {
+    borderRadius: 10,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
