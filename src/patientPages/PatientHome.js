@@ -46,48 +46,6 @@ export default function PatientHome({navigation}) {
     navigation.navigate('HospitalList');
   };
 
-  // const homepage = [
-  //   {
-  //     key: 1,
-  //     drName: 'Alaa Abdelmajied',
-  //     speciality: 'Dermatologist',
-  //     hName: 'Al Andalusia Hospital',
-  //     address: '6 smouha st.',
-  //     image: require('../../images/andalusiahospital.png'),
-  //   },
-  //   {
-  //     key: 2,
-  //     drName: 'Ali Ghazal',
-  //     speciality: 'Psychiatrist',
-  //     hName: 'German Hospital',
-  //     address: '6 gleem st.',
-  //     image: require('../../images/germanhospital.jpg'),
-  //   },
-  //   {
-  //     key: 3,
-  //     drName: 'Mayar Adel',
-  //     speciality: 'Dentist',
-  //     hName: 'Royal Hospital',
-  //     address: '6 ibrahmia st.',
-  //     image: require('../../images/royalhospital.png'),
-  //   },
-  //   {
-  //     key: 4,
-  //     drName: 'Omar Shalaby',
-  //     speciality: 'Cardiologist',
-  //     hName: 'Alex Hospital',
-  //     address: '6 camp shizar st.',
-  //     image: require('../../images/alexhospital.png'),
-  //   },
-  //   {
-  //     key: 5,
-  //     drName: 'Nadeen Elgazar',
-  //     speciality: 'Gynaecologist',
-  //     hName: 'ICC Hospital',
-  //     address: '6 smouha st.',
-  //     image: require('../../images/icchospital.png'),
-  //   },
-  // ];
 
   return (
     <View style={styles.container}>

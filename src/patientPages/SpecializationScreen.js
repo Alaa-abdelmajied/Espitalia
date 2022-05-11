@@ -10,7 +10,7 @@ import {
 import {SearchBar} from 'react-native-elements';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import axios from 'axios';
-import { Server_URL} from "@env";
+import {Server_URL} from '@env';
 
 export default function Speciality({navigation, route}) {
   const [specialization, setSpecialization] = useState([]);
@@ -36,22 +36,21 @@ export default function Speciality({navigation, route}) {
     getSpecializations();
   }, []);
 
-  // const [search, setSearch] = useState('');
+  const [search, setSearch] = useState('');
   // const updateSearch = search => {
   //   setSearch(search);
   // };
 
-  // useEffect(() => {
-  // const searchSpecialization = text => {
-  //   axios
-  //     .get(`http://192.168.1.10:3000/patient/searchSpecialization/${text}`)
-  //     .then(response => setSearch(response.data))
-  //     .catch(function (error) {
-  //       console.log(error.message);
-  //     });
-  // };
+  const searchSpecialization = text => {
+    axios
+      .get(`http://192.168.1.10:3000/patient/searchSpecialization/${text}`)
+      .then(response => setSearch(response.data))
+      .catch(function (error) {
+        console.log(error.message);
+      });
+  };
 
-  const onPress = (item) => {
+  const onPress = item => {
     navigation.navigate('DoctorsScreen', {
       hospitalID: hospitalID,
       specialization: item,
@@ -67,7 +66,7 @@ export default function Speciality({navigation, route}) {
         lightTheme={true}
         placeholder="search"
         containerStyle={{backgroundColor: '#f0f0f0'}}
-        // onChangeText={searchSpecialization}
+        onChangeText={searchSpecialization()}
         // value={search}
         inputContainerStyle={{borderRadius: 50, backgroundColor: '#fff'}}
       />

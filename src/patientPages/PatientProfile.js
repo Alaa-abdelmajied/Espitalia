@@ -11,17 +11,20 @@ import {
 } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import EncryptedStorage from 'react-native-encrypted-storage';
 import axios from 'axios';
-import {Server_URL} from '@env';
+import {Server_URL, Token_Secret} from '@env';
 
 export default function Profile({navigation}) {
   const [oldAppointments, setOldAppointments] = useState([]);
+
   useEffect(() => {
     const getOldAppointments = async () => {
+      const token = JSON.parse(
+        await EncryptedStorage.getItem(Token_Secret),
+      ).token;
       await axios
-        .get(
-          `${Server_URL}:3000/patient/oldAppointment/626815e4419d4e945c124cf4`,
-        )
+        .get(`${Server_URL}:3000/patient/oldAppointment/${token}`)
         .then(response => setOldAppointments(response.data))
         .catch(function (error) {
           console.log(error.message);
@@ -30,22 +33,17 @@ export default function Profile({navigation}) {
     getOldAppointments();
   }, []);
 
-  const onPressReport = () => {
+  const onPressReport = id => {
     navigation.navigate('Report', {
-      appointmentID: oldAppointments[1].appointmentID,
+      appointmentID: id,
     });
-    console.log(oldAppointments[1].appointmentID);
   };
 
   const [showModal, setShowModal] = useState(false);
 
-  // const onPress = () => {
-  //   setShowModal(false)
-  // }
-
   return (
     <ScrollView>
-      <Modal visible={showModal} animationType="fade" transparent={true}>
+      {/* <Modal visible={showModal} animationType="fade" transparent={true}>
         <View style={styles.logoutModal}>
           <FontAwesome
             name={'close'}
@@ -56,7 +54,7 @@ export default function Profile({navigation}) {
             <Text style={{fontSize: 15, color: '#fff'}}>Logout</Text>
           </Pressable>
         </View>
-      </Modal>
+      </Modal> */}
       <View style={styles.header}></View>
       <Image
         style={styles.avatar}
@@ -65,11 +63,21 @@ export default function Profile({navigation}) {
       <View
         style={{position: 'absolute', alignSelf: 'flex-end', marginTop: 15}}>
         <TouchableOpacity style={{margin: 5}}>
-          <Ionicons
+          {/* <Ionicons
             name="ellipsis-vertical"
             size={30}
             color="#fff"
-            onPress={() => setShowModal(true)}></Ionicons>
+            onPress={() => setShowModal(true)}></Ionicons> */}
+          <Text
+            style={{
+              color: '#000',
+              margin: 5,
+              padding: 5,
+              fontSize: 20,
+              backgroundColor: '#fff',
+            }}>
+            Logout
+          </Text>
         </TouchableOpacity>
       </View>
       <View style={styles.body}>
@@ -99,12 +107,12 @@ export default function Profile({navigation}) {
           </View>
           <View style={styles.lineStyle} />
           <Text style={styles.subtitle}>OLD RESERVATIONS</Text>
-          {oldAppointments.map((item, itemIndex) => {
+          {oldAppointments.map(item => {
             return (
               <TouchableOpacity
                 style={styles.appointmentsCard}
-                key={itemIndex}
-                onPress={onPressReport}>
+                key={item.appointmentID}
+                onPress={() => onPressReport(item.appointmentID)}>
                 <Text style={styles.infoText}>
                   Hospital Name: {item.hospitalName}
                 </Text>

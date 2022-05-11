@@ -10,20 +10,22 @@ import {
   TextInput,
   TouchableOpacity,
 } from 'react-native';
-
+import {Rating} from 'react-native-ratings';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import axios from 'axios';
 import {Server_URL} from '@env';
 
 export default function Report({route}) {
   const {appointmentID} = route.params;
-  const [report, setReport] = useState([]);
+  const [report, setReport] = useState({});
 
   useEffect(() => {
     const selectReport = async () => {
       await axios
         .get(`${Server_URL}:3000/patient/report/${appointmentID}`)
-        .then(response => setReport(response.data))
+        .then(response => {
+          setReport(response.data);
+        })
         .catch(function (error) {
           console.log(error.message);
         });
@@ -35,25 +37,45 @@ export default function Report({route}) {
   const [defaultRating, setDefaultRating] = useState(2);
   const [maxRating, setMaxRating] = useState([1, 2, 3, 4, 5]);
 
+  const rate = rating => {
+    console.log('Rating ' + rating);
+  };
+
   return (
     <ScrollView>
       <Modal visible={showModal} animationType="fade" transparent={true}>
         <View style={styles.modal}>
           <FontAwesome
             name={'close'}
-            size={25}
+            size={20}
             color={'#1c1bad'}
             onPress={() => setShowModal(false)}
             style={{alignSelf: 'flex-start', margin: 5}}></FontAwesome>
           <View
             style={{
               flexDirection: 'row',
+              alignSelf: 'center',
             }}>
-            {maxRating.map((item, key) => {
+            <Rating
+              type="star"
+              tintColor="#f0f0f0"
+              ratingCount={5}
+              imageSize={25}
+              startingValue={1}
+              fractions={1}
+              showRating
+              onFinishRating={(score) => rate(score)}
+              style={{
+                margin: 5,
+                backgroundColor: 'transparent',
+                fontSize: 15,
+              }}></Rating>
+            {/* {maxRating.map((item, key) => {
               return (
                 <TouchableOpacity
                   activeOpacity={0.7}
                   key={key}
+                  style={{marginVertical: 5}}
                   onPress={() => setDefaultRating(item)}>
                   <FontAwesome
                     name={item <= defaultRating ? 'star' : 'star-o'}
@@ -62,7 +84,7 @@ export default function Report({route}) {
                   />
                 </TouchableOpacity>
               );
-            })}
+            })} */}
           </View>
           <View style={styles.modalInput}>
             <TextInput placeholder="Write Review" multiline={true}></TextInput>
@@ -71,7 +93,7 @@ export default function Report({route}) {
             name={'save'}
             size={25}
             color={'#1c1bad'}
-            style={{alignSelf: 'center', marginTop: -30}}
+            style={{alignSelf: 'center', margin: 5}}
             onPress={() => setShowModal(false)}></FontAwesome>
         </View>
       </Modal>
@@ -108,31 +130,30 @@ export default function Report({route}) {
           <Text style={styles.infoText}>{report.prescription}</Text>
         </ScrollView>
       </View>
-      {/* <Pressable style={styles.modalButton} onPress={() => setShowModal(true)}>
-        <Text style={styles.modalText}>Rate and Review</Text>
-      </Pressable> */}
-    </ScrollView>
+          </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   modal: {
-    height: 250,
+    height: '60%',
     backgroundColor: '#f0f0f0',
-    borderRadius: 5,
-    width: 300,
-    margin: 300,
+    borderRadius: 15,
+    width: '80%',
+    margin: 10,
+    // margin: 300,
     alignSelf: 'center',
-    // justifyContent: 'center',
+    justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
+    shadowColor: '#1c1bad',
     shadowOpacity: 1,
     shadowOffset: {
       width: 10,
-      height: 20,
+      height: 15,
     },
     elevation: 10,
     overflow: 'hidden',
+    padding: 5,
   },
 
   reportCard: {
@@ -168,6 +189,8 @@ const styles = StyleSheet.create({
     width: '95%',
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 15,
   },
 
   modalText: {
