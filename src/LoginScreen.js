@@ -18,49 +18,71 @@ import {Server_URL, Token_Secret, Credintials_Secret} from '@env';
 export default function Login({navigation, route}) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [errorMeesage, setIsVisible] = useState(false);
 
   const onPressHandler = () => {
     //staff -> username -> search for keyword dr or recep or admin
-    axios
-      .post(`${Server_URL}:3000/patient/login`, {
-        email: email,
-        password: password,
-      })
-      .then(async function (response) {
-        const {verified, token} = response.data;
-        try {
-          await EncryptedStorage.setItem(
-            Token_Secret,
-            JSON.stringify({token: token}),
-          );
-          await EncryptedStorage.setItem(
-            Credintials_Secret,
-            JSON.stringify({
-              email: email,
-              password: password,
-            }),
-          );
-        } catch (err) {
-          Alert.alert('Error', err.code, [
-            {text: 'Exit', onPress: () => BackHandler.exitApp()},
-          ]);
-        }
-        if (verified) {
+    var staff = route.params.staff;
+    if(!staff){
+
+      axios
+        .post(`${Server_URL}:3000/patient/login`, {
+          email: email,
+          password: password,
+        })
+        .then(async function (response) {
+          const {verified, token} = response.data;
+          try {
+            await EncryptedStorage.setItem(
+              Token_Secret,
+              JSON.stringify({token: token}),
+            );
+            await EncryptedStorage.setItem(
+              Credintials_Secret,
+              JSON.stringify({
+                email: email,
+                password: password,
+              }),
+            );
+          } catch (err) {
+            Alert.alert('Error', err.code, [
+              {text: 'Exit', onPress: () => BackHandler.exitApp()},
+            ]);
+          }
+          if (verified) {
+            navigation.reset({
+              index: 0,
+              routes: [{name: 'Patient'}],
+            });
+          } else {
+            navigation.navigate('OTP');
+          }
+        })
+        .catch(function (error) {
+          const err = error.response.data;
+          if (err == 'Incorrect email or password') {
+            //alert worng email or password
+            setIsVisible(true);
+            console.log('alert');
+          }
+        });
+    }
+    else{
+      axios
+        .post(`${Server_URL}:3000/hospital/login`,{
+          email: email,
+          password: password
+        })
+        .then(async function (response) {
           navigation.reset({
-            index: 0,
-            routes: [{name: 'Patient'}],
+            index:0,
+            routes:[{name:'HosptialAdminHomePage'}]
           });
-        } else {
-          navigation.navigate('OTP');
-        }
-      })
-      .catch(function (error) {
-        const err = error.response.data;
-        if (err == 'Incorrect email or password') {
-          //alert worng email or password
-          console.log('alert');
-        }
-      });
+        })
+        .catch(function(error){
+          console.log('ERROR:',error);
+        })
+    }
     // navigation.reset({
     //   index: 0,
     //   routes: [{ name: route.params.staff ? 'HosptialAdminHomePage' : 'Patient' }],
@@ -95,6 +117,11 @@ export default function Login({navigation, route}) {
             <Pressable>
               <Text style={styles.QuestionText}>Forgot password?</Text>
             </Pressable>
+
+            {
+              !errorMeesage &&
+              <Text style={{color:'red'}}>Something is Wrong</Text>
+            }
 
             <Pressable style={styles.RegisterButton} onPress={onPressHandler}>
               <Text style={[styles.buttonText, {color: '#fff'}]}>Sign In</Text>
