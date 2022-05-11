@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -12,20 +12,29 @@ import {
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
-import {Server_URL} from '@env';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import { Server_URL, Token_Secret } from '@env';
 
-export default function Profile({navigation}) {
+export default function Profile({ navigation }) {
   const [oldAppointments, setOldAppointments] = useState([]);
   useEffect(() => {
     const getOldAppointments = async () => {
-      await axios
-        .get(
-          `${Server_URL}:3000/patient/oldAppointment/626815e4419d4e945c124cf4`,
-        )
-        .then(response => setOldAppointments(response.data))
-        .catch(function (error) {
-          console.log(error.message);
-        });
+      try {
+        const token = JSON.parse(await EncryptedStorage.getItem(Token_Secret)).token;
+        await axios
+          .get(
+            `${Server_URL}:3000/patient/oldAppointment/${token}`,
+          )
+          .then(response => setOldAppointments(response.data))
+          .catch(function (error) {
+            console.log(error.message);
+          });
+      } catch (err) {
+        Alert.alert('Error', err.code, [
+          { text: 'Exit', onPress: () => BackHandler.exitApp() },
+        ]);
+      }
+
     };
     getOldAppointments();
   }, []);
@@ -37,6 +46,38 @@ export default function Profile({navigation}) {
     console.log(oldAppointments[1].appointmentID);
   };
 
+  const onPressLogout = async () => {
+    console.log("I got clicked :)");
+    try {
+      const token = JSON.parse(await EncryptedStorage.getItem(Token_Secret)).token;
+      axios
+        .post(`${Server_URL}:3000/patient/logout`, {
+          token: token
+        })
+        .then(async function (response) {
+          try {
+            await EncryptedStorage.removeItem(Token_Secret);
+            navigation.reset({
+              index: 0,
+              routes: [{ name: 'WelcomePage' }],
+            });
+          } catch (err) {
+            Alert.alert('Error', err.code, [
+              { text: 'Exit', onPress: () => BackHandler.exitApp() },
+            ]);
+          }
+        })
+        .catch(function (error) {
+          const err = error.response.data;
+          //alert err.msg
+        });
+    } catch (err) {
+      Alert.alert('Error', err.code, [
+        { text: 'Exit', onPress: () => BackHandler.exitApp() },
+      ]);
+    }
+  }
+
   const [showModal, setShowModal] = useState(false);
 
   // const onPress = () => {
@@ -45,7 +86,7 @@ export default function Profile({navigation}) {
 
   return (
     <ScrollView>
-      <Modal visible={showModal} animationType="fade" transparent={true}>
+      {/* <Modal visible={showModal} animationType="fade" transparent={true}>
         <View style={styles.logoutModal}>
           <FontAwesome
             name={'close'}
@@ -56,27 +97,28 @@ export default function Profile({navigation}) {
             <Text style={{fontSize: 15, color: '#fff'}}>Logout</Text>
           </Pressable>
         </View>
-      </Modal>
+      </Modal> */}
       <View style={styles.header}></View>
       <Image
         style={styles.avatar}
-        source={{uri: 'https://bootdey.com/img/Content/avatar/avatar6.png'}}
+        source={{ uri: 'https://bootdey.com/img/Content/avatar/avatar6.png' }}
       />
       <View
-        style={{position: 'absolute', alignSelf: 'flex-end', marginTop: 15}}>
-        <TouchableOpacity style={{margin: 5}}>
-          <Ionicons
+        style={{ position: 'absolute', alignSelf: 'flex-end', marginTop: 15 }}>
+        <TouchableOpacity style={{ margin: 5 }} onPress={onPressLogout}>
+          <Text>Logout</Text>
+          {/* <Ionicons
             name="ellipsis-vertical"
             size={30}
             color="#fff"
-            onPress={() => setShowModal(true)}></Ionicons>
+            onPress={() => setShowModal(true)}></Ionicons> */}
         </TouchableOpacity>
       </View>
       <View style={styles.body}>
         <View style={styles.bodyContent}>
           <Text style={styles.name}>Ahmed Mohamed</Text>
           <Text style={styles.subtitle}>BASIC DATA</Text>
-          <TouchableOpacity style={{flexDirection: 'row'}}>
+          <TouchableOpacity style={{ flexDirection: 'row' }}>
             <FontAwesome name="edit" size={25} color="#000"></FontAwesome>
             <Text
               style={{
