@@ -25,62 +25,6 @@ export default function Hospitals({navigation}) {
     setSearch(search);
   };
 
-  // const hospitals = [
-  //   {
-  //     key: 1,
-  //     hName: 'Al Andalusia Hospital',
-  //     address: '15 el midan st. - smouha',
-  //     image: require('../../images/andalusiahospital.png'),
-  //   },
-  //   {
-  //     key: 2,
-  //     hName: 'Royal Hospital',
-  //     address: '17 abdelqader basha st.',
-  //     image: require('../../images/royalhospital.png'),
-  //   },
-  //   {
-  //     key: 3,
-  //     hName: 'Alex Hospital',
-  //     address: '12 camp shizar st.',
-  //     image: require('../../images/alexhospital.png'),
-  //   },
-  //   {
-  //     key: 4,
-  //     hName: 'ICC Hospital',
-  //     address: '3 smouha st.',
-  //     image: require('../../images/icchospital.png'),
-  //   },
-  //   {
-  //     key: 5,
-  //     hName: 'Alex Hospital',
-  //     address: '6 camp shizar st.',
-  //     image: require('../../images/alexhospital.png'),
-  //   },
-  //   {
-  //     key: 6,
-  //     hName: 'Alex Hospital',
-  //     address: '5 camp shizar st.',
-  //     image: require('../../images/alexhospital.png'),
-  //   },
-  //   {
-  //     key: 7,
-  //     hName: 'Alex Hospital',
-  //     address: '5 camp shizar st.',
-  //     image: require('../../images/andalusiahospital.png'),
-  //   },
-  //   {
-  //     key: 8,
-  //     hName: 'Al Andalusia Hospital',
-  //     address: '15 el midan st. - smouha',
-  //     image: require('../../images/andalusiahospital.png'),
-  //   },
-  //   {
-  //     key: 9,
-  //     hName: 'German Hospital',
-  //     address: '6 gleem st.',
-  //     image: require('../../images/andalusiahospital.png'),
-  //   },
-  // ];
 
   return (
     <View style={{flex: 1, justifyContent: 'center'}}>

@@ -1,18 +1,20 @@
 import React, {useState, useEffect} from 'react';
 import {StyleSheet, Text, View, FlatList, Pressable, Image} from 'react-native';
+import EncryptedStorage from 'react-native-encrypted-storage';
 import axios from 'axios';
-import {Server_URL} from '@env';
+import {Server_URL, Token_Secret} from '@env';
 
 export default function Reservation({navigation}) {
   const [upcomingAppointments, setUpcomingAppointments] = useState([]);
 
   useEffect(() => {
     const getUpcomingAppointments = async () => {
+      const token = JSON.parse(
+        await EncryptedStorage.getItem(Token_Secret),
+      ).token;
       await axios
-        .get(
-          `${Server_URL}:3000/patient/upcomingAppointment/626815e4419d4e945c124cf4`,
-        )
-        .then(response => setUpcomingAppointments(response.data))
+        .get(`${Server_URL}:3000/patient/upcomingAppointment/${token}`)
+                .then(response => setUpcomingAppointments(response.data))
         .catch(function (error) {
           console.log(error.message);
         });
@@ -20,50 +22,7 @@ export default function Reservation({navigation}) {
     getUpcomingAppointments();
   }, []);
 
-  // const [Items, setItems] = useState([
-  //   {
-  //     key: '1',
-  //     Hname: 'Middle East Hospital',
-  //     doctor: 'Ahmed',
-  //     date: '15/3/2022',
-  //     resNum: 1,
-  //   },
-  //   {
-  //     key: '2',
-  //     Hname: 'ICC Hospital',
-  //     doctor: 'Maram',
-  //     date: '16/3/2022',
-  //     resNum: 2,
-  //   },
-  //   {
-  //     key: '3',
-  //     Hname: 'Al Andalusia Hospital',
-  //     doctor: 'Ali',
-  //     date: '19/3/2022',
-  //     resNum: 3,
-  //   },
-  //   {
-  //     key: '4',
-  //     Hname: 'Royal Hospital',
-  //     doctor: 'Alaa',
-  //     date: '25/3/2022',
-  //     resNum: 4,
-  //   },
-  //   {
-  //     key: '5',
-  //     Hname: 'German Hospital',
-  //     doctor: 'Mayar',
-  //     date: '5/4/2022',
-  //     resNum: 5,
-  //   },
-  //   {
-  //     key: '6',
-  //     Hname: 'Alexandria International Hospital',
-  //     doctor: 'Nadeen',
-  //     date: '15/4/2022',
-  //     resNum: 6,
-  //   },
-  // ]);
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>

@@ -11,12 +11,14 @@ import {
 } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import EncryptedStorage from 'react-native-encrypted-storage';
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { Server_URL, Token_Secret } from '@env';
 
 export default function Profile({ navigation }) {
   const [oldAppointments, setOldAppointments] = useState([]);
+
   useEffect(() => {
     const getOldAppointments = async () => {
       try {
@@ -34,16 +36,14 @@ export default function Profile({ navigation }) {
           { text: 'Exit', onPress: () => BackHandler.exitApp() },
         ]);
       }
-
     };
     getOldAppointments();
   }, []);
 
-  const onPressReport = () => {
+  const onPressReport = id => {
     navigation.navigate('Report', {
-      appointmentID: oldAppointments[1].appointmentID,
+      appointmentID: id,
     });
-    console.log(oldAppointments[1].appointmentID);
   };
 
   const onPressLogout = async () => {
@@ -79,10 +79,6 @@ export default function Profile({ navigation }) {
   }
 
   const [showModal, setShowModal] = useState(false);
-
-  // const onPress = () => {
-  //   setShowModal(false)
-  // }
 
   return (
     <ScrollView>
@@ -141,12 +137,12 @@ export default function Profile({ navigation }) {
           </View>
           <View style={styles.lineStyle} />
           <Text style={styles.subtitle}>OLD RESERVATIONS</Text>
-          {oldAppointments.map((item, itemIndex) => {
+          {oldAppointments.map(item => {
             return (
               <TouchableOpacity
                 style={styles.appointmentsCard}
-                key={itemIndex}
-                onPress={onPressReport}>
+                key={item.appointmentID}
+                onPress={() => onPressReport(item.appointmentID)}>
                 <Text style={styles.infoText}>
                   Hospital Name: {item.hospitalName}
                 </Text>
