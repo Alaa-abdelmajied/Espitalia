@@ -6,7 +6,7 @@
  */
 
 module.exports = {
-  resetCache:true,
+  resetCache: true,
   transformer: {
     getTransformOptions: async () => ({
       transform: {

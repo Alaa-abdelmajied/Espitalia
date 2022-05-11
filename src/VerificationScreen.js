@@ -11,10 +11,17 @@ export default function OTP({navigation}) {
   const [OTP, setOTP] = useState('');
 
   const onPressHandler = async () => {
+    try {
+      const token = JSON.parse(await EncryptedStorage.getItem(Token_Secret)).token;
+    } catch (err) {
+      Alert.alert('Error', err.code, [
+        {text: 'Exit', onPress: () => BackHandler.exitApp()},
+      ]);
+    }
     axios
       .post(`${Server_URL}:3000/patient/verify`, {
         otp: OTP,
-        token: JSON.parse(await EncryptedStorage.getItem(Token_Secret)).token,
+        token: token,
         forgot: false,
       })
       .then(function (response) {
