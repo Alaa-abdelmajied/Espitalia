@@ -12,60 +12,24 @@ import {
   FlatList,
 } from 'react-native';
 
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {Rating} from 'react-native-ratings';
 import axios from 'axios';
 import {Server_URL} from '@env';
 
 export default function ProfileScreen({route}) {
-  const appointments = [
-    {
-      key: 1,
-      date: 'Thurs. 9/3/2022',
-      from: '14:00',
-      to: '16:00',
-      color: '#1c1bad',
-    },
-    {
-      key: 2,
-      date: 'Sat. 11/3/2022',
-      from: '11:00',
-      to: '17:00',
-      color: '#1c1bad',
-    },
-    {
-      key: 3,
-      date: 'Sun. 12/3/2022',
-      from: '11:00',
-      to: '17:00',
-      color: '#1c1bad',
-    },
-    {
-      key: 4,
-      date: 'Tues. 14/3/2022',
-      from: '16:00',
-      to: '19:00',
-      color: '#1c1bad',
-    },
-    {
-      key: 5,
-      date: 'Wed.: 15/3/2022',
-      from: '16:00',
-      to: '19:00',
-      color: '#1c1bad',
-    },
-  ];
 
   const {drID, drName, speciality, hospitalName, averageRating} = route.params;
   const [comments, setComments] = useState([]);
+  const [schedule, setSchedule] = useState([]);
 
   useEffect(() => {
     const getReviews = async () => {
       await axios
         .get(`${Server_URL}:3000/patient/doctor/${drID}`)
         .then(response => {
-          setComments(response.data);
+          setComments(response.data.reviewDetails);
+          setSchedule(response.data.scheduleDetails);
         })
         .catch(function (error) {
           console.log(error.message);
@@ -113,13 +77,8 @@ export default function ProfileScreen({route}) {
                 imageSize={30}
                 startingValue={averageRating}
                 fractions={1}
-                readonly={true}
-                style={{
-                  margin: 5,
-                  backgroundColor: 'transparent',
-                  fontSize: 15,
-                }}></Rating>
-              <Text style={styles.name}>{averageRating}/5</Text>
+                readonly={true}></Rating>
+              <Text style={styles.text}>{averageRating}/5</Text>
             </View>
           </View>
         </View>
@@ -134,9 +93,9 @@ export default function ProfileScreen({route}) {
               {useNativeDriver: false},
             )}
             scrollEventThrottle={16}>
-            {appointments.map((card, cardIndex) => {
+            {schedule.map((card, cardIndex) => {
               return (
-                <Animated.View style={{width: windowWidth}} key={card.key}>
+                <Animated.View style={{width: windowWidth}} key={cardIndex}>
                   <View style={styles.scheduleCard}>
                     <View style={styles.dateHeader}>
                       <Text style={{color: '#fff', fontSize: 20}}>
@@ -160,7 +119,7 @@ export default function ProfileScreen({route}) {
             })}
           </ScrollView>
           <View style={styles.indicatorContainer}>
-            {appointments.map((card, cardIndex) => {
+            {schedule.map((card, cardIndex) => {
               const width = scrollX.interpolate({
                 inputRange: [
                   windowWidth * (cardIndex - 1),
@@ -176,7 +135,7 @@ export default function ProfileScreen({route}) {
                   style={[
                     styles.normalDots,
                     {width},
-                    {backgroundColor: card.color},
+                    {backgroundColor: '#1c1bad'},
                   ]}
                   key={cardIndex}
                 />
@@ -188,32 +147,14 @@ export default function ProfileScreen({route}) {
           <Text style={styles.title}>Ratings and Reviews</Text>
           {comments.map((reviewCard, cardIndex) => {
             return (
-              <View
-                key={cardIndex}
-                style={{
-                  backgroundColor: '#fff',
-                  width: '95%',
-                  margin: 5,
-                  justifyContent: 'center',
-                  alignSelf: 'center',
-                  borderRadius: 10,
-                  shadowColor: '#000000',
-                  shadowOffset: {width: -2, height: 2},
-                  shadowOpacity: 0.2,
-                  shadowRadius: 3,
-                  elevation: 2,
-                }}>
-                <View
-                  style={{height: 150, width: '97%', alignSelf: 'center'}}
-                  key={reviewCard.key}>
-                  <View style={{flexDirection: 'row'}}>
-                    <Text style={styles.name}>{reviewCard.name}</Text>
-                    <Text style={styles.name}>{reviewCard.date}</Text>
-                  </View>
+              <View key={cardIndex} style={styles.commentsCard}>
+                <View style={{height: 150, width: '97%', alignSelf: 'center'}}>
+                  <Text style={styles.text}>{reviewCard.name}</Text>
                   <View
                     style={{
                       flexDirection: 'row',
-                      marginLeft: 5,
+                      alignItems: 'center',
+                      marginTop: 10,
                     }}>
                     <Rating
                       type="custom"
@@ -225,12 +166,11 @@ export default function ProfileScreen({route}) {
                       fractions={1}
                       readonly={true}
                       style={{
-                        margin: 5,
-                        backgroundColor: 'transparent',
-                        fontSize: 15,
+                        marginRight: 10,
                       }}></Rating>
+                    <Text style={styles.text}>{reviewCard.date}</Text>
                   </View>
-                  <Text style={styles.review}>{reviewCard.review}</Text>
+                  <Text style={styles.text}>{reviewCard.review}</Text>
                 </View>
               </View>
             );
@@ -283,10 +223,10 @@ const styles = StyleSheet.create({
     // backgroundColor:'#ff0ff0',
   },
 
-  name: {
-    fontSize: 20,
+  text: {
+    fontSize: 19,
     color: '#000',
-    marginLeft: 5,
+    margin: 1,
   },
 
   dr_name: {
@@ -310,7 +250,7 @@ const styles = StyleSheet.create({
   },
 
   review: {
-    fontSize: 16,
+    fontSize: 19,
     color: '#000',
     marginLeft: 5,
   },
@@ -370,6 +310,20 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     borderColor: '#fff',
     color: '#fff',
+  },
+
+  commentsCard: {
+    backgroundColor: '#fff',
+    width: '95%',
+    margin: 5,
+    justifyContent: 'center',
+    alignSelf: 'center',
+    borderRadius: 10,
+    shadowColor: '#000000',
+    shadowOffset: {width: -2, height: 2},
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 2,
   },
 
   customRatingBar: {
