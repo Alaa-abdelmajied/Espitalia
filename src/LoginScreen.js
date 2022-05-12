@@ -1,5 +1,17 @@
 import React, {useState} from 'react';
 import Svg, {Path} from 'react-native-svg';
+//import RadioButtonRN from 'radio-buttons-react-native';
+//import RadioGroup from 'react-native-radio-buttons-group';
+import RadioGroup from 'react-native-radio-button-group';
+/*
+TODO: 
+add this line in react-native-radio-button-group/RadioGroup.js in line 15
+  options: PropTypes.arrayOf(PropTypes.shape({
+
+*/
+
+
+
 
 import {
   StyleSheet,
@@ -19,7 +31,23 @@ export default function Login({navigation, route}) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMeesage, setIsVisible] = useState(false);
-
+  const[selectedStaff,setSelectedStaff] = useState({});
+  var whoIsLogingIn = [
+    {
+      id: 'hospital',
+      label: 'Hospital',
+      // labelView: 'hospital'
+    },{
+      id: 'doctor',
+      label: 'Doctor',
+      // labelView: 'doctor'
+    },{
+      id: 'receptionist',
+      label: 'Receptionist',
+      //labelView: 'receptionist'
+    }
+  ];
+  
   const onPressHandler = () => {
     //staff -> username -> search for keyword dr or recep or admin
     var staff = route.params.staff;
@@ -68,20 +96,40 @@ export default function Login({navigation, route}) {
         });
     }
     else{
+      console.log(selectedStaff.id);
+      // navigation.reset({
+      //   index:0,
+        
+      //   routes: [{
+      //     name:'HosptialAdminHomePage',
+      //     params:{test: 'bar'}
+      //   }]
+        
+      //   //actions: [navigation.navigate({name: 'HosptialAdminHomePage', params: {test: "hi"} })]
+      // });
+
+      //FIXME: I'm working don't delete me
+      // const staffUr
       axios
-        .post(`${Server_URL}:3000/hospital/login`,{
+        .post(`${Server_URL}:3000/${selectedStaff.id}/login`,{
           email: email,
           password: password
         })
         .then(async function (response) {
-          navigation.reset({
-            index:0,
-            routes:[{name:'HosptialAdminHomePage'}]
+          console.log(response.data);
+          //navigation.navigate('HosptialAdminHomePage', {test: "hi"});
+          navigation.navigate({
+            name: 'HosptialAdminHomePage',
+            params: {
+              test: true,
+            },
           });
+         // setParams({test:"hi"});
         })
         .catch(function(error){
           console.log('ERROR:',error);
         })
+        
     }
     // navigation.reset({
     //   index: 0,
@@ -119,7 +167,7 @@ export default function Login({navigation, route}) {
             </Pressable>
 
             {
-              !errorMeesage &&
+              errorMeesage &&
               <Text style={{color:'red'}}>Something is Wrong</Text>
             }
 
@@ -139,7 +187,12 @@ export default function Login({navigation, route}) {
                   </Text>
                 </Pressable>
               </View>
-            ) : null}
+            ) : (
+              <RadioGroup
+                  options={whoIsLogingIn}
+                  onChange={(option) => setSelectedStaff(option)}
+            />
+            )}
           </View>
         </View>
       </View>

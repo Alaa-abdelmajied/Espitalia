@@ -45,7 +45,7 @@ const Doctorspage = ({ navigation, route }) => {
                     style={styles.touchableOpacity}
                     onPress={() => navigation.navigate('AddnewDoctor')}
                 >
-                    <Icon style={styles.addButton} name='plus' />
+                    <Icon style={styles.addButton} name='user-plus' />
                 </TouchableOpacity>
             </View>
         </SafeAreaView>
@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
         elevation: 1,
     },
     touchableOpacity: {
-        backgroundColor: 'blue',
+        backgroundColor: '#1c1bad',
         alignItems: 'center',
         justifyContent: 'center',
         position: 'absolute',
