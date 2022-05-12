@@ -18,25 +18,6 @@ export default function DonateBlood({navigation}) {
     getRequests();
   }, []);
 
-  // const [Items, setItems] = useState([
-  //   {
-  //     key: '1',
-  //     Hname: 'Middle East Hospital ',
-  //     bloodType: 'A+',
-  //     date: '22/3/2022',
-  //   },
-  //   {key: '2', Hname: 'ICC Hospital', bloodType: 'AB+', date: '25/3/2022'},
-  //   {key: '3', Hname: 'German Hospital', bloodType: 'O-', date: '28/3/2022'},
-  //   {key: '4', Hname: 'Royal Hospital', bloodType: 'O+', date: '13/4/2022'},
-  //   {key: '5', Hname: 'Alex Scan', bloodType: 'B-', date: '13/4/2022'},
-  //   {key: '6', Hname: 'Bet El Ne3ma', bloodType: 'AB-', date: '20/4/2022'},
-  //   {
-  //     key: '7',
-  //     Hname: 'Al Andalusia Hospital',
-  //     bloodType: 'A-',
-  //     date: '25/4/2022',
-  //   },
-  // ]);
 
   return (
     <View style={styles.container}>

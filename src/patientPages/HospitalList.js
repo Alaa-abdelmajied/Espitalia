@@ -6,8 +6,8 @@ import axios from 'axios';
 import {Server_URL} from '@env';
 
 export default function Hospitals({navigation}) {
+  
   const [allHospitals, setAllHospitals] = useState([]);
-
   useEffect(() => {
     const seeAllHospitals = async () => {
       await axios

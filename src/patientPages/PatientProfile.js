@@ -11,7 +11,6 @@ import {
 } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import EncryptedStorage from 'react-native-encrypted-storage';
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { Server_URL, Token_Secret } from '@env';
@@ -45,6 +44,7 @@ export default function Profile({ navigation }) {
       appointmentID: id,
     });
   };
+  
 
   const onPressLogout = async () => {
     console.log("I got clicked :)");
