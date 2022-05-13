@@ -2,23 +2,17 @@ import React, { useState } from "react";
 import { View, StyleSheet, Button, Text, Image } from 'react-native';
 
 export default function Homepage({ navigation, route }) {
-var test = route.params.test;
-  console.log(test);
-  const hospitalData = {
-    id: 1,
-    name: 'Andalosia',
-    Address: ['Smouha'],
-  };
-
+  //token: JSON.parse(await EncryptedStorage.getItem(Token_Secret)).token,
+  
   return (
     <View style={styles.container}>
       <View style={styles.logo}>
         <Image source={{ uri: 'https://images.assets-landingi.com/ezfQc3bO/logo_01.png' }} style={styles.img} />
       </View>
       <View style={styles.info}>
-        <Text style={styles.label}>Hospital:{'\t'} <Text style={styles.data}>{route.name}</Text></Text>
+        <Text style={styles.label}>Hospital:{'\t'} <Text style={styles.data}>{route.params.name}</Text></Text>
 
-        <Text style={styles.label}>Adress:{'\t\t\t'} <Text style={styles.data}>{hospitalData.Address}</Text></Text>
+        <Text style={styles.label}>Adress:{'\t\t\t'} <Text style={styles.data}>{route.params.address}</Text></Text>
       </View>
 
       <View style={styles.buttons}>

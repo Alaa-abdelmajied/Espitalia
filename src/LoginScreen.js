@@ -1,13 +1,27 @@
-import React, {useState} from 'react';
-import Svg, {Path} from 'react-native-svg';
+import React, { useState } from 'react';
+import Svg, { Path } from 'react-native-svg';
 //import RadioButtonRN from 'radio-buttons-react-native';
 //import RadioGroup from 'react-native-radio-buttons-group';
+import { CommonActions, StackActions } from '@react-navigation/native';
+import { NavigationActions } from 'react-navigation';
+
+
 import RadioGroup from 'react-native-radio-button-group';
 /*
 TODO: 
 add this line in react-native-radio-button-group/RadioGroup.js in line 15
   options: PropTypes.arrayOf(PropTypes.shape({
-
+and in circle.js replace by:
+  <Animated.View
+    style={[
+      styles.fill,
+      {
+        backgroundColor: circleStyle.fillColor,
+        height: this.props.active ? 20 : 0,
+        width: this.props.active ? 20 : 0,
+      },
+    ]}
+  />
 */
 
 
@@ -25,33 +39,33 @@ import {
 
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {Server_URL, Token_Secret, Credintials_Secret} from '@env';
+import { Server_URL, Token_Secret, Credintials_Secret } from '@env';
 
-export default function Login({navigation, route}) {
+export default function Login({ navigation, route }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMeesage, setIsVisible] = useState(false);
-  const[selectedStaff,setSelectedStaff] = useState({});
+  const [selectedStaff, setSelectedStaff] = useState({});
   var whoIsLogingIn = [
     {
       id: 'hospital',
       label: 'Hospital',
       // labelView: 'hospital'
-    },{
+    }, {
       id: 'doctor',
       label: 'Doctor',
       // labelView: 'doctor'
-    },{
+    }, {
       id: 'receptionist',
       label: 'Receptionist',
       //labelView: 'receptionist'
     }
   ];
-  
+
   const onPressHandler = () => {
     //staff -> username -> search for keyword dr or recep or admin
     var staff = route.params.staff;
-    if(!staff){
+    if (!staff) {
 
       axios
         .post(`${Server_URL}:3000/patient/login`, {
@@ -59,11 +73,11 @@ export default function Login({navigation, route}) {
           password: password,
         })
         .then(async function (response) {
-          const {verified, token} = response.data;
+          const { verified, token } = response.data;
           try {
             await EncryptedStorage.setItem(
               Token_Secret,
-              JSON.stringify({token: token}),
+              JSON.stringify({ token: token }),
             );
             await EncryptedStorage.setItem(
               Credintials_Secret,
@@ -74,13 +88,13 @@ export default function Login({navigation, route}) {
             );
           } catch (err) {
             Alert.alert('Error', err.code, [
-              {text: 'Exit', onPress: () => BackHandler.exitApp()},
+              { text: 'Exit', onPress: () => BackHandler.exitApp() },
             ]);
           }
           if (verified) {
             navigation.reset({
               index: 0,
-              routes: [{name: 'Patient'}],
+              routes: [{ name: 'Patient' }],
             });
           } else {
             navigation.navigate('OTP');
@@ -95,41 +109,49 @@ export default function Login({navigation, route}) {
           }
         });
     }
-    else{
-      console.log(selectedStaff.id);
-      // navigation.reset({
-      //   index:0,
-        
-      //   routes: [{
-      //     name:'HosptialAdminHomePage',
-      //     params:{test: 'bar'}
-      //   }]
-        
-      //   //actions: [navigation.navigate({name: 'HosptialAdminHomePage', params: {test: "hi"} })]
-      // });
+    else {
+      // navigation.dispatch(StackActions.popToTop());
+      // navigation.dispatch(
+      //   StackActions.replace('HosptialAdminHomePage', {screen:'Home', params: {to: 1999}})
+      // );
+
 
       //FIXME: I'm working don't delete me
       // const staffUr
       axios
-        .post(`${Server_URL}:3000/${selectedStaff.id}/login`,{
+        .post(`${Server_URL}:3000/${selectedStaff.id}/login`, {
           email: email,
           password: password
         })
         .then(async function (response) {
-          console.log(response.data);
-          //navigation.navigate('HosptialAdminHomePage', {test: "hi"});
-          navigation.navigate({
-            name: 'HosptialAdminHomePage',
-            params: {
-              test: true,
-            },
-          });
-         // setParams({test:"hi"});
+          const token = response.headers['x-auth-token'];
+          try {
+            await EncryptedStorage.setItem(
+              Token_Secret,
+              JSON.stringify({ token: token }),
+            );
+            await EncryptedStorage.setItem(
+              Credintials_Secret,
+              JSON.stringify({
+                email: email,
+                password: password,
+              }),
+            );
+          } catch (err) {
+            Alert.alert('Error', err.code, [
+              { text: 'Exit', onPress: () => BackHandler.exitApp() },
+            ]);
+          }
+          navigation.dispatch(StackActions.popToTop());
+          navigation.dispatch(
+            StackActions.replace('HosptialAdminHomePage', { screen: 'Home', params: response.data })
+          );
+          // setParams({test:"hi"});
         })
-        .catch(function(error){
-          console.log('ERROR:',error);
+        .catch(function (error) {
+          console.log('ERROR:', error);
         })
-        
+
     }
     // navigation.reset({
     //   index: 0,
@@ -168,30 +190,30 @@ export default function Login({navigation, route}) {
 
             {
               errorMeesage &&
-              <Text style={{color:'red'}}>Something is Wrong</Text>
+              <Text style={{ color: 'red' }}>Something is Wrong</Text>
             }
 
             <Pressable style={styles.RegisterButton} onPress={onPressHandler}>
-              <Text style={[styles.buttonText, {color: '#fff'}]}>Sign In</Text>
+              <Text style={[styles.buttonText, { color: '#fff' }]}>Sign In</Text>
             </Pressable>
             {!route.params.staff ? (
-              <View style={{flexDirection: 'row', margin: '5%'}}>
+              <View style={{ flexDirection: 'row', margin: '5%' }}>
                 <Text style={styles.QuestionText}>
                   Don't have an account yet?
                 </Text>
 
                 <Pressable onPress={() => navigation.navigate('SignUp')}>
                   <Text
-                    style={{color: '#1c1bad', textDecorationLine: 'underline'}}>
+                    style={{ color: '#1c1bad', textDecorationLine: 'underline' }}>
                     Sign Up
                   </Text>
                 </Pressable>
               </View>
             ) : (
               <RadioGroup
-                  options={whoIsLogingIn}
-                  onChange={(option) => setSelectedStaff(option)}
-            />
+                options={whoIsLogingIn}
+                onChange={(option) => setSelectedStaff(option)}
+              />
             )}
           </View>
         </View>
@@ -268,7 +290,7 @@ const styles = StyleSheet.create({
     margin: '3%',
     backgroundColor: '#fff',
     shadowColor: '#000000',
-    shadowOffset: {width: -1, height: 1},
+    shadowOffset: { width: -1, height: 1 },
     shadowOpacity: 0.2,
     shadowRadius: 1,
     elevation: 2,
