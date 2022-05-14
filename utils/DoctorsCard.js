@@ -3,16 +3,17 @@ import {StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
 
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-const DoctorsCard = ({
-  card,
-  maxRating,
-  defaultRating,
-  navigation,
-  hospitalName,
-  hospitalAddress,
-}) => {
+import {Rating} from 'react-native-ratings';
+
+const DoctorsCard = ({card, navigation, hospitalName, hospitalAddress}) => {
   const onPress = () => {
-    navigation.navigate('DoctorDetails');
+    navigation.navigate('DoctorDetails', {
+      drID: card._id,
+      drName: card.name,
+      speciality: card.specialization,
+      hospitalName: card.doctorHospitalName,
+      averageRating: card.averageRating,
+    });
   };
 
   return (
@@ -50,21 +51,20 @@ const DoctorsCard = ({
           </View>
         </View>
         <View style={styles.customRatingBar}>
-          {maxRating.map((item, key) => {
-            return (
-              <TouchableOpacity
-                activeOpacity={0.7}
-                key={item}
-                onPress={() => setDefaultRating(item)}>
-                <FontAwesome
-                  name={item <= defaultRating ? 'star' : 'star-o'}
-                  size={25}
-                  color="#FDCC0D"
-                />
-                {/* <Text> Rate is {item} / 5</Text> */}
-              </TouchableOpacity>
-            );
-          })}
+          <Rating
+            type="custom"
+            ratingBackgroundColor="#bfbfbf"
+            tintColor="#fff"
+            ratingCount={5}
+            imageSize={25}
+            startingValue={card.averageRating}
+            fractions={1}
+            readonly={true}
+            style={{
+              margin: 5,
+              backgroundColor: 'transparent',
+              fontSize: 15,
+            }}></Rating>
         </View>
       </View>
     </TouchableOpacity>

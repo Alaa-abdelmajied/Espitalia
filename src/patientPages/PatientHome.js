@@ -8,22 +8,29 @@ import {
   TouchableOpacity,
   Image,
   Pressable,
+  FlatList,
 } from 'react-native';
 
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import {Rating} from 'react-native-ratings';
+
 import {Server_URL} from '@env';
 
 export default function PatientHome({navigation}) {
-  const [defaultRating, setDefaultRating] = useState(2);
-  const [maxRating] = useState([1, 2, 3, 4, 5]);
-  const [homepageData, setHomepageData] = useState([]);
+  const [hospitals, setHospitals] = useState([]);
+  const [doctors, setDoctors] = useState([]);
+  const [specializations, setSecializations] = useState([]);
 
   useEffect(() => {
     const displayHomepage = async () => {
       await axios
         .get(`${Server_URL}:3000/patient/homepage`)
-        .then(response => setHomepageData(response.data))
+        .then(response => {
+          setHospitals(response.data.hospitals);
+          setDoctors(response.data.doctors);
+          setSecializations(response.data.specializations);
+        })
         .catch(function (error) {
           console.log(error.message);
         });
@@ -32,65 +39,54 @@ export default function PatientHome({navigation}) {
   }, []);
 
   const onPressHospitals = () => {
-    navigation.navigate('SpecializationScreen');
+    navigation.navigate('SpecializationScreen', {
+      hospitalID: hospitals._id,
+      hospitalName: hospitals.name,
+      hospitalAddress: hospitals.address,
+      // fromHomepage: true,
+    });
   };
 
   const onPressDoctors = () => {
-    navigation.navigate('DoctorDetails');
+    navigation.navigate('DoctorDetails', {
+      drID: doctors._id,
+      drName: doctors.name,
+      speciality: doctors.speciality,
+      hospitalName: doctors.hospitalName,
+      averageRating: doctors.averageRating,
+      fromHomepage: true,
+    });
+    // console.log(
+    //   doctors._id,
+    //   doctors.name,
+    //   doctors.speciality,
+    //   doctors.hospitalName,
+    //   doctors.averageRating,
+    // );
   };
 
-  const seeAllDoctors = () => {
-    navigation.navigate('DoctorList', {isAllDoctors: true});
+  const onPressSpecializations = (specialization) => {
+    navigation.navigate('DoctorsScreen', {
+      speciality: specialization,
+      fromHomepage: true,
+    });
+    console.log(specialization);
   };
+
   const seeAllHospitals = () => {
     navigation.navigate('HospitalList');
   };
-
-  // const homepage = [
-  //   {
-  //     key: 1,
-  //     drName: 'Alaa Abdelmajied',
-  //     speciality: 'Dermatologist',
-  //     hName: 'Al Andalusia Hospital',
-  //     address: '6 smouha st.',
-  //     image: require('../../images/andalusiahospital.png'),
-  //   },
-  //   {
-  //     key: 2,
-  //     drName: 'Ali Ghazal',
-  //     speciality: 'Psychiatrist',
-  //     hName: 'German Hospital',
-  //     address: '6 gleem st.',
-  //     image: require('../../images/germanhospital.jpg'),
-  //   },
-  //   {
-  //     key: 3,
-  //     drName: 'Mayar Adel',
-  //     speciality: 'Dentist',
-  //     hName: 'Royal Hospital',
-  //     address: '6 ibrahmia st.',
-  //     image: require('../../images/royalhospital.png'),
-  //   },
-  //   {
-  //     key: 4,
-  //     drName: 'Omar Shalaby',
-  //     speciality: 'Cardiologist',
-  //     hName: 'Alex Hospital',
-  //     address: '6 camp shizar st.',
-  //     image: require('../../images/alexhospital.png'),
-  //   },
-  //   {
-  //     key: 5,
-  //     drName: 'Nadeen Elgazar',
-  //     speciality: 'Gynaecologist',
-  //     hName: 'ICC Hospital',
-  //     address: '6 smouha st.',
-  //     image: require('../../images/icchospital.png'),
-  //   },
-  // ];
+  const seeAllDoctors = () => {
+    navigation.navigate('DoctorList', {isAllDoctors: true});
+  };
+  const seeAllSpecializations = () => {
+    navigation.navigate('SpecializationScreen', {isAllSpecializations: true
+    // ,fromHomepage:false
+    });
+  };
 
   return (
-    <View style={styles.container}>
+    <ScrollView vertical={true}>
       <View style={styles.header}>
         <Image
           style={styles.Image}
@@ -103,50 +99,47 @@ export default function PatientHome({navigation}) {
           <Text
             style={{color: '#1c1bad', textDecorationLine: 'underline'}}
             onPress={seeAllHospitals}>
-            See all hospitals
+            All hospitals
           </Text>
         </Pressable>
       </View>
       <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-        {homepageData.map((card, cardIndex) => {
+        {hospitals.map((card, cardIndex) => {
           return (
             <TouchableOpacity
               style={styles.cards}
               key={cardIndex}
               onPress={onPressHospitals}>
               <View style={styles.card_header}>
-                {/* <View style={styles.textView}> */}
-                <Text style={styles.name}> {card.hospitalName} </Text>
-                {/* </View> */}
+                <Text style={styles.name}> {card.name} </Text>
               </View>
               <View style={styles.hospital_content}>
-                {/* <Image style={styles.hospitalImg} source={card.image}></Image> */}
                 <View style={{flexDirection: 'row', alignItems: 'center'}}>
                   <Ionicons
                     name={'location-sharp'}
                     size={25}
                     color="#1c1bad"
                     style={{margin: 10}}></Ionicons>
-                  <Text style={styles.cardText}>{card.hospitalAddress}</Text>
+                  <Text style={styles.cardText}>{card.address}</Text>
                 </View>
               </View>
             </TouchableOpacity>
           );
         })}
       </ScrollView>
-      <View style={styles.lineStyle} />
+      {/* <View style={styles.lineStyle} /> */}
       <View style={styles.headline}>
         <Text style={styles.titleText}>Doctors</Text>
         <Pressable>
           <Text
             style={{color: '#1c1bad', textDecorationLine: 'underline'}}
             onPress={seeAllDoctors}>
-            See all doctors
+            All doctors
           </Text>
         </Pressable>
       </View>
       <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-        {homepageData.map((card, cardIndex) => {
+        {doctors.map((card, cardIndex) => {
           return (
             <TouchableOpacity
               style={styles.cards}
@@ -159,18 +152,18 @@ export default function PatientHome({navigation}) {
                     uri: 'https://bootdey.com/img/Content/avatar/avatar6.png',
                   }}></Image>
                 <View style={styles.textView}>
-                  <Text style={styles.name}>Dr. {card.drName} </Text>
+                  <Text style={styles.name}>Dr. {card.name} </Text>
                   <Text style={styles.speciality}>{card.speciality}</Text>
                 </View>
               </View>
-              <View style={styles.card_content}>
+              <View style={styles.doctor_content}>
                 <View style={styles.place}>
                   <FontAwesome
                     name={'hospital-o'}
                     size={30}
                     color="#1c1bad"
                     style={{margin: 10}}></FontAwesome>
-                  <Text style={styles.cardText}>{card.doctorHospitalName}</Text>
+                  <Text style={styles.cardText}>{card.hospitalName}</Text>
                 </View>
                 <View style={styles.place}>
                   <Ionicons
@@ -178,34 +171,61 @@ export default function PatientHome({navigation}) {
                     size={30}
                     color="#1c1bad"
                     style={{margin: 10}}></Ionicons>
-                  <Text style={styles.cardText}>
-                    {card.doctorHospitalAddress}
-                  </Text>
+                  <Text style={styles.cardText}>{card.hospitalAddress}</Text>
                 </View>
                 <View style={styles.customRatingBar}>
-                  {maxRating.map((item, key) => {
-                    return (
-                      <TouchableOpacity
-                        activeOpacity={0.7}
-                        key={item}
-                        disabled={true}
-                        // onPress={() => setDefaultRating(item)}
-                      >
-                        <FontAwesome
-                          name={item <= defaultRating ? 'star' : 'star-o'}
-                          size={26}
-                          color="#FDCC0D"
-                        />
-                      </TouchableOpacity>
-                    );
-                  })}
+                  <Rating
+                    type="custom"
+                    ratingBackgroundColor="#bfbfbf"
+                    tintColor="#fff"
+                    ratingCount={5}
+                    imageSize={25}
+                    startingValue={card.averageRating}
+                    fractions={1}
+                    readonly={true}
+                    style={{
+                      margin: 5,
+                      backgroundColor: 'transparent',
+                      fontSize: 15,
+                    }}></Rating>
                 </View>
               </View>
             </TouchableOpacity>
           );
         })}
       </ScrollView>
-    </View>
+      <View style={styles.headline}>
+        <Text style={styles.titleText}>Specializations</Text>
+        <Pressable>
+          <Text
+            style={{color: '#1c1bad', textDecorationLine: 'underline'}}
+            onPress={seeAllSpecializations}>
+            All specializations
+          </Text>
+        </Pressable>
+      </View>
+      <ScrollView vertical={true} showsHorizontalScrollIndicator={false}>
+        {specializations.map((card, cardIndex) => {
+          return (
+            <TouchableOpacity
+              style={styles.specializationCard}
+              key={cardIndex}
+              onPress={() =>onPressSpecializations(card)}>
+              <View style={{justifyContent: 'center', alignItems: 'center'}}>
+                <FontAwesome
+                  name={'stethoscope'}
+                  size={40}
+                  color="#1c1bad"
+                  style={{margin: 10}}></FontAwesome>
+              </View>
+              <View style={{flex: 2, justifyContent: 'center'}}>
+                <Text style={styles.cardText}>{card}</Text>
+              </View>
+            </TouchableOpacity>
+          );
+        })}
+      </ScrollView>
+    </ScrollView>
   );
 }
 
@@ -317,7 +337,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
 
-  card_content: {
+  doctor_content: {
     height: '100%',
     width: '100%',
   },
@@ -340,6 +360,24 @@ const styles = StyleSheet.create({
   customRatingBar: {
     justifyContent: 'center',
     flexDirection: 'row',
+  },
+
+  specializationCard: {
+    // width: '100%',
+    paddingTop: 5,
+    paddingBottom: 5,
+    // margin: '1%',
+    margin: 3,
+    backgroundColor: '#FFFFFF',
+    flexDirection: 'row',
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOpacity: 1,
+    shadowOffset: {
+      width: 3,
+      height: 3,
+    },
+    elevation: 2,
   },
 
   titleText: {

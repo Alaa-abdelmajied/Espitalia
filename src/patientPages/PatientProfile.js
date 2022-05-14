@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   StyleSheet,
   Text,
@@ -13,57 +13,84 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { Server_URL, Token_Secret } from '@env';
+import {Server_URL, Token_Secret} from '@env';
 
-export default function Profile({ navigation }) {
+export default function Profile({navigation}) {
+  const [personalData, setPersonalData] = useState('');
   const [oldAppointments, setOldAppointments] = useState([]);
+
+  useEffect(() => {
+    const getPersonalData = async () => {
+      try {
+        const token = JSON.parse(
+          await EncryptedStorage.getItem(Token_Secret),
+        ).token;
+        console.log(token);
+        await axios
+          .get(`${Server_URL}:3000/patient/getPatient/${token}`)
+          .then(response => {
+            setPersonalData(response.data);
+            console.log(response.data.name);
+          })
+          .catch(function (error) {
+            console.log(error.message);
+          });
+      } catch (err) {
+        Alert.alert('Error', err.code, [
+          {text: 'Exit', onPress: () => BackHandler.exitApp()},
+        ]);
+      }
+    };
+    getPersonalData();
+  }, []);
+
   useEffect(() => {
     const getOldAppointments = async () => {
       try {
-        const token = JSON.parse(await EncryptedStorage.getItem(Token_Secret)).token;
+        const token = JSON.parse(
+          await EncryptedStorage.getItem(Token_Secret),
+        ).token;
         await axios
-          .get(
-            `${Server_URL}:3000/patient/oldAppointment/${token}`,
-          )
+          .get(`${Server_URL}:3000/patient/oldAppointment/${token}`)
           .then(response => setOldAppointments(response.data))
           .catch(function (error) {
             console.log(error.message);
           });
       } catch (err) {
         Alert.alert('Error', err.code, [
-          { text: 'Exit', onPress: () => BackHandler.exitApp() },
+          {text: 'Exit', onPress: () => BackHandler.exitApp()},
         ]);
       }
-
     };
     getOldAppointments();
   }, []);
 
-  const onPressReport = () => {
+  const onPressReport = id => {
     navigation.navigate('Report', {
-      appointmentID: oldAppointments[1].appointmentID,
+      appointmentID: id,
     });
-    console.log(oldAppointments[1].appointmentID);
   };
 
   const onPressLogout = async () => {
-    console.log("I got clicked :)");
+    console.log('I got clicked :)');
     try {
-      const token = JSON.parse(await EncryptedStorage.getItem(Token_Secret)).token;
+      const token = JSON.parse(
+        await EncryptedStorage.getItem(Token_Secret),
+      ).token;
       axios
         .post(`${Server_URL}:3000/patient/logout`, {
-          token: token
+          token: token,
         })
         .then(async function (response) {
           try {
             await EncryptedStorage.removeItem(Token_Secret);
             navigation.reset({
               index: 0,
-              routes: [{ name: 'WelcomePage' }],
+              routes: [{name: 'WelcomePage'}],
             });
           } catch (err) {
             Alert.alert('Error', err.code, [
-              { text: 'Exit', onPress: () => BackHandler.exitApp() },
+              {text: 'Exit', onPress: () => BackHandler.exitApp()},
             ]);
           }
         })
@@ -73,52 +100,57 @@ export default function Profile({ navigation }) {
         });
     } catch (err) {
       Alert.alert('Error', err.code, [
-        { text: 'Exit', onPress: () => BackHandler.exitApp() },
+        {text: 'Exit', onPress: () => BackHandler.exitApp()},
       ]);
     }
-  }
+  };
 
   const [showModal, setShowModal] = useState(false);
 
-  // const onPress = () => {
-  //   setShowModal(false)
-  // }
-
   return (
     <ScrollView>
-      {/* <Modal visible={showModal} animationType="fade" transparent={true}>
+      <Modal visible={showModal} animationType="fade" transparent={true}>
         <View style={styles.logoutModal}>
           <FontAwesome
             name={'close'}
             size={20}
             color={'#fff'}
             onPress={() => setShowModal(false)}></FontAwesome>
-          <Pressable onPress={() => navigation.navigate('')}>
+          <Pressable onPress={onPressLogout}>
             <Text style={{fontSize: 15, color: '#fff'}}>Logout</Text>
           </Pressable>
+          <Pressable
+            onPress={() => {
+              navigation.navigate('ChangePassword', {
+                profileChangePassword: true,
+              }),
+                setShowModal(false);
+            }}>
+            <Text style={{fontSize: 15, color: '#fff'}}>Change Password</Text>
+          </Pressable>
         </View>
-      </Modal> */}
+      </Modal>
       <View style={styles.header}></View>
       <Image
         style={styles.avatar}
-        source={{ uri: 'https://bootdey.com/img/Content/avatar/avatar6.png' }}
+        source={{uri: 'https://bootdey.com/img/Content/avatar/avatar6.png'}}
       />
       <View
-        style={{ position: 'absolute', alignSelf: 'flex-end', marginTop: 15 }}>
-        <TouchableOpacity style={{ margin: 5 }} onPress={onPressLogout}>
-          <Text>Logout</Text>
-          {/* <Ionicons
+        style={{position: 'absolute', alignSelf: 'flex-end', marginTop: 15}}>
+        <TouchableOpacity style={{margin: 5}} onPress={onPressLogout}>
+          {/* <Text>Logout</Text> */}
+          <Ionicons
             name="ellipsis-vertical"
             size={30}
             color="#fff"
-            onPress={() => setShowModal(true)}></Ionicons> */}
+            onPress={() => setShowModal(true)}></Ionicons>
         </TouchableOpacity>
       </View>
       <View style={styles.body}>
         <View style={styles.bodyContent}>
-          <Text style={styles.name}>Ahmed Mohamed</Text>
+          <Text style={styles.name}>{personalData.name}</Text>
           <Text style={styles.subtitle}>BASIC DATA</Text>
-          <TouchableOpacity style={{ flexDirection: 'row' }}>
+          <TouchableOpacity style={{flexDirection: 'row'}}>
             <FontAwesome name="edit" size={25} color="#000"></FontAwesome>
             <Text
               style={{
@@ -131,8 +163,10 @@ export default function Profile({ navigation }) {
             </Text>
           </TouchableOpacity>
           <View style={styles.description}>
-            <Text style={styles.mainText}>Email: ahmed.mo@gmail.com</Text>
-            <Text style={styles.mainText}>Username: ahmed_99 </Text>
+            <Text style={styles.mainText}>Email: {personalData.email}</Text>
+            <Text style={styles.mainText}>
+              Phone number: {personalData.phoneNumber}
+            </Text>
             <Text style={styles.mainText}>Age: 22</Text>
             <Text style={styles.mainText}>Blood Type: A+</Text>
             <Text style={styles.mainText}>Diabetic: No</Text>
@@ -141,12 +175,12 @@ export default function Profile({ navigation }) {
           </View>
           <View style={styles.lineStyle} />
           <Text style={styles.subtitle}>OLD RESERVATIONS</Text>
-          {oldAppointments.map((item, itemIndex) => {
+          {oldAppointments.map(item => {
             return (
               <TouchableOpacity
                 style={styles.appointmentsCard}
-                key={itemIndex}
-                onPress={onPressReport}>
+                key={item.appointmentID}
+                onPress={() => onPressReport(item.appointmentID)}>
                 <Text style={styles.infoText}>
                   Hospital Name: {item.hospitalName}
                 </Text>
@@ -158,31 +192,6 @@ export default function Profile({ navigation }) {
               </TouchableOpacity>
             );
           })}
-
-          {/* <FlatList
-            data={Items}
-            keyExtractor={item => {
-              return item.key;
-            }}
-            renderItem={({item}) => {
-              return (
-                <TouchableOpacity
-                  style={styles.appointmentsCard}
-                  onPress={onPressReport}>
-                  <Text style={styles.infoText}>
-                    Hospital Name: {item.Hname}{' '}
-                  </Text>
-                  <Text style={styles.infoText}>
-                    Doctor Name: {item.doctor}{' '}
-                  </Text>
-                  <Text style={styles.infoText}>
-                    Specialization: {item.specialization}{' '}
-                  </Text>
-                  <Text style={styles.infoText}>Date: {item.date} </Text>
-                </TouchableOpacity>
-              );
-            }}
-          /> */}
         </View>
       </View>
     </ScrollView>
@@ -299,15 +308,22 @@ const styles = StyleSheet.create({
   },
 
   logoutModal: {
-    height: 50,
+    height: 130,
     backgroundColor: '#1c1bad',
     borderRadius: 5,
-    borderWidth: 2,
-    borderColor: '#fff',
-    width: 100,
-    margin: 10,
+    borderWidth: 0.5,
+    // borderColor: '#fff',
+    width: 135,
+    margin: 5,
     alignSelf: 'flex-end',
     justifyContent: 'center',
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 1,
+    shadowOffset: {
+      width: 10,
+      height: 10,
+    },
+    elevation: 10,
   },
 });
