@@ -7,37 +7,49 @@ import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {Server_URL, Token_Secret} from '@env';
 
-export default function OTP({navigation}) {
+export default function OTP({navigation, route}) {
   const [OTP, setOTP] = useState('');
+  const {isForgotten} = route.params;
 
   const onPressHandler = async () => {
     try {
-      const token = JSON.parse(await EncryptedStorage.getItem(Token_Secret)).token;
+      const token = JSON.parse(
+        await EncryptedStorage.getItem(Token_Secret),
+      ).token;
+      console.log(token);
+      axios
+        .post(`${Server_URL}:3000/patient/verify`, {
+          otp: OTP,
+          token: token,
+          forgot: isForgotten,
+        })
+        .then(async function (response) {
+          if (!isForgotten) {
+            navigation.reset({
+              index: 0,
+              routes: [{name: 'Patient'}],
+            });
+          } else {
+            navigation.navigate('ChangePassword', {changePassword: true});
+          }
+        })
+        .catch(function (error) {
+          const err = error.response.data;
+          if (err == 'Wrong Otp') {
+            //alert otp
+            console.log('alert');
+          }
+        });
     } catch (err) {
       Alert.alert('Error', err.code, [
         {text: 'Exit', onPress: () => BackHandler.exitApp()},
       ]);
     }
-    axios
-      .post(`${Server_URL}:3000/patient/verify`, {
-        otp: OTP,
-        token: token,
-        forgot: false,
-      })
-      .then(function (response) {
-        navigation.reset({
-          index: 0,
-          routes: [{name: 'Patient'}],
-        });
-      })
-      .catch(function (error) {
-        const err = error.response.data;
-        if (err == 'Wrong Otp') {
-          //alert otp
-          console.log('alert');
-        }
-      });
   };
+
+  // const ChangePassword = () => {
+  //   navigation.navigate('ChangePassword', {ChangePassword: true});
+  // };
 
   return (
     <View style={styles.body}>

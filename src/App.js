@@ -13,6 +13,7 @@ import Login from './LoginScreen';
 import SignUp from './RegisterScreen';
 import Questions from './SignUpQuestions';
 import OTP from './VerificationScreen';
+import ChangePassword from './ChangePasswordScreen';
 
 //Patient pages
 import PatientHome from './patientPages/PatientHome';
@@ -321,6 +322,7 @@ export default function App() {
         }}>
         <Stack.Screen name="WelcomePage" component={WelcomePage} />
         <Stack.Screen name="Login" component={Login} />
+        <Stack.Screen name="ChangePassword" component={ChangePassword} />
         <Stack.Screen name="OTP" component={OTP} />
         <Stack.Screen name="SignUp" component={SignUp} />
         <Stack.Screen name="SignUpQuestions" component={Questions} />

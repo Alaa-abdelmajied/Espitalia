@@ -43,6 +43,7 @@ export default function PatientHome({navigation}) {
       hospitalID: hospitals._id,
       hospitalName: hospitals.name,
       hospitalAddress: hospitals.address,
+      // fromHomepage: true,
     });
   };
 
@@ -53,14 +54,35 @@ export default function PatientHome({navigation}) {
       speciality: doctors.speciality,
       hospitalName: doctors.hospitalName,
       averageRating: doctors.averageRating,
+      fromHomepage: true,
     });
+    // console.log(
+    //   doctors._id,
+    //   doctors.name,
+    //   doctors.speciality,
+    //   doctors.hospitalName,
+    //   doctors.averageRating,
+    // );
   };
 
+  const onPressSpecializations = (specialization) => {
+    navigation.navigate('DoctorsScreen', {
+      speciality: specialization,
+      fromHomepage: true,
+    });
+    console.log(specialization);
+  };
+
+  const seeAllHospitals = () => {
+    navigation.navigate('HospitalList');
+  };
   const seeAllDoctors = () => {
     navigation.navigate('DoctorList', {isAllDoctors: true});
   };
-  const seeAllHospitals = () => {
-    navigation.navigate('HospitalList');
+  const seeAllSpecializations = () => {
+    navigation.navigate('SpecializationScreen', {isAllSpecializations: true
+    // ,fromHomepage:false
+    });
   };
 
   return (
@@ -177,7 +199,7 @@ export default function PatientHome({navigation}) {
         <Pressable>
           <Text
             style={{color: '#1c1bad', textDecorationLine: 'underline'}}
-            onPress={seeAllDoctors}>
+            onPress={seeAllSpecializations}>
             All specializations
           </Text>
         </Pressable>
@@ -185,7 +207,10 @@ export default function PatientHome({navigation}) {
       <ScrollView vertical={true} showsHorizontalScrollIndicator={false}>
         {specializations.map((card, cardIndex) => {
           return (
-            <TouchableOpacity style={styles.specializationCard} key={cardIndex}>
+            <TouchableOpacity
+              style={styles.specializationCard}
+              key={cardIndex}
+              onPress={() =>onPressSpecializations(card)}>
               <View style={{justifyContent: 'center', alignItems: 'center'}}>
                 <FontAwesome
                   name={'stethoscope'}
@@ -194,7 +219,7 @@ export default function PatientHome({navigation}) {
                   style={{margin: 10}}></FontAwesome>
               </View>
               <View style={{flex: 2, justifyContent: 'center'}}>
-                <Text style={styles.cardText}>{card.specialization}</Text>
+                <Text style={styles.cardText}>{card}</Text>
               </View>
             </TouchableOpacity>
           );

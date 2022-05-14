@@ -4,6 +4,7 @@ import DoctorsCard from '../../utils/DoctorsCard';
 import {SearchBar} from 'react-native-elements';
 import axios from 'axios';
 import {Server_URL} from '@env';
+import Speciality from './SpecializationScreen';
 
 export default function Doctors({navigation, route}) {
   const {
@@ -12,14 +13,28 @@ export default function Doctors({navigation, route}) {
     hospitalName,
     hospitalAddress,
     isAllDoctors,
+    speciality,
+    fromHomepage,
   } = route.params;
-  // const [allDoctors, setAllDoctors] = useState([]);
 
   const [doctors, setDoctors] = useState([]);
+
   useEffect(() => {
     console.log(Server_URL);
-
-    if (isAllDoctors) {
+    if (fromHomepage) {
+      const getSpecDoctors = async () => {
+        await axios
+          .get(`${Server_URL}:3000/patient/searchSpecialization/${speciality}`)
+          .then(response => {
+            setDoctors(response.data);
+            console.log(response.data);
+          })
+          .catch(function (error) {
+            console.log(error.message);
+          });
+      };
+      getSpecDoctors();
+    } else if (isAllDoctors) {
       const seeAllDoctors = async () => {
         await axios
           .get(`${Server_URL}:3000/patient/allDoctors`)
@@ -74,10 +89,18 @@ export default function Doctors({navigation, route}) {
               card={item}
               navigation={navigation}
               hospitalName={
-                isAllDoctors ? item.doctorHospitalName : hospitalName
+                fromHomepage
+                  ? item.hospitalName
+                  : isAllDoctors
+                  ? item.doctorHospitalName
+                  : hospitalName
               }
               hospitalAddress={
-                isAllDoctors ? item.doctorHospitalAddress : hospitalAddress
+                fromHomepage
+                  ? item.hospitalAddress
+                  : isAllDoctors
+                  ? item.doctorHospitalAddress
+                  : hospitalAddress
               }
             />
           );
