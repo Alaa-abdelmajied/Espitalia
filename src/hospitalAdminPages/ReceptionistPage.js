@@ -6,13 +6,14 @@ import ReceptionistCard from './ReceptionistCard'
 const Receptionistpage = ({navigation, route}) => {
     const [text,setText] = useState('');
     const onChange = (textValue) => setText(textValue);
-    const [Reciptionists, setReciptionist] = useState([
-        {name: 'Omar Shalaby', age: 40},
-        {name: 'Nadeen el Gazzar', age: 45},
-        {name: 'Maram Ghazal', age: 12},
-        {name: 'Mayar Adel', age: 20},
-        {name: 'Alaa Abdel Majied',age: 15}
-    ]);
+    // const [Reciptionists, setReciptionist] = useState([
+    //     {name: 'Omar Shalaby', age: 40},
+    //     {name: 'Nadeen el Gazzar', age: 45},
+    //     {name: 'Maram Ghazal', age: 12},
+    //     {name: 'Mayar Adel', age: 20},
+    //     {name: 'Alaa Abdel Majied',age: 15}
+    // ]);
+
     return (
         <SafeAreaView style={styles.container}>
         <View style={styles.container}>
@@ -20,7 +21,7 @@ const Receptionistpage = ({navigation, route}) => {
                 <TextInput placeholder='🔍Search' style={styles.input} onChangeText={onChange} />
             </View>
             <FlatList
-                data={Reciptionists}
+                data={route.params}
                 renderItem={({item}) => <ReceptionistCard item={item} />}
             />
             <TouchableOpacity

@@ -1,9 +1,48 @@
 import React, { useState } from "react";
 import { View, StyleSheet, Button, Text, Image } from 'react-native';
 
+import EncryptedStorage from 'react-native-encrypted-storage';
+import { Server_URL, Token_Secret, Credintials_Secret } from '@env';
+import axios from "axios";
+
 export default function Homepage({ navigation, route }) {
   //token: JSON.parse(await EncryptedStorage.getItem(Token_Secret)).token,
-  
+  const getDoctors = async () => {
+    const token = JSON.parse(await EncryptedStorage.getItem(Token_Secret)).token;
+    console.log(token);
+    axios
+      .get(`${Server_URL}:3000/hospital/viewDoctors`, {
+        headers: {
+          'x-auth-token': token
+        }
+      })
+      .then(async function (response) {
+        //console.log(response.data);
+        navigation.navigate('Doctors', response.data);
+      })
+      .catch (function (error){
+        console.log(error);
+      }); 
+
+  }
+  const getReceptionists = async () => {
+    const token = JSON.parse(await EncryptedStorage.getItem(Token_Secret)).token;
+    console.log(token);
+    axios
+      .get(`${Server_URL}:3000/hospital/viewReceptionists`, {
+        headers: {
+          'x-auth-token': token
+        }
+      })
+      .then(async function (response) {
+        //console.log(response.data);
+        navigation.navigate('Reciptionist', response.data);
+      })
+      .catch (function (error){
+        console.log(error);
+      }); 
+
+  }
   return (
     <View style={styles.container}>
       <View style={styles.logo}>
@@ -19,12 +58,12 @@ export default function Homepage({ navigation, route }) {
         <Button
           title="Doctors"
           color={'#1c1bad'}
-          onPress={() => navigation.navigate('Doctors', hospitalData)}
+          onPress={getDoctors}
         />
         <Button
           title="Reciptionists"
           color={'#1c1bad'}
-          onPress={() => navigation.navigate('Reciptionist', hospitalData)}
+          onPress={getReceptionists}
         />
       </View>
       <Button

@@ -10,25 +10,28 @@ import { normalizeRect } from 'react-native/Libraries/StyleSheet/Rect';
 const Doctorspage = ({ navigation, route }) => {
     const [text, setText] = useState('');
     const onChange = (textValue) => setText(textValue);
-    const [Doctors, setDoctor] = useState([
-        { id: 1, name: 'Omar Shalaby', age: 22, specialization: 'mo5 w 23sab' },
-        { id: 2, name: 'Nadeen el Gazzar', age: 45, specialization: 'asnan' },
-        { id: 3, name: 'Maram Ghazal', age: 12, specialization: 'ta8zya' },
-        { id: 4, name: 'Mayar Adel', age: 20, specialization: 'ay 7aga' },
-        { id: 5, name: 'Alaa Abdel Majied', age: 15, specialization: 'Doctor w 5alas' },
-        { id: 6, name: 'Omar Shalaby', age: 22, specialization: 'mo5 w 23sab' },
-        { id: 7, name: 'Nadeen el Gazzar', age: 45, specialization: 'asnan' },
-        { id: 8, name: 'Maram Ghazal', age: 12, specialization: 'ta8zya' },
-        { id: 9, name: 'Mayar Adel', age: 20, specialization: 'ay 7aga' },
-        { id: 10, name: 'Omar Shalaby', age: 22, specialization: 'mo5 w 23sab' },
-        { id: 11, name: 'Nadeen el Gazzar', age: 45, specialization: 'asnan' },
-        { id: 12, name: 'Maram Ghazal', age: 12, specialization: 'ta8zya' },
-        { id: 13, name: 'Mayar Adel', age: 20, specialization: 'ay 7aga' },
-        { id: 14, name: 'Alaa Abdel Majied', age: 15, specialization: 'Doctor w 5alas' },
-        { id: 15, name: 'Alaa Abdel Majied', age: 15, specialization: 'Doctor w 5alas' },
-        { id: 16, name: 'Alaa Abdel Majied', age: 15, specialization: 'Doctor w 5alas' },
-        { id: 17, name: 'Omar Shalaby', age: 22, specialization: 'mo5 w 23sab' }
-    ]);
+    // const [Doctors, setDoctor] = useState([
+    //     { id: 1, name: 'Omar Shalaby', age: 22, specialization: 'mo5 w 23sab' },
+    //     { id: 2, name: 'Nadeen el Gazzar', age: 45, specialization: 'asnan' },
+    //     { id: 3, name: 'Maram Ghazal', age: 12, specialization: 'ta8zya' },
+    //     { id: 4, name: 'Mayar Adel', age: 20, specialization: 'ay 7aga' },
+    //     { id: 5, name: 'Alaa Abdel Majied', age: 15, specialization: 'Doctor w 5alas' },
+    //     { id: 6, name: 'Omar Shalaby', age: 22, specialization: 'mo5 w 23sab' },
+    //     { id: 7, name: 'Nadeen el Gazzar', age: 45, specialization: 'asnan' },
+    //     { id: 8, name: 'Maram Ghazal', age: 12, specialization: 'ta8zya' },
+    //     { id: 9, name: 'Mayar Adel', age: 20, specialization: 'ay 7aga' },
+    //     { id: 10, name: 'Omar Shalaby', age: 22, specialization: 'mo5 w 23sab' },
+    //     { id: 11, name: 'Nadeen el Gazzar', age: 45, specialization: 'asnan' },
+    //     { id: 12, name: 'Maram Ghazal', age: 12, specialization: 'ta8zya' },
+    //     { id: 13, name: 'Mayar Adel', age: 20, specialization: 'ay 7aga' },
+    //     { id: 14, name: 'Alaa Abdel Majied', age: 15, specialization: 'Doctor w 5alas' },
+    //     { id: 15, name: 'Alaa Abdel Majied', age: 15, specialization: 'Doctor w 5alas' },
+    //     { id: 16, name: 'Alaa Abdel Majied', age: 15, specialization: 'Doctor w 5alas' },
+    //     { id: 17, name: 'Omar Shalaby', age: 22, specialization: 'mo5 w 23sab' }
+    // ]);
+
+    //console.log(route.params);
+    //console.log(navigation);
 
 
     return (
@@ -38,8 +41,19 @@ const Doctorspage = ({ navigation, route }) => {
                     <TextInput placeholder='🔍Search' style={styles.input} onChangeText={onChange} />
                 </View>
                 <FlatList
-                    data={Doctors}
-                    renderItem={({ item }) => <DoctorCard item={item} />}
+                    data={route.params}
+                    renderItem={({ item }) => 
+                    <TouchableOpacity style={styles.doctorCard} onPress={() => navigation.navigate('DoctorProfile',item)}>
+                    <View style={styles.doctorView}>
+                        <View>
+                            <Text style={styles.doctorText}>{item.name}</Text>
+                            <Text style={styles.doctorText}>{item.specialization}</Text>
+                        </View>
+                        <Icon name='angle-double-right' style={styles.icon}/>
+            
+                    </View>
+                    </TouchableOpacity>
+                    }
                 />
                 <TouchableOpacity
                     style={styles.touchableOpacity}
@@ -89,12 +103,34 @@ const styles = StyleSheet.create({
         right: 40,
         bottom: 40,
         elevation: 10,
-        
+
     },
     addButton: {
-        fontSize:30,
-        color:'white',
+        fontSize: 30,
+        color: 'white',
     },
+    doctorCard: {
+        padding: 15,
+        backgroundColor: 'white',
+        borderRadius: 10,
+        borderColor: 'gray',
+        margin: 5,
+        elevation: 5,
+      },
+      doctorView: {
+        borderRadius: 10,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+      },
+      doctorText: {
+        fontSize: 15,
+        color: 'black'
+      },
+      icon: {
+        color: 'black',
+        fontSize: 30,
+      },
 
 });
 

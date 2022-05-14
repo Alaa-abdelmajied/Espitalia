@@ -4,13 +4,12 @@ import Icon from 'react-native-vector-icons/dist/FontAwesome';
 
 
 
-const DoctorCard = ({item}) => {
+const DoctorCard = ({item, navigation}) => {
   return (
-    <TouchableOpacity style={styles.doctorCard}>
+    <TouchableOpacity style={styles.doctorCard} onPress={() => navigation.navigate('WelcomePage')}>
         <View style={styles.doctorView}>
             <View>
                 <Text style={styles.doctorText}>{item.name}</Text>
-                <Text style={styles.doctorText}>{item.age}</Text>
                 <Text style={styles.doctorText}>{item.specialization}</Text>
             </View>
             <Icon name='angle-double-right' style={styles.icon}/>
