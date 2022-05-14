@@ -12,11 +12,11 @@ import {
 
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import {Rating} from 'react-native-ratings';
+
 import {Server_URL} from '@env';
 
 export default function PatientHome({navigation}) {
-  const [defaultRating, setDefaultRating] = useState(2);
-  const [maxRating] = useState([1, 2, 3, 4, 5]);
   const [homepageData, setHomepageData] = useState([]);
 
   useEffect(() => {
@@ -32,11 +32,21 @@ export default function PatientHome({navigation}) {
   }, []);
 
   const onPressHospitals = () => {
-    navigation.navigate('SpecializationScreen');
+    navigation.navigate('SpecializationScreen', {
+      hospitalID: homepageData.hospitalID,
+      hospitalName: homepageData.hospitalName,
+      hospitalAddress: homepageData.hospitalAddress,
+    });
   };
 
   const onPressDoctors = () => {
-    navigation.navigate('DoctorDetails');
+    navigation.navigate('DoctorDetails', {
+      drID: homepageData.drID,
+      drName: homepageData.drName,
+      speciality: homepageData.speciality,
+      hospitalName: homepageData.hospitalName,
+      averageRating: homepageData.averageRating,
+    });
   };
 
   const seeAllDoctors = () => {
@@ -45,7 +55,6 @@ export default function PatientHome({navigation}) {
   const seeAllHospitals = () => {
     navigation.navigate('HospitalList');
   };
-
 
   return (
     <View style={styles.container}>
@@ -141,22 +150,20 @@ export default function PatientHome({navigation}) {
                   </Text>
                 </View>
                 <View style={styles.customRatingBar}>
-                  {maxRating.map((item, key) => {
-                    return (
-                      <TouchableOpacity
-                        activeOpacity={0.7}
-                        key={item}
-                        disabled={true}
-                        // onPress={() => setDefaultRating(item)}
-                      >
-                        <FontAwesome
-                          name={item <= defaultRating ? 'star' : 'star-o'}
-                          size={26}
-                          color="#FDCC0D"
-                        />
-                      </TouchableOpacity>
-                    );
-                  })}
+                  <Rating
+                    type="custom"
+                    ratingBackgroundColor="#bfbfbf"
+                    tintColor="#fff"
+                    ratingCount={5}
+                    imageSize={25}
+                    startingValue={card.averageRating}
+                    fractions={1}
+                    readonly={true}
+                    style={{
+                      margin: 5,
+                      backgroundColor: 'transparent',
+                      fontSize: 15,
+                    }}></Rating>
                 </View>
               </View>
             </TouchableOpacity>

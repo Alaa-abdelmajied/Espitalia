@@ -48,15 +48,10 @@ export default function Doctors({navigation, route}) {
     }
   }, []);
 
-  const [defaultRating, setDefaultRating] = useState(2);
-  const [maxRating, setMaxRating] = useState([1, 2, 3, 4, 5]);
-
   const [search, setSearch] = useState('');
-
   const updateSearch = search => {
     setSearch(search);
   };
-
 
   return (
     <View style={{flex: 1, justifyContent: 'center', flexDirection: 'column'}}>
@@ -68,18 +63,6 @@ export default function Doctors({navigation, route}) {
         containerStyle={{backgroundColor: '#f0f0f0'}}
         inputContainerStyle={{borderRadius: 50, backgroundColor: '#fff'}}
       />
-      {/* <ScrollView>
-        {doctors.map((card, cardIndex) => {
-          return (
-            <DoctorsCard
-              card={card}
-              maxRating={maxRating}
-              defaultRating={defaultRating}
-              navigation={navigation}
-            />
-          );
-        })}
-      </ScrollView>  */}
       <FlatList
         data={doctors}
         keyExtractor={item => {
@@ -89,8 +72,6 @@ export default function Doctors({navigation, route}) {
           return (
             <DoctorsCard
               card={item}
-              maxRating={maxRating}
-              defaultRating={defaultRating}
               navigation={navigation}
               hospitalName={
                 isAllDoctors ? item.doctorHospitalName : hospitalName

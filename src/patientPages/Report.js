@@ -13,14 +13,16 @@ import {
 import {Rating} from 'react-native-ratings';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import axios from 'axios';
-import {Server_URL} from '@env';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import {Server_URL, Token_Secret} from '@env';
 
 export default function Report({route}) {
   const {appointmentID} = route.params;
+
   const [report, setReport] = useState({});
 
   useEffect(() => {
-    const selectReport = async () => {
+    const getReport = async () => {
       await axios
         .get(`${Server_URL}:3000/patient/report/${appointmentID}`)
         .then(response => {
@@ -30,15 +32,39 @@ export default function Report({route}) {
           console.log(error.message);
         });
     };
-    selectReport();
+    getReport();
   }, []);
 
-  const [showModal, setShowModal] = useState(false);
-  const [defaultRating, setDefaultRating] = useState(2);
-  const [maxRating, setMaxRating] = useState([1, 2, 3, 4, 5]);
+  const [rate, setRate] = useState('');
+  const [review, setReview] = useState('');
 
-  const rate = rating => {
-    console.log('Rating ' + rating);
+  const saveReview = async () => {
+    const token = JSON.parse(
+      await EncryptedStorage.getItem(Token_Secret),
+    ).token;
+    await axios
+      .post(`${Server_URL}:3000/patient/rateAndReview`, {
+        review: review,
+        rate: rate,
+        doctorId: report.drId,
+        token: token,
+      })
+      .then(response => {
+        setReport(response.data);
+        console.log(response.data);
+      })
+      .catch(function (error) {
+        console.log(error.message);
+      });
+  };
+
+  const [showModal, setShowModal] = useState(false);
+
+  const onPressSave = () => {
+    saveReview();
+    setShowModal(false);
+    console.log(rate);
+
   };
 
   return (
@@ -64,7 +90,7 @@ export default function Report({route}) {
               startingValue={1}
               fractions={1}
               showRating
-              onFinishRating={(score) => rate(score)}
+              onFinishRating={rate => setRate(rate)}
               style={{
                 margin: 5,
                 backgroundColor: 'transparent',
@@ -87,14 +113,17 @@ export default function Report({route}) {
             })} */}
           </View>
           <View style={styles.modalInput}>
-            <TextInput placeholder="Write Review" multiline={true}></TextInput>
+            <TextInput
+              placeholder="Write Review"
+              multiline={true}
+              onChangeText={review => setReview(review)}></TextInput>
           </View>
           <FontAwesome
             name={'save'}
             size={25}
             color={'#1c1bad'}
             style={{alignSelf: 'center', margin: 5}}
-            onPress={() => setShowModal(false)}></FontAwesome>
+            onPress={onPressSave}></FontAwesome>
         </View>
       </Modal>
       <View style={styles.header}>
@@ -130,7 +159,7 @@ export default function Report({route}) {
           <Text style={styles.infoText}>{report.prescription}</Text>
         </ScrollView>
       </View>
-          </ScrollView>
+    </ScrollView>
   );
 }
 

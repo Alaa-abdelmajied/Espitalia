@@ -1,6 +1,4 @@
-import React, {useRef} from 'react';
-import {useState} from 'react';
-
+import React, {useRef, useState, useEffect} from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -16,8 +14,11 @@ import {
 
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import {Rating} from 'react-native-ratings';
+import axios from 'axios';
+import {Server_URL} from '@env';
 
-export default function ProfileScreen() {
+export default function ProfileScreen({route}) {
   const appointments = [
     {
       key: 1,
@@ -56,46 +57,29 @@ export default function ProfileScreen() {
     },
   ];
 
-  const review = [
-    {
-      key: 1,
-      reviewer_name: 'Maram Ghazal',
-      date: '9/3/2022',
-      review:
-        'Hello, this is my first review, why dont you try to add some important features like telegeram like: separete tabs for audio, video and photo',
-    },
-    {
-      key: 2,
-      reviewer_name: 'Alaa Abdelmajied',
-      date: '11/3/2022',
-      review:
-        'Hello, this is my first review, why dont you try to add some important features like telegeram',
-    },
-    {
-      key: 3,
-      reviewer_name: 'Mayar Adel',
-      date: '12/3/2022',
-      review: 'Hello, this is my first review',
-    },
-    {
-      key: 4,
-      reviewer_name: 'Nadeen Elgazar',
-      date: '14/3/2022',
-      review: 'I dont like this style btw',
-    },
-    {
-      key: 5,
-      reviewer_name: 'Omar Shalaby',
-      date: '15/3/2022',
-      review: 'This is too much scrolling',
-    },
-  ];
+  const {drID, drName, speciality, hospitalName, averageRating} = route.params;
+  const [comments, setComments] = useState([]);
 
-  const [defaultRating, setDefaultRating] = useState(2);
-  const [maxRating, setMaxRating] = useState([1, 2, 3, 4, 5]);
+  useEffect(() => {
+    const getReviews = async () => {
+      await axios
+        .get(`${Server_URL}:3000/patient/doctor/${drID}`)
+        .then(response => {
+          setComments(response.data);
+        })
+        .catch(function (error) {
+          console.log(error.message);
+        });
+    };
+    getReviews();
+  }, []);
+
+  const OnPress = () => {
+    console.log('reviews:', comments);
+    console.log('avg rating:', averageRating);
+  };
 
   const scrollX = useRef(new Animated.Value(0)).current;
-
   let {width: windowWidth, height: windowHeight} = useWindowDimensions();
   windowHeight = windowHeight - 300;
 
@@ -110,34 +94,33 @@ export default function ProfileScreen() {
           />
           <View style={styles.body}>
             {/* <View style={styles.bodyContent}> */}
-            <Text style={styles.dr_name}>Dr Alaa</Text>
-            <Text style={styles.speciality}>Dermatologist</Text>
+            <Text style={styles.dr_name}>{drName}</Text>
+            <Text style={styles.speciality}>{speciality}</Text>
             <View style={{flexDirection: 'row'}}>
               <Ionicons
                 name={'location-sharp'}
                 size={25}
                 color="#1c1bad"
                 style={{margin: 5}}></Ionicons>
-              <Text style={styles.description}>
-                Working at Andalusia Hospital
-              </Text>
+              <Text style={styles.description}>{hospitalName}</Text>
             </View>
-            {/* <View style={styles.customRatingBar}>
-              {maxRating.map((item, key) => {
-                return (
-                  <TouchableOpacity
-                    activeOpacity={0.7}
-                    key={i + 1}
-                    onPress={() => setDefaultRating(item)}>
-                    <FontAwesome
-                      name={item <= defaultRating ? 'star' : 'star-o'}
-                      size={25}
-                      color="#FDCC0D"
-                    />
-                  </TouchableOpacity>
-                );
-              })}
-            </View> */}
+            <View style={styles.customRatingBar}>
+              <Rating
+                type="custom"
+                ratingBackgroundColor="#bfbfbf"
+                tintColor="#f0f0f0"
+                ratingCount={5}
+                imageSize={30}
+                startingValue={averageRating}
+                fractions={1}
+                readonly={true}
+                style={{
+                  margin: 5,
+                  backgroundColor: 'transparent',
+                  fontSize: 15,
+                }}></Rating>
+              <Text style={styles.name}>{averageRating}/5</Text>
+            </View>
           </View>
         </View>
         <View style={styles.appointmentsContainer}>
@@ -168,7 +151,7 @@ export default function ProfileScreen() {
                         To: {card.to}
                       </Text>
                     </View>
-                    <Pressable style={styles.bookButton}>
+                    <Pressable style={styles.bookButton} onPress={OnPress}>
                       <Text style={{color: '#fff'}}>Book</Text>
                     </Pressable>
                   </View>
@@ -201,68 +184,12 @@ export default function ProfileScreen() {
             })}
           </View>
         </View>
-
         <View style={styles.reviewsArea}>
           <Text style={styles.title}>Ratings and Reviews</Text>
-          {/* <FlatList
-            data={review}
-            keyExtractor={item => {
-              return item.key;
-            }}
-            renderItem={({item}) => {
-              return (
-                <View
-                  style={{
-                    backgroundColor: '#fff',
-                    width: '95%',
-                    margin: 5,
-                    justifyContent: 'center',
-                    alignSelf: 'center',
-                    borderRadius: 10,
-                    shadowColor: '#000000',
-                    shadowOffset: {width: -2, height: 2},
-                    shadowOpacity: 0.2,
-                    shadowRadius: 3,
-                    elevation: 2,
-                  }}>
-                  <View
-                    style={{height: 150, width: '97%', alignSelf: 'center'}}
-                    >
-                    <View style={{flexDirection: 'row'}}>
-                      <Text style={styles.name}>
-                        {item.reviewer_name}
-                      </Text>
-                      <Text style={styles.name}>{item.date}</Text>
-                    </View>
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        marginLeft: '3%',
-                      }}>
-                      {maxRating.map((item, key) => {
-                        return (
-                          <TouchableOpacity
-                            activeOpacity={0.7}
-                            key={key}
-                            onPress={() => setDefaultRating(item)}>
-                            <FontAwesome
-                              name={item <= defaultRating ? 'star' : 'star-o'}
-                              size={25}
-                              color="#FDCC0D"
-                            />
-                          </TouchableOpacity>
-                        );
-                      })}
-                    </View>
-                    <Text style={styles.review}>{item.review}</Text>
-                  </View>
-                </View>
-              );
-            }}
-          /> */}
-          {review.map((reviewCard, cardIndex) => {
+          {comments.map((reviewCard, cardIndex) => {
             return (
               <View
+                key={cardIndex}
                 style={{
                   backgroundColor: '#fff',
                   width: '95%',
@@ -280,7 +207,7 @@ export default function ProfileScreen() {
                   style={{height: 150, width: '97%', alignSelf: 'center'}}
                   key={reviewCard.key}>
                   <View style={{flexDirection: 'row'}}>
-                    <Text style={styles.name}>{reviewCard.reviewer_name}</Text>
+                    <Text style={styles.name}>{reviewCard.name}</Text>
                     <Text style={styles.name}>{reviewCard.date}</Text>
                   </View>
                   <View
@@ -288,20 +215,20 @@ export default function ProfileScreen() {
                       flexDirection: 'row',
                       marginLeft: 5,
                     }}>
-                    {maxRating.map((item, key) => {
-                      return (
-                        <TouchableOpacity
-                          activeOpacity={0.7}
-                          key={key}
-                          onPress={() => setDefaultRating(item)}>
-                          <FontAwesome
-                            name={item <= defaultRating ? 'star' : 'star-o'}
-                            size={25}
-                            color="#FDCC0D"
-                          />
-                        </TouchableOpacity>
-                      );
-                    })}
+                    <Rating
+                      type="custom"
+                      ratingBackgroundColor="#bfbfbf"
+                      tintColor="#fff"
+                      ratingCount={5}
+                      imageSize={25}
+                      startingValue={reviewCard.rate}
+                      fractions={1}
+                      readonly={true}
+                      style={{
+                        margin: 5,
+                        backgroundColor: 'transparent',
+                        fontSize: 15,
+                      }}></Rating>
                   </View>
                   <Text style={styles.review}>{reviewCard.review}</Text>
                 </View>
@@ -309,7 +236,6 @@ export default function ProfileScreen() {
             );
           })}
         </View>
-        {/* <View style={{ backgroundColor: '#FDCC0D', width: '100%', height: 100, justifyContent: 'center', alignItems: 'center' }}><Text style={styles.title}>Comments Section - To be continued</Text></View> */}
       </View>
     </ScrollView>
   );
@@ -357,21 +283,10 @@ const styles = StyleSheet.create({
     // backgroundColor:'#ff0ff0',
   },
 
-  // bodyContent: {
-  //   // flex: 1,
-  //   // flexDirection: 'column',
-  //   alignItems: 'center',
-  //   // backgroundColor: '#f0ff7f',
-  //   // padding: 30,
-  //   // marginTop:150,
-  // },
-
   name: {
     fontSize: 20,
     color: '#000',
     marginLeft: 5,
-    // marginTop: 10,
-    // textAlign: 'center'
   },
 
   dr_name: {
@@ -400,15 +315,6 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
 
-  // scheduleContainer:
-  // {
-  //   height: 280,
-  //   margin: '2%',
-  //   flexDirection: 'column',
-  //   // backgroundColor: '#ff0fff',
-  //   // justifyContent: 'space-evenly'
-  // },
-
   appointmentsContainer: {
     height: 280,
     flexDirection: 'column',
@@ -419,8 +325,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    // marginBottom: 20,
-    // backgroundColor: '#ff0fff',
   },
 
   normalDots: {
@@ -470,6 +374,7 @@ const styles = StyleSheet.create({
 
   customRatingBar: {
     justifyContent: 'center',
+    alignItems: 'center',
     flexDirection: 'row',
     margin: 5,
   },
@@ -481,7 +386,6 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    // textAlign: 'center',
     fontSize: 22,
     fontWeight: '700',
     color: 'bold',
@@ -491,6 +395,5 @@ const styles = StyleSheet.create({
 
   reviewsArea: {
     width: '100%',
-    // backgroundColor:'#f0f'
   },
 });
