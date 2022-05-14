@@ -67,6 +67,7 @@ export default function Login({ navigation, route }) {
     var staff = route.params.staff;
     if (!staff) {
 
+      console.log('here');
       axios
         .post(`${Server_URL}:3000/patient/login`, {
           email: email,
@@ -119,20 +120,20 @@ export default function Login({ navigation, route }) {
       //   console.log('select hospital');
       //   setIsVisible(true);
       // }
-      console.log(email, password, selectedStaff.id);
+      const url = `${Server_URL}:3000/${selectedStaff.id}/login`;
+      console.log(email, password, selectedStaff.id, url);
       axios
-      .post(`${Server_URL}:3000/${selectedStaff.id}/login`, {
-        email: email,
-        password: password
-      })
-      .then(async function (response) {
-        console.log("we are here");
-        //setIsVisible(false);
-        const token = response.headers['x-auth-token'];
-        try {
-          await EncryptedStorage.setItem(
-            Token_Secret,
-            JSON.stringify({ token: token }),
+        .post(url, {
+          email: email,
+          password: password
+        })
+        .then(async function (response) {
+          setIsVisible(false);
+          const token = response.headers['x-auth-token'];
+          try {
+            await EncryptedStorage.setItem(
+              Token_Secret,
+              JSON.stringify({ token: token }),
             );
             await EncryptedStorage.setItem(
               Credintials_Secret,
@@ -140,21 +141,21 @@ export default function Login({ navigation, route }) {
                 email: email,
                 password: password,
               }),
-              );
-            } catch (err) {
-              Alert.alert('Error', err.code, [
-                { text: 'Exit', onPress: () => BackHandler.exitApp() },
-              ]);
-            }
+            );
+          } catch (err) {
+            Alert.alert('Error', err.code, [
+              { text: 'Exit', onPress: () => BackHandler.exitApp() },
+            ]);
+          }
           navigation.dispatch(StackActions.popToTop());
           navigation.dispatch(
             StackActions.replace('HosptialAdminHomePage', { screen: 'Home', params: response.data })
-            );
-          })
-          .catch(function (error) {
-            console.log("we are here");
-            //setIsVisible(true);
-            console.log('ERROR:', error);
+          );
+        })
+        .catch(function (error) {
+          setIsVisible(true);
+          console.log(errorMeesage);
+          console.log('ERROR:', error);
         });
     }
   };

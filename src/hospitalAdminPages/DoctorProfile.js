@@ -1,5 +1,5 @@
-import React, {useRef} from 'react';
-import {useState} from 'react';
+import React, { useEffect, useRef } from 'react';
+import { useState } from 'react';
 
 import {
   ScrollView,
@@ -17,8 +17,39 @@ import {
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-export default function ProfileScreen({ navigation , route}) {
-  
+import axios from "axios";
+import EncryptedStorage from 'react-native-encrypted-storage';
+import { Server_URL, Token_Secret, Credintials_Secret } from '@env';
+
+export default function ProfileScreen({ navigation, route }) {
+  const removeSchedle = async (workingDay) => {
+    try {
+      const token = JSON.parse(await EncryptedStorage.getItem(Token_Secret)).token;
+      //console.log(token);
+      console.log(route.params._id, workingDay._id, Server_URL);
+      axios({
+        method: 'put',
+        url: `${Server_URL}:3000/hospital/removeWorkingDay`,
+        data: {
+          doctorID: route.params._id,
+          workingDay: workingDay._id,
+        },
+        headers: {
+          'x-auth-token': token
+        }
+      })
+        .then(function (response) {
+          console.log(response.data);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });;
+    }
+    catch (error) {
+      console.log(error);
+      // console.log("no try");
+    }
+  }
 
   const review = [
     {
@@ -60,7 +91,7 @@ export default function ProfileScreen({ navigation , route}) {
 
   const scrollX = useRef(new Animated.Value(0)).current;
 
-  let {width: windowWidth, height: windowHeight} = useWindowDimensions();
+  let { width: windowWidth, height: windowHeight } = useWindowDimensions();
   windowHeight = windowHeight - 300;
 
   return (
@@ -70,7 +101,7 @@ export default function ProfileScreen({ navigation , route}) {
           <View style={styles.header}></View>
           <Image
             style={styles.avatar}
-            source={{uri: 'https://bootdey.com/img/Content/avatar/avatar6.png'}}
+            source={{ uri: 'https://bootdey.com/img/Content/avatar/avatar6.png' }}
           />
           <View style={styles.body}>
             {/* <View style={styles.bodyContent}> */}
@@ -85,27 +116,30 @@ export default function ProfileScreen({ navigation , route}) {
             pagingEnabled
             showsHorizontalScrollIndicator={false}
             onScroll={Animated.event(
-              [{nativeEvent: {contentOffset: {x: scrollX}}}],
-              {useNativeDriver: false},
+              [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+              { useNativeDriver: false },
             )}
             scrollEventThrottle={16}>
             {route.params.workingDays.map((card, cardIndex) => {
               return (
-                <Animated.View style={{width: windowWidth}} key={card.key}>
+                <Animated.View style={{ width: windowWidth }} key={card.key}>
                   <View style={styles.scheduleCard}>
                     <View style={styles.dateHeader}>
-                      <Text style={{color: '#fff', fontSize: 20}}>
+                      <Text style={{ color: '#fff', fontSize: 20 }}>
                         {card.day}
                       </Text>
                     </View>
-                    <View style={{margin: 30, alignItems: 'center'}}>
-                      <Text style={{color: '#000', fontSize: 20}}>
+                    <View style={{ margin: 30, alignItems: 'center' }}>
+                      <Text style={{ color: '#000', fontSize: 20 }}>
                         From: {card.from}
                       </Text>
-                      <Text style={{color: '#000', fontSize: 20}}>
+                      <Text style={{ color: '#000', fontSize: 20 }}>
                         To: {card.to}
                       </Text>
                     </View>
+                    <Pressable style={styles.bookButton} onPress={() => removeSchedle(card)}>
+                      <Text style={{ color: '#fff' }}>Remove</Text>
+                    </Pressable>
                   </View>
                 </Animated.View>
               );
@@ -127,8 +161,8 @@ export default function ProfileScreen({ navigation , route}) {
                 <Animated.View
                   style={[
                     styles.normalDots,
-                    {width},
-                    {backgroundColor: card.color},
+                    { width },
+                    { backgroundColor: card.color },
                   ]}
                   key={cardIndex}
                 />
@@ -139,7 +173,7 @@ export default function ProfileScreen({ navigation , route}) {
 
         <View style={styles.reviewsArea}>
           <Text style={styles.title}>Ratings and Reviews</Text>
-          
+
           {route.params.reviews.map((reviewCard, cardIndex) => {
             return (
               <View
@@ -151,15 +185,15 @@ export default function ProfileScreen({ navigation , route}) {
                   alignSelf: 'center',
                   borderRadius: 10,
                   shadowColor: '#000000',
-                  shadowOffset: {width: -2, height: 2},
+                  shadowOffset: { width: -2, height: 2 },
                   shadowOpacity: 0.2,
                   shadowRadius: 3,
                   elevation: 2,
                 }}>
                 <View
-                  style={{height: 150, width: '97%', alignSelf: 'center'}}
+                  style={{ height: 150, width: '97%', alignSelf: 'center' }}
                   key={reviewCard.key}>
-                  <View style={{flexDirection: 'row'}}>
+                  <View style={{ flexDirection: 'row' }}>
                     <Text style={styles.name}>{reviewCard.reviewer_name}</Text>
                     <Text style={styles.name}>{reviewCard.date}</Text>
                   </View>
@@ -321,7 +355,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 35,
     shadowColor: '#000000',
-    shadowOffset: {width: -2, height: 2},
+    shadowOffset: { width: -2, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 3,
     elevation: 2,
@@ -372,5 +406,17 @@ const styles = StyleSheet.create({
   reviewsArea: {
     width: '100%',
     // backgroundColor:'#f0f'
+  },
+  bookButton: {
+    width: 100,
+    paddingTop: '6%',
+    paddingBottom: '6%',
+    borderRadius: 30,
+    backgroundColor: '#bf0000',
+    borderWidth: 1,
+    alignItems: 'center',
+    textAlign: 'center',
+    borderColor: '#fff',
+    color: '#fff',
   },
 });
