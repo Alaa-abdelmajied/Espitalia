@@ -51,7 +51,7 @@ export default function Login({navigation, route}) {
             routes: [{name: 'Patient'}],
           });
         } else {
-          navigation.navigate('OTP');
+          navigation.navigate('OTP', {isForgotten: false});
         }
       })
       .catch(function (error) {
@@ -92,7 +92,10 @@ export default function Login({navigation, route}) {
               placeholder="Enter your password"
               onChangeText={text => setPassword(text)}></TextInput>
 
-            <Pressable>
+            <Pressable
+              onPress={() =>
+                navigation.navigate('ChangePassword', {changePassword: false})
+              }>
               <Text style={styles.QuestionText}>Forgot password?</Text>
             </Pressable>
 

@@ -18,8 +18,8 @@ import axios from 'axios';
 import {Server_URL} from '@env';
 
 export default function ProfileScreen({route}) {
-
-  const {drID, drName, speciality, hospitalName, averageRating} = route.params;
+  const {drID, drName, speciality, hospitalName, averageRating, fromHomepage} =
+    route.params;
   const [comments, setComments] = useState([]);
   const [schedule, setSchedule] = useState([]);
 

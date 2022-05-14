@@ -14,41 +14,55 @@ import {Server_URL} from '@env';
 
 export default function Speciality({navigation, route}) {
   const [specialization, setSpecialization] = useState([]);
-  const {hospitalID, hospitalName, hospitalAddress} = route.params;
+  const [allSpecializations, setAllSpecializations] = useState([]);
+  const {
+    hospitalID,
+    hospitalName,
+    hospitalAddress,
+    isAllSpecializations,
+    // fromHomepage,
+  } = route.params;
 
-  useEffect(() => {
-    const getSpecializations = async () => {
-      await axios
-        .get(`${Server_URL}:3000/patient/pressOnHospital/${hospitalID}`)
-        .then(response => {
-          setSpecialization(response.data);
-        })
-        .catch(function (error) {
-          const err = error.response.data;
-          if (err == 'No specialzations found') {
-            //alert worng email or password
-            Alert.alert(err);
+  if (!isAllSpecializations) {
+    useEffect(() => {
+      const getSpecializations = async () => {
+        await axios
+          .get(`${Server_URL}:3000/patient/pressOnHospital/${hospitalID}`)
+          .then(response => {
+            setSpecialization(response.data);
+          })
+          .catch(function (error) {
+            const err = error.response.data;
+            if (err == 'No specialzations found') {
+              //alert worng email or password
+              Alert.alert(err);
+              console.log(error.message);
+            } else if (err == 'No hospitals found') {
+            }
+          });
+      };
+      getSpecializations();
+    }, []);
+  } else {
+    useEffect(() => {
+      const getAllSpecializations = async () => {
+        await axios
+          .get(`${Server_URL}:3000/patient/allSpecializations`)
+          .then(response => {
+            setAllSpecializations(response.data);
+          })
+          .catch(function (error) {
             console.log(error.message);
-          } else if (err == 'No hospitals found') {
-          }
-        });
-    };
-    getSpecializations();
-  }, []);
+          });
+      };
+      getAllSpecializations();
+    }, []);
+  }
 
   const [search, setSearch] = useState('');
   // const updateSearch = search => {
   //   setSearch(search);
   // };
-
-  const searchSpecialization = text => {
-    axios
-      .get(`http://192.168.1.10:3000/patient/searchSpecialization/${text}`)
-      .then(response => setSearch(response.data))
-      .catch(function (error) {
-        console.log(error.message);
-      });
-  };
 
   const onPress = item => {
     navigation.navigate('DoctorsScreen', {
@@ -57,6 +71,7 @@ export default function Speciality({navigation, route}) {
       hospitalName: hospitalName,
       hospitalAddress: hospitalAddress,
       isAllDoctors: false,
+      fromHomepage: false,
     });
   };
 
@@ -66,13 +81,13 @@ export default function Speciality({navigation, route}) {
         lightTheme={true}
         placeholder="search"
         containerStyle={{backgroundColor: '#f0f0f0'}}
-        onChangeText={searchSpecialization()}
+        // onChangeText={searchSpecialization()}
         // value={search}
         inputContainerStyle={{borderRadius: 50, backgroundColor: '#fff'}}
       />
       <FlatList
         keyExtractor={(item, index) => index.toString()}
-        data={specialization}
+        data={!isAllSpecializations ? specialization : allSpecializations}
         renderItem={({item}) => {
           return (
             <TouchableOpacity
@@ -85,9 +100,15 @@ export default function Speciality({navigation, route}) {
                   color="#1c1bad"
                   style={{margin: 10}}></FontAwesome>
               </View>
-              <View style={{flex: 2, justifyContent: 'center'}}>
-                <Text style={styles.speciality}>{item}</Text>
-              </View>
+              {!isAllSpecializations ? (
+                <View style={{flex: 2, justifyContent: 'center'}}>
+                  <Text style={styles.speciality}>{item}</Text>
+                </View>
+              ) : (
+                <View style={{flex: 2, justifyContent: 'center'}}>
+                  <Text style={styles.speciality}>{item.name}</Text>
+                </View>
+              )}
             </TouchableOpacity>
           );
         }}
