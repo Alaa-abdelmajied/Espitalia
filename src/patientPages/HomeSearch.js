@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, TouchableOpacity, FlatList, Text } from 'react-native';
-import { Button, SearchBar } from 'react-native-elements';
-import { Server_URL } from '@env';
+import React, {useEffect, useState} from 'react';
+import {StyleSheet, View, TouchableOpacity, FlatList, Text} from 'react-native';
+import {Button, SearchBar} from 'react-native-elements';
+import {Server_URL} from '@env';
 import axios from 'axios';
 
-export default function Search({ navigation }) {
+export default function Search({navigation}) {
   const [search, setSearch] = useState('');
   const [doctorsResult, setDoctorsResult] = useState([]);
   const [doctorSeeMore, setDoctorSeeMore] = useState(false);
@@ -13,7 +13,7 @@ export default function Search({ navigation }) {
   const [specializationsResult, setSpecializationsResult] = useState([]);
   const [specializationSeeMore, setSpecializationSeeMore] = useState(false);
 
-  const updateSearch = (search) => {
+  const updateSearch = search => {
     setSearch(search);
     if (search.length > 0) {
       generalSearch(search);
@@ -27,7 +27,7 @@ export default function Search({ navigation }) {
     }
   };
 
-  const generalSearch = (search) => {
+  const generalSearch = search => {
     axios
       .get(`${Server_URL}:3000/patient/search/${search}`)
       .then(response => {
@@ -53,91 +53,101 @@ export default function Search({ navigation }) {
       });
   };
 
-
   return (
     <View style={styles.container}>
       <SearchBar
         lightTheme={true}
         placeholder="search for doctor, hospital or specialization"
-        onChangeText={(value) => updateSearch(value)}
+        onChangeText={value => updateSearch(value)}
         value={search}
         fontSize={15}
-        containerStyle={{ backgroundColor: '#f0f0f0' }}
-        inputContainerStyle={{ borderRadius: 50, backgroundColor: '#fff' }}
+        containerStyle={{backgroundColor: '#f0f0f0'}}
+        inputContainerStyle={{borderRadius: 50, backgroundColor: '#fff'}}
       />
       <FlatList
         keyExtractor={item => item._id}
         data={doctorsResult}
-        ListHeaderComponent={() =>
+        ListHeaderComponent={() => (
           <View style={styles.flatListHeader}>
-            <Text style={{ flex: 4 }}>Doctors</Text>
-            {doctorSeeMore ? <TouchableOpacity style={styles.seeMoreButton}>
-              <Text>See More</Text>
-            </TouchableOpacity> : null}
+            <Text style={styles.titleText}>Doctors</Text>
+            {doctorSeeMore ? (
+              <TouchableOpacity style={styles.seeMoreButton}>
+                <Text style={{color: '#fff', fontSize: 15}}>See More</Text>
+              </TouchableOpacity>
+            ) : null}
           </View>
-        } renderItem={({ item }) => {
+        )}
+        renderItem={({item}) => {
           return (
-            <TouchableOpacity style={styles.specializationCard
-            }>
-              <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-              </View>
-              <View style={{ flex: 2, justifyContent: 'center' }}>
+            <TouchableOpacity style={styles.specializationCard}>
+              <View
+                style={{justifyContent: 'center', alignItems: 'center'}}></View>
+              <View style={{flex: 2, justifyContent: 'center'}}>
                 <Text style={styles.speciality}>{item.name}</Text>
               </View>
             </TouchableOpacity>
           );
         }}
-        ListEmptyComponent={<Text>No Results</Text>}
+        ListEmptyComponent={
+          <Text style={{fontSize: 20, alignSelf: 'center'}}>No Results</Text>
+        }
       />
 
       <FlatList
         keyExtractor={item => item._id}
         data={hospitalsResult}
-        ListHeaderComponent={() =>
+        ListHeaderComponent={() => (
           <View style={styles.flatListHeader}>
-            <Text style={{ flex: 4 }}>Hospitals</Text>
-            {hospitalSeeMore ? <TouchableOpacity style={styles.seeMoreButton}>
-              <Text>See More</Text>
-            </TouchableOpacity> : null}
+            <Text style={styles.titleText}>Hospitals</Text>
+            {hospitalSeeMore ? (
+              <TouchableOpacity style={styles.seeMoreButton}>
+                <Text style={{color: '#fff', fontSize: 15}}>See More</Text>
+              </TouchableOpacity>
+            ) : null}
           </View>
-        } renderItem={({ item }) => {
+        )}
+        renderItem={({item}) => {
           return (
-            <TouchableOpacity style={styles.specializationCard
-            }>
-              <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-              </View>
-              <View style={{ flex: 2, justifyContent: 'center' }}>
+            <TouchableOpacity style={styles.specializationCard}>
+              <View
+                style={{justifyContent: 'center', alignItems: 'center'}}></View>
+              <View style={{flex: 2, justifyContent: 'center'}}>
                 <Text style={styles.speciality}>{item.name}</Text>
               </View>
             </TouchableOpacity>
           );
         }}
-        ListEmptyComponent={<Text>No Results</Text>}
+        ListEmptyComponent={
+          <Text style={{fontSize: 20, alignSelf: 'center'}}>No Results</Text>
+        }
       />
       <FlatList
         keyExtractor={item => item._id}
         data={specializationsResult}
-        ListHeaderComponent={() =>
+        ListHeaderComponent={() => (
           <View style={styles.flatListHeader}>
-            <Text style={{ flex: 4 }}>Specializations</Text>
-            {specializationSeeMore ? <TouchableOpacity style={styles.seeMoreButton}>
-              <Text>See More</Text>
-            </TouchableOpacity> : null}
+            <Text style={styles.titleText}>Specializations</Text>
+            {specializationSeeMore ? (
+              <TouchableOpacity style={styles.seeMoreButton}>
+                <Text style={{color: '#fff', fontSize: 15}}>See More</Text>
+              </TouchableOpacity>
+            ) : null}
           </View>
-        }
-        renderItem={({ item }) => {
+        )}
+        renderItem={({item}) => {
           return (
-            <TouchableOpacity style={styles.specializationCard
-            }>
-              <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-              </View>
-              <View style={{ flex: 2, justifyContent: 'center' }}>
+            <TouchableOpacity style={styles.specializationCard}>
+              <View
+                style={{justifyContent: 'center', alignItems: 'center'}}></View>
+              <View style={{flex: 2, justifyContent: 'center'}}>
                 <Text style={styles.speciality}>{item.name}</Text>
               </View>
             </TouchableOpacity>
           );
         }}
-        ListEmptyComponent={<Text>No Results</Text>}
+        ListEmptyComponent={
+          <Text style={{fontSize: 18, alignSelf: 'center'}}>No Results</Text>
+        }
       />
     </View>
   );
@@ -222,10 +232,12 @@ const styles = StyleSheet.create({
   },
   seeMoreButton: {
     flex: 1,
+    margin:5,
     alignSelf: 'flex-end',
-    backgroundColor: "#f00f",
+    borderRadius: 10,
+    backgroundColor: '#1c1bad',
     alignItems: 'center',
-    justifyContent: "center"
+    justifyContent: 'center',
   },
   // notificationList: {
   //   marginTop: 0,
@@ -277,5 +289,13 @@ const styles = StyleSheet.create({
   search: {
     borderRadius: 20,
     height: 50,
+  },
+
+  titleText: {
+    color: '#000',
+    margin: 12,
+    fontSize: 20,
+    fontWeight: 'bold',
+    flex: 4,
   },
 });

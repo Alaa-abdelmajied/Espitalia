@@ -35,9 +35,8 @@ export default function Speciality({navigation, route}) {
             const err = error.response.data;
             if (err == 'No specialzations found') {
               //alert worng email or password
-              Alert.alert(err);
+              // Alert.alert(err);
               console.log(error.message);
-            } else if (err == 'No hospitals found') {
             }
           });
       };
@@ -59,9 +58,30 @@ export default function Speciality({navigation, route}) {
     }, []);
   }
 
-  const [search, setSearch] = useState('');
+  // const [search, setSearch] = useState('');
+  // const [doctorsResult, setDoctorsResult] = useState([]);
+
+  // const doctorSearch = search => {
+  //   axios
+  //   .get(`${Server_URL}:3000/patient/searchAllSpecializations/${search}`)
+  //   .then(response => {
+  //     setDoctorsResult(response.data.doctors);
+  //   })
+  //   .catch(function (error) {
+  //     const err = error.response.data;
+  //     if (err == 'No specializations found') {
+  //       setDoctorsResult([]);
+  //     }
+  //   });
+  // };
+
   // const updateSearch = search => {
   //   setSearch(search);
+  //   if (search.length > 0) {
+  //     doctorSearch(search);
+  //   } else {
+  //     setDoctorsResult([]);
+  //   }
   // };
 
   const onPress = item => {
@@ -81,7 +101,7 @@ export default function Speciality({navigation, route}) {
         lightTheme={true}
         placeholder="search"
         containerStyle={{backgroundColor: '#f0f0f0'}}
-        // onChangeText={searchSpecialization()}
+        // onChangeText={value=> updateSearch(value)}
         // value={search}
         inputContainerStyle={{borderRadius: 50, backgroundColor: '#fff'}}
       />
@@ -112,6 +132,17 @@ export default function Speciality({navigation, route}) {
             </TouchableOpacity>
           );
         }}
+        ListEmptyComponent={
+          <Text
+            style={{
+              fontSize: 20,
+              alignSelf: 'center',
+              color: '#000',
+              margin: '10%',
+            }}>
+            No specializations found :(
+          </Text>
+        }
       />
     </View>
   );

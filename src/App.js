@@ -22,7 +22,7 @@ import PatientReservations from './patientPages/PatientReservations';
 import Specializaion from './patientPages/SpecializationScreen';
 import DoctorList from './patientPages/DoctorList';
 import HospitalList from './patientPages/HospitalList';
-
+import EditProfile from './patientPages/EditProfile';
 import DoctorDetails from './patientPages/DoctorDetails';
 import BloodDonation from './patientPages/BloodDonation';
 import PatientNotification from './patientPages/Notifications';
@@ -35,7 +35,7 @@ import PatientHistory from './doctorPages/PatientHistory';
 import DoctorProfile from './doctorPages/Profile';
 import UpcomingReservations from './doctorPages/UpcomingReservations';
 
-//Patient pages
+//Receptionist pages
 import ReceptHome from './receptionistPages/ReceptHome';
 import ReceptProfile from './receptionistPages/ReceptProfile';
 import ReceptNotification from './receptionistPages/Notifications';
@@ -79,6 +79,7 @@ function PatientProfileStackNav() {
         headerShown: false,
       }}>
       <Stack.Screen name="PatientProfile" component={PatientProfile} />
+      <Stack.Screen name="EditProfile" component={EditProfile} />
       <Stack.Screen name="Report" component={Report} />
     </Stack.Navigator>
   );

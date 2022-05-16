@@ -4,7 +4,6 @@ import DoctorsCard from '../../utils/DoctorsCard';
 import {SearchBar} from 'react-native-elements';
 import axios from 'axios';
 import {Server_URL} from '@env';
-import Speciality from './SpecializationScreen';
 
 export default function Doctors({navigation, route}) {
   const {
@@ -105,6 +104,17 @@ export default function Doctors({navigation, route}) {
             />
           );
         }}
+        ListEmptyComponent={
+          <Text
+            style={{
+              fontSize: 20,
+              alignSelf: 'center',
+              color: '#000',
+              margin: '10%',
+            }}>
+            No doctors found :(
+          </Text>
+        }
       />
     </View>
   );

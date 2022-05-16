@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {ScrollView, StyleSheet, View, FlatList} from 'react-native';
+import {ScrollView, StyleSheet, View, FlatList,Text} from 'react-native';
 import HospitalsCard from '../../utils/HospitalsCard';
 import {SearchBar} from 'react-native-elements';
 import axios from 'axios';
@@ -36,11 +36,7 @@ export default function Hospitals({navigation}) {
         containerStyle={{backgroundColor: '#f0f0f0'}}
         inputContainerStyle={{borderRadius: 50, backgroundColor: '#fff'}}
       />
-      {/* <ScrollView>
-        {hospitals.map(card => {
-          return <HospitalsCard card={card} navigation={navigation} />;
-        })}
-      </ScrollView> */}
+
       <FlatList
         data={allHospitals}
         keyExtractor={item => {
@@ -49,6 +45,17 @@ export default function Hospitals({navigation}) {
         renderItem={({item}) => {
           return <HospitalsCard card={item} navigation={navigation} />;
         }}
+        ListEmptyComponent={
+          <Text
+            style={{
+              fontSize: 20,
+              alignSelf: 'center',
+              color: '#000',
+              margin: '10%',
+            }}>
+            No hospitals found :(
+          </Text>
+        }
       />
     </View>
   );

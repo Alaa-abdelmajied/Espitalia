@@ -8,18 +8,26 @@ import {
   Image,
   Text,
   Pressable,
-  TouchableOpacity,
-  FlatList,
+  BackHandler,
+  Alert,
 } from 'react-native';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {Rating} from 'react-native-ratings';
 import axios from 'axios';
-import {Server_URL} from '@env';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import {Server_URL, Token_Secret} from '@env';
 
 export default function ProfileScreen({route}) {
-  const {drID, drName, speciality, hospitalName, averageRating, fromHomepage} =
-    route.params;
+  const {
+    drID,
+    drName,
+    speciality,
+    hospitalName,
+    hospitalAddress,
+    averageRating,
+    // fromHomepage
+  } = route.params;
   const [comments, setComments] = useState([]);
   const [schedule, setSchedule] = useState([]);
 
@@ -38,9 +46,38 @@ export default function ProfileScreen({route}) {
     getReviews();
   }, []);
 
-  const OnPress = () => {
-    console.log('reviews:', comments);
-    console.log('avg rating:', averageRating);
+  const bookAppointment = async (date, from, to) => {
+    console.log('pressed');
+    try {
+      const token = JSON.parse(
+        await EncryptedStorage.getItem(Token_Secret),
+      ).token;
+
+      axios
+        .post(`${Server_URL}:3000/patient/book`, {
+          token: token,
+          drId: drID,
+          date: date,
+          from: from,
+          to: to,
+        })
+        .then(async function (response) {
+          console.log('done');
+
+          Alert.alert('Appointment successfully booked');
+        })
+        .catch(function (error) {
+          const err = error.response.data;
+          if (err == 'Error booking appointment') {
+            Alert.alert('Error booking appointment');
+          }
+          console.log(err);
+        });
+    } catch (err) {
+      Alert.alert('Error', err.code, [
+        {text: 'Exit', onPress: () => BackHandler.exitApp()},
+      ]);
+    }
   };
 
   const scrollX = useRef(new Animated.Value(0)).current;
@@ -66,7 +103,9 @@ export default function ProfileScreen({route}) {
                 size={25}
                 color="#1c1bad"
                 style={{margin: 5}}></Ionicons>
-              <Text style={styles.description}>{hospitalName}</Text>
+              <Text style={styles.description}>
+                {hospitalName} {hospitalAddress}
+              </Text>
             </View>
             <View style={styles.customRatingBar}>
               <Rating
@@ -110,7 +149,11 @@ export default function ProfileScreen({route}) {
                         To: {card.to}
                       </Text>
                     </View>
-                    <Pressable style={styles.bookButton} onPress={OnPress}>
+                    <Pressable
+                      style={styles.bookButton}
+                      onPress={() =>
+                        bookAppointment(card.date, card.from, card.to)
+                      }>
                       <Text style={{color: '#fff'}}>Book</Text>
                     </Pressable>
                   </View>
