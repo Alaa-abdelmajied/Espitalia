@@ -47,25 +47,26 @@ export default function PatientHome({navigation}) {
     });
   };
 
-  const onPressDoctors = () => {
+  const onPressDoctors = (
+    id,
+    name,
+    speciality,
+    hospitalName,
+    hospitalAddress,
+    averageRating,
+  ) => {
     navigation.navigate('DoctorDetails', {
-      drID: doctors._id,
-      drName: doctors.name,
-      speciality: doctors.speciality,
-      hospitalName: doctors.hospitalName,
-      averageRating: doctors.averageRating,
-      fromHomepage: true,
+      drID: id,
+      drName: name,
+      speciality: speciality,
+      hospitalName: hospitalName,
+      hospitalAddress: hospitalAddress,
+      averageRating: averageRating,
+      // fromHomepage: true,
     });
-    // console.log(
-    //   doctors._id,
-    //   doctors.name,
-    //   doctors.speciality,
-    //   doctors.hospitalName,
-    //   doctors.averageRating,
-    // );
   };
 
-  const onPressSpecializations = (specialization) => {
+  const onPressSpecializations = specialization => {
     navigation.navigate('DoctorsScreen', {
       speciality: specialization,
       fromHomepage: true,
@@ -80,8 +81,9 @@ export default function PatientHome({navigation}) {
     navigation.navigate('DoctorList', {isAllDoctors: true});
   };
   const seeAllSpecializations = () => {
-    navigation.navigate('SpecializationScreen', {isAllSpecializations: true
-    // ,fromHomepage:false
+    navigation.navigate('SpecializationScreen', {
+      isAllSpecializations: true,
+      // ,fromHomepage:false
     });
   };
 
@@ -144,7 +146,16 @@ export default function PatientHome({navigation}) {
             <TouchableOpacity
               style={styles.cards}
               key={cardIndex}
-              onPress={onPressDoctors}>
+              onPress={() =>
+                onPressDoctors(
+                  card._id,
+                  card.name,
+                  card.speciality,
+                  card.hospitalName,
+                  card.hospitalAddress,
+                  card.averageRating,
+                )
+              }>
               <View style={styles.card_header}>
                 <Image
                   style={styles.doctorImg}
@@ -210,7 +221,7 @@ export default function PatientHome({navigation}) {
             <TouchableOpacity
               style={styles.specializationCard}
               key={cardIndex}
-              onPress={() =>onPressSpecializations(card)}>
+              onPress={() => onPressSpecializations(card)}>
               <View style={{justifyContent: 'center', alignItems: 'center'}}>
                 <FontAwesome
                   name={'stethoscope'}

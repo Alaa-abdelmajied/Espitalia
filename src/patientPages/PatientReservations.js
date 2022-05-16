@@ -1,11 +1,21 @@
 import React, {useState, useEffect} from 'react';
-import {StyleSheet, Text, View, FlatList, Pressable, Image} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  FlatList,
+  Pressable,
+  Image,
+  Alert,
+  BackHandler,
+} from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import axios from 'axios';
 import {Server_URL, Token_Secret} from '@env';
 
-export default function Reservation({navigation}) {
+export default function Reservation({}) {
   const [upcomingAppointments, setUpcomingAppointments] = useState([]);
+  // const [refreshFlatlist, setRefreshFlatList] = useState(false);
 
   useEffect(() => {
     const getUpcomingAppointments = async () => {
@@ -14,7 +24,7 @@ export default function Reservation({navigation}) {
       ).token;
       await axios
         .get(`${Server_URL}:3000/patient/upcomingAppointment/${token}`)
-                .then(response => setUpcomingAppointments(response.data))
+        .then(response => setUpcomingAppointments(response.data))
         .catch(function (error) {
           console.log(error.message);
         });
@@ -22,6 +32,29 @@ export default function Reservation({navigation}) {
     getUpcomingAppointments();
   }, []);
 
+  const cancelAppointment = appointmentID => {
+    // setRefreshFlatList(!refreshFlatlist);
+    console.log(appointmentID);
+    console.log('pressed');
+    try {
+      axios
+        .delete(`${Server_URL}:3000/patient/cancel/${appointmentID}`)
+        .then(function (response) {
+          Alert.alert('Appointment cancelled successfully');
+        })
+        .catch(function (error) {
+          const err = error.response.data;
+          console.log(err);
+          if (err == 'Error cancelling appointment') {
+            Alert.alert('Error cancelling appointment');
+          }
+        });
+    } catch (err) {
+      Alert.alert('Error', err.code, [
+        {text: 'Exit', onPress: () => BackHandler.exitApp()},
+      ]);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -32,10 +65,10 @@ export default function Reservation({navigation}) {
       </View>
 
       <FlatList
+        // return item.appointmentID;
         data={upcomingAppointments}
-        // keyExtractor={item => {
-        //   return item.appointmentID;
-        // }}
+        extraData={upcomingAppointments}
+        keyExtractor={(item, index) => index.toString()}
         renderItem={({item}) => (
           <View style={styles.appointmentsCard}>
             <View style={styles.infoView}>
@@ -50,12 +83,25 @@ export default function Reservation({navigation}) {
               <View style={styles.numberView}>
                 <Text style={styles.infoText}>Flow Number</Text>
               </View>
-              <Pressable style={styles.button}>
+              <Pressable
+                style={styles.button}
+                onPress={() => cancelAppointment(item.appointmentID)}>
                 <Text style={styles.buttonText}>CANCEL</Text>
               </Pressable>
             </View>
           </View>
         )}
+        ListEmptyComponent={
+          <Text
+            style={{
+              fontSize: 20,
+              alignSelf: 'center',
+              color: '#000',
+              margin: '10%',
+            }}>
+            No upcoming reservations :)
+          </Text>
+        }
       />
     </View>
   );

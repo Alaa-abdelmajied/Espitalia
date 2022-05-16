@@ -105,6 +105,15 @@ export default function Profile({navigation}) {
     }
   };
 
+  onPressEdit = () => {
+    navigation.navigate('EditProfile', {
+      name: personalData.name,
+      email: personalData.email,
+      age: personalData.age,
+      phoneNumber: personalData.phoneNumber,
+    });
+  };
+
   const [showModal, setShowModal] = useState(false);
 
   return (
@@ -150,7 +159,9 @@ export default function Profile({navigation}) {
         <View style={styles.bodyContent}>
           <Text style={styles.name}>{personalData.name}</Text>
           <Text style={styles.subtitle}>BASIC DATA</Text>
-          <TouchableOpacity style={{flexDirection: 'row'}}>
+          <TouchableOpacity
+            style={{flexDirection: 'row'}}
+            onPress={onPressEdit}>
             <FontAwesome name="edit" size={25} color="#000"></FontAwesome>
             <Text
               style={{
@@ -215,7 +226,7 @@ const styles = StyleSheet.create({
     marginTop: 40,
   },
   mainText: {
-    margin: '1%',
+    margin: 3,
     color: '#000',
     fontSize: 18,
   },
