@@ -67,7 +67,6 @@ export default function Login({ navigation, route }) {
     var staff = route.params.staff;
     if (!staff) {
 
-      console.log('here');
       axios
         .post(`${Server_URL}:3000/patient/login`, {
           email: email,
@@ -191,7 +190,7 @@ export default function Login({ navigation, route }) {
 
             {
               errorMeesage &&
-              <Text style={{ color: 'red' }}>Something is Wrong</Text>
+              <Text style={{ color: '#f00' }}>Something is Wrong</Text>
             }
 
             <Pressable style={styles.RegisterButton} onPress={onPressHandler}>

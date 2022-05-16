@@ -1,33 +1,80 @@
-import React, { useState } from 'react';
-import { View, Text, SafeAreaView, StyleSheet, TextInput, Button, Pressable, ScrollView, Modal, Alert } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, FlatList, Text, TouchableOpacity, StyleSheet, TextInput, Button, Pressable, ScrollView, Modal, Alert } from 'react-native';
 import SelectBox from 'react-native-multi-selectbox';
 import { xorBy } from 'lodash';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import SelectDropdown from 'react-native-select-dropdown';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/dist/FontAwesome';
+import Icon5 from 'react-native-vector-icons/dist/FontAwesome5';
 import datePackage from 'date-and-time';
 
+import axios from 'axios';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import { Server_URL, Token_Secret, Credintials_Secret } from '@env';
+import { CommonActions, StackActions } from '@react-navigation/native';
+// import validator from'validator';
+const validator = require('validator');
 
 //https://www.npmjs.com/package/react-native-multi-selectbox
 //https://retool.com/blog/react-native-datepicker-libraries/
+/*
+dbachmann0@ning.com
+n8RPhN
+*/
 
-const Day = ['Saterday','Sunday','Monday','Tuesday','Wednesday','Thursday','Friday'];
+const Day = ['Saterday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
 const AddDoctorPage = ({ navigation, route }) => {
-    const today = new Date();
+    // const [specializationsObj, setSpecializationsObj] = useState([]);
+    const [specializations, setSpecializations] = useState([]);
+    const [selectedSpecialization, setSelectedSpecialization] = useState('');
+    useEffect(() => {
+        const getSpecialization = async () => {
+            const token = JSON.parse(await EncryptedStorage.getItem(Token_Secret)).token;
+            // console.log('Getting Spec.');
+            axios
+                .get(`${Server_URL}:3000/hospital/getSpecializations`, {
+                    headers: {
+                        'x-auth-token': token
+                    }
+                })
+                .then(function (response) {
+                    // setSpecializations([...specializations, response.data]);
+                    setSpecializations(response.data);
+                    // console.log(response.data);
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        }
+        getSpecialization();
+    }, []);
+    const [name, setName] = useState('');
+    const [nameError, setNameError] = useState('');
+    const [email, setEmail] = useState('');
+    const [emailError, setEmailError] = useState('');
+
+    const [errorMessage, setErrorMessage] = useState('');
+    const [errorMessage2, setErrorMessage2] = useState('');
+
+    const [modalVisible, setModalVisible] = useState(false);
+
+    const [today,] = useState(new Date());
     const [text, setText] = useState('📅 DD/MM/YYYY');
     const [show, setShow] = useState(false);
-    const [date, setDate] = useState(new Date());
+    const [date, setDate] = useState(today);
 
+    const [day, setDay] = useState('');
     const [fromText, setFromText] = useState('From');
-    const [from, setFrom] = useState(new Date());
+    const [from, setFrom] = useState(today);
     const [toText, setToText] = useState('To');
-    const [to, setTo] = useState(new Date());
+    const [to, setTo] = useState(today);
 
     const [showFrom, setShowFrom] = useState(false);
     const [showTo, setShowTo] = useState(false);
+
+    const [workingDays, setWorkingDays] = useState([]);
 
     const OpenDateWindow = () => {
         setShow(true);
@@ -49,46 +96,202 @@ const AddDoctorPage = ({ navigation, route }) => {
         setText(fullDate);
     }
     const handelFrom = (event, selectedTime) => {
-        console.log(selectedTime);
-        //const currentFrom = selectedTime || new Date();
         setShowFrom(false);
-        const time = JSON.stringify(selectedTime).split('');
-        const Time = time[12]+time[13]+time[14]+time[15]+time[16];
-        setFromText(Time);
         setFrom(selectedTime);
+        const time = selectedTime.getHours() + ':' + selectedTime.getMinutes()
+        setFromText(time);
+        // console.log(from);
     }
     const handelTo = (event, selectedTime) => {
-        
-        console.log('grenetsh');
-        console.log(selectedTime);
         setShowTo(false);
-        
-        //selectedTime = datePackage.addHours(selectedTime,2);
-        console.log('cairo');
-        console.log(selectedTime);
-        const time = JSON.stringify(selectedTime).split('');
-        
-        const Time = time[12]+time[13]+time[14]+time[15]+time[16];
-        setToText(Time);
         setTo(selectedTime);
+        const time = selectedTime.getHours() + ':' + selectedTime.getMinutes()
+        setToText(time);
+        // console.log(to);
+    }
+    const handelWorkingDay = (d, f, t) => {
+        const workingDay = {
+            day: d,
+            // from: f.getHours() + ':' + f.getMinutes(),
+            // to: t.getHours() + ':' + t.getMinutes()
+            from: from,
+            to: to
+        };
+        // console.log(checkWorkingDays(workingDay, workingDays));
+        console.log(d);
+        if (d == '') {
+            setErrorMessage('Select a Day');
+        }
+        else if (f == today) {
+            setErrorMessage('Select a From');
+        }
+        else if (t == today) {
+            setErrorMessage('Select a To');
+        }
+        else if (!checkWorkingDays(workingDay, workingDays)) {
+            setErrorMessage('Working day is already exists');
+        }
+        else {
+            // console.log('handel Working Days');
+            console.log(workingDay);
+            setWorkingDays([...workingDays, workingDay]);
+            setErrorMessage('');
+            setModalVisible(!modalVisible);
+            handelCloseModal();
+        }
+    }
+    const checkWorkingDays = (newWD, WDs) => {
+        if (WDs.length == 0) return true;
+        for (var i = 0; i < WDs.length; i++) {
+            if (newWD.day == WDs[i].day) {
+                if (newWD.from <= WDs[i].from && newWD.to >= WDs[i].to) {
+                    return false;
+                }
+                else if (newWD.from <= WDs[i].from && newWD.to >= WDs[i].from) {
+                    return false;
+                }
+                else if (newWD.from >= WDs[i].from && newWD.to <= WDs[i].to) {
+                    return false;
+                }
+                else if (newWD.from >= WDs[i].from && newWD.from <= WDs[i].to) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    const handelCloseModal = () => {
+        setDay('');
+        setFrom(today);
+        setFromText('From');
+        setTo(today);
+        setToText('To');
+        setErrorMessage('');
+    }
+    const removeWorkingDay = (d, f, t) => {
+        const workingDay = {
+            day: d,
+            from: f,
+            to: t
+        };
+        setWorkingDays(workingDays.filter(item => JSON.stringify(item) !== JSON.stringify(workingDay)));
     }
 
+    const makeValidWorkingDays = () => {
+        const newWorkingDays = [];
+        for (var i = 0; i < workingDays.length; i++) {
+            newWorkingDays.push({
+                day: workingDays[i].day,
+                from: workingDays[i].from.getHours() + ':' + workingDays[i].from.getMinutes(),
+                to: workingDays[i].to.getHours() + ':' + workingDays[i].to.getMinutes()
+            });
+        }
+        // console.log("helloooo", newWorkingDays);
+        return newWorkingDays;
+    }
+
+    const AddNewDoctor = async () => {
+        if (name == '') setErrorMessage2('Enter Name');
+        else if (email == '') setErrorMessage2('Enter Email');
+        else if (selectedSpecialization == '') setErrorMessage2('Select Specialization');
+        else if (date == today) setErrorMessage2('select a proper date');
+        else if (workingDays.length == 0) setErrorMessage2('Make a working days');
+        else if (emailError != '') null;
+        else {
+            setErrorMessage2('');
+            const token = JSON.parse(await EncryptedStorage.getItem(Token_Secret)).token;
+            axios({
+                method: 'post',
+                url: `${Server_URL}:3000/hospital/addDoctor`,
+                data: {
+                    name: name,
+                    userName: name,
+                    specialization: selectedSpecialization,
+                    email: email,
+                    password: '123456789',
+                    workingDays: makeValidWorkingDays()
+                },
+                headers: {
+                    'x-auth-token': token
+                }
+            })
+                .then(function (response) {
+                    // console.log(response.data);
+                    navigation.goBack();
+                    // navigation.navigate("Doctors") 
+                    // navigation.navigate("HosptialAdminHomePage") 
+                    // navigation.dispatch(StackActions.popToTop());
+                    // navigation.dispatch(
+                    //     StackActions.replace('HosptialAdminHomePage', { screen: 'Home' })
+                    // );
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        }
+    }
+
+    /*
+    Create a function that create a compontent every time the plus button being pressed:
+    Component : day - From - To
+    this component return an object(workingday = {
+                                                    day,
+                                                    from,
+                                                    to
+                                                }
+    )
+    then we have a [workingDays, setWorkingDays] = useState([]) store all working days in array to save it in database
+    
+    
+    */
+
     return (
-        <ScrollView style={styles.container}>
+        <View style={styles.container}>
             <View style={styles.view}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', flex: 1 }}>
                     <Text style={styles.label}>Name:</Text>
                 </View>
                 <Text style={{ color: '#000' }}>Dr.</Text>
-                <TextInput style={styles.input} placeholder='ex.: Joe McLoy' />
+                <TextInput style={styles.input} placeholder='ex.: Joe McLoy' onChangeText={text => setName(text)} />
             </View>
             <View style={styles.view}>
                 <Text style={styles.label}>Email:</Text>
-                <TextInput style={styles.input} placeholder='ex. jeo.McLoy@Gmail.com' />
+                <TextInput style={styles.input} placeholder='ex. jeo.McLoy@Gmail.com' onChangeText={text => {
+                    setEmail(text);
+                    if (!validator.isEmail(text)) setEmailError('! Invalid Email');
+                    else setEmailError('');
+                }} />
             </View>
+            {emailError != '' &&
+                <View style={{ alignItems: 'center' }}>
+                    <Text style={{ color: '#f00' }}>{emailError}</Text>
+                </View>
+            }
+
             <View style={styles.view}>
                 <Text style={styles.label}>specialization:</Text>
-                <TextInput style={styles.input} placeholder='ex. Ophthalmologists' />
+                <SelectDropdown
+                    renderDropdownIcon={() => <Ionicons
+                        name={'chevron-down'}
+                        size={20}
+                        color={'#000'}
+                    />}
+                    dropdownBackgroundColor='#fff'
+                    dropdownOverlayColor='transparent'
+                    buttonStyle={[styles.dayInput, { width: 230 }]}
+                    defaultButtonText='Specialization'
+                    buttonTextStyle={{ color: '#a1a1a1', fontSize: 16 }}
+                    data={specializations}
+                    onSelect={(selectedItem, index) => {
+                        setSelectedSpecialization(selectedItem);
+                    }}
+                    buttonTextAfterSelection={(selectedItem, index) => {
+                        return selectedItem
+                    }}
+                    rowTextForSelection={(item, index) => {
+                        return item
+                    }}
+                />
             </View>
             <View style={styles.view}>
                 <Text style={styles.label}>Date of Birth:</Text>
@@ -108,74 +311,73 @@ const AddDoctorPage = ({ navigation, route }) => {
                         />)}
                 </View>
             </View>
-            <View style={styles.workingDay}>
-                <SelectDropdown
-                    renderDropdownIcon={() => <Ionicons
-                        name={'chevron-down'}
-                        size={20}
-                        color={'#000'}
-                    />}
-                    dropdownBackgroundColor='#fff'
-                    dropdownOverlayColor='transparent'
-                    buttonStyle={styles.dayInput}
-                    defaultButtonText='Day'
-                    buttonTextStyle={{ color: '#a1a1a1', fontSize: 16 }}
-                    data={Day}
-                    onSelect={(selectedItem, index) => {
-                        console.log(selectedItem, index)
-                    }}
-                    buttonTextAfterSelection={(selectedItem, index) => {
-                        return selectedItem
-                    }}
-                    rowTextForSelection={(item, index) => {
-                        return item
-                    }}
-                />
-                <View style={{width:'100%', flexDirection:'row'}}>
-                    <View style={styles.timeInput}>
-                        <Button 
-                        style={styles.dateInput}
-                        title={fromText}
-                        color={'#1c1bad'}
-                        onPress={OpenFromWindow}
-                        />
-                    </View>
-                    { showFrom &&
-                        <DateTimePicker
-                        mode='time'
-                        value={from}
-                        onChange={handelFrom}
-                        />
-                    }
-                    <View style={styles.timeInput}>
-                        <Button 
-                        title={toText}
-                        color={'#1c1bad'}
-                        onPress={OpenToWindow}
-                        />
-                    </View>
 
-                    { showTo &&
-                        <DateTimePicker
-                        mode='time'
-                        value={to}
-                        onChange={handelTo}
-                        />
-                    }
-                </View>
-            </View>
+            <ScrollView>
+                {workingDays.length != 0 ? workingDays.map((workingDayCard, cardIndex) => {
+                    return (
+                        <View
+                            style={{
+                                backgroundColor: '#fff',
+                                width: '95%',
+                                margin: 5,
+                                justifyContent: 'center',
+                                alignSelf: 'center',
+                                borderRadius: 10,
+                                shadowColor: '#000000',
+                                shadowOffset: { width: -2, height: 2 },
+                                shadowOpacity: 0.2,
+                                shadowRadius: 3,
+                                elevation: 2,
+                            }}>
+                            <View
+                                style={{ width: '97%', alignSelf: 'center', justifyContent: 'center' }}
+                            >
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 5 }}>
+                                    <View style={{ flexDirection: 'row', paddingTop: 5 }}>
+                                        <Text style={styles.name}>Day: {workingDayCard.day} |</Text>
+                                        <Text style={styles.name}>From: {workingDayCard.from.getHours() + ':' + workingDayCard.from.getMinutes()} |</Text>
+                                        <Text style={styles.name}>To: {workingDayCard.to.getHours() + ':' + workingDayCard.to.getMinutes()}</Text>
+                                    </View>
+                                    <TouchableOpacity
+                                        style={[styles.touchableOpacity, { backgroundColor: "#f00", width: 35, height: 35, }]}
+                                        onPress={() => {
+                                            removeWorkingDay(workingDayCard.day, workingDayCard.from, workingDayCard.to);
+                                        }}
+                                    >
+                                        <Icon style={[styles.newDay, { fontSize: 20 }]} name='trash-o' />
+                                    </TouchableOpacity>
+                                </View>
+                                <View
+                                    style={{
+                                        flexDirection: 'row',
+                                        marginLeft: 5,
+                                    }}>
+
+                                </View>
+                            </View>
+                        </View>
+                    );
+                }) : null}
+            </ScrollView>
+
             <View style={styles.addNewScheduleContainter}>
                 <TouchableOpacity
                     style={styles.touchableOpacity}
-                    onPress={() => {console.log('add new Working Day')}}
-                    >
-                    <Icon style={styles.newDay} name='plus' />
+                    onPress={() => {
+                        //handelWorkingDay(day, from, to);
+                        setModalVisible(!modalVisible);
+                    }}
+                >
+                    <Icon5 style={styles.newDay} name='calendar-plus' />
                 </TouchableOpacity>
             </View>
-
-            <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+            <View style={{ justifyContent: 'center', alignItems: 'center', margin: 50 }}>
+                {errorMessage2 != '' &&
+                    <Text style={{ color: '#f00' }}>{errorMessage2}</Text>
+                }
                 <Pressable
-                    onPress={() => { navigation.navigate("Doctors", { name: 'hi' }) }}
+                    // onPress={() => { } }
+                    onPress={AddNewDoctor}
                     style={({ pressed }) => [
                         {
                             backgroundColor: pressed ? '#55f' : '#1c1bad',
@@ -192,8 +394,104 @@ const AddDoctorPage = ({ navigation, route }) => {
                     )}
 
                 </Pressable>
+                <Modal
+                    animationType="slide"
+                    transparent={true}
+                    hardwareAccelerated={true}
+                    visible={modalVisible}
+                    onRequestClose={() => {
+                        Alert.alert("Modal has been closed.");
+                        setModalVisible(!modalVisible);
+                    }}
+                >
+                    <View style={[styles.centeredView]}>
+                        <View style={[styles.modalView]}>
+                            <View style={[styles.workingDay, { width: '100%', alignItems: 'center' }]}>
+                                <SelectDropdown
+                                    renderDropdownIcon={() => <Ionicons
+                                        name={'chevron-down'}
+                                        size={20}
+                                        color={'#000'}
+                                    />}
+                                    dropdownBackgroundColor='#fff'
+                                    dropdownOverlayColor='transparent'
+                                    buttonStyle={styles.dayInput}
+                                    defaultButtonText='Day'
+                                    buttonTextStyle={{ color: '#a1a1a1', fontSize: 16 }}
+                                    data={Day}
+                                    onSelect={(selectedItem, index) => {
+                                        setDay(selectedItem[0] + selectedItem[1] + selectedItem[2]);
+                                    }}
+                                    buttonTextAfterSelection={(selectedItem, index) => {
+                                        return selectedItem
+                                    }}
+                                    rowTextForSelection={(item, index) => {
+                                        return item
+                                    }}
+                                />
+                                <View style={{ width: '200%', flexDirection: 'row', marginTop: 10 }}>
+                                    <View style={styles.timeInput}>
+                                        <Button
+                                            value={today}
+                                            style={styles.dateInput}
+                                            title={fromText}
+                                            color={'#1c1bad'}
+                                            onPress={OpenFromWindow}
+                                        />
+                                    </View>
+                                    {showFrom &&
+                                        <DateTimePicker
+                                            mode='time'
+                                            value={from}
+                                            onChange={handelFrom}
+                                        />
+                                    }
+                                    <View style={styles.timeInput}>
+                                        <Button
+                                            title={toText}
+                                            color={'#1c1bad'}
+                                            onPress={OpenToWindow}
+                                        />
+                                    </View>
+
+                                    {showTo &&
+                                        <DateTimePicker
+                                            mode='time'
+                                            value={to}
+                                            onChange={handelTo}
+                                        />
+                                    }
+                                </View>
+                            </View>
+                            {errorMessage != '' &&
+                                <Text style={{ color: '#f00' }}>{errorMessage}</Text>
+                            }
+                            <View style={{ flexDirection: 'row' }}>
+                                <Pressable
+                                    style={[styles.button, styles.buttonClose]}
+                                    onPress={() => {
+                                        handelWorkingDay(day, from, to);
+
+                                    }
+                                    }
+                                >
+                                    <Icon style={styles.newDay} name='check' />
+                                </Pressable>
+                                <Pressable
+                                    style={[styles.button, styles.buttonClose, { backgroundColor: "#f00" }]}
+                                    onPress={() => {
+                                        handelCloseModal();
+                                        setModalVisible(!modalVisible)
+                                    }}
+                                >
+                                    <Icon style={styles.newDay} name='close' />
+                                </Pressable>
+                            </View>
+                        </View>
+                    </View>
+                </Modal>
             </View>
-        </ScrollView>
+        </View>
     );
 
 };
@@ -209,6 +507,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         padding: 5,
         alignItems: 'center',
+        marginTop: 10,
     },
     label: {
         flex: 1,
@@ -231,22 +530,13 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 10,
-        margin: 50,
+        margin: 10,
         shadowColor: "#000",
         shadowOffset: {
             width: 0,
             height: 2
         },
         elevation: 5,
-    },
-    slctbox: {
-        flex: 1,
-        padding: 10,
-        margin: 10,
-    },
-    btnTxt: {
-        color: 'white',
-        fontSize: 15,
     },
     centeredView: {
         flex: 1,
@@ -255,26 +545,12 @@ const styles = StyleSheet.create({
         marginTop: 22,
 
     },
-    modalView: {
-        //flex: 1,
-        margin: 20,
-        backgroundColor: "white",
-        borderRadius: 20,
-        padding: 20,
-        alignItems: "center",
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2
-        },
-        elevation: 30,
-    },
-    dayInput:{
-        width: '50%',
+    dayInput: {
+        // width: '50%',
         borderRadius: 10,
         padding: 15,
         justifyContent: 'center',
-        margin: 5,
+        // margin: 5,
         backgroundColor: '#fff',
         shadowColor: '#000000',
         shadowOffset: { width: -1, height: 1 },
@@ -282,7 +558,7 @@ const styles = StyleSheet.create({
         shadowRadius: 1,
         elevation: 2,
     },
-    timeInput:{
+    timeInput: {
         width: '20%',
         margin: 5,
     },
@@ -304,25 +580,71 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         position: 'relative',
-        width: 40,
-        height: 40,
+        width: 50,
+        height: 50,
         borderRadius: 100,
         elevation: 10,
-        
+
     },
     workingDay: {
-        flexDirection: 'row',
+        // flexDirection: 'row',
         alignItems: 'center',
+        justifyContent: 'space-evenly',
     },
     newDay: {
-        fontSize:25,
-        color:'white',
+        fontSize: 30,
+        color: 'white',
     },
     addNewScheduleContainter: {
         alignItems: 'center',
         justifyContent: 'center',
         padding: 10,
-    }
+    },
+    centeredView: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        marginTop: 22
+    },
+    modalView: {
+        margin: 20,
+        backgroundColor: "white",
+        borderRadius: 20,
+        padding: 35,
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5
+    },
+    // button: {
+    //     borderRadius: 20,
+    //     padding: 10,
+    //     elevation: 2
+    // },
+    buttonClose: {
+        backgroundColor: "#2196F3",
+    },
+    textStyle: {
+        color: "white",
+        fontWeight: "bold",
+        textAlign: "center"
+    },
+    modalText: {
+        marginBottom: 15,
+        textAlign: "center"
+    },
+    name: {
+        fontSize: 18,
+        color: '#000',
+        marginLeft: 5,
+        // marginTop: 10,
+        // textAlign: 'center'
+    },
 });
 
 export default AddDoctorPage;

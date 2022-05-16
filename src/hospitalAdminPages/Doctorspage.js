@@ -12,7 +12,7 @@ import { Server_URL, Token_Secret, Credintials_Secret } from '@env';
 
 
 const Doctorspage = ({ navigation, route }) => {
-    const [doctors, setDoctors] = useState([]);
+    const [doctors, setDoctors] = useState();
     useEffect(() => {
         const getDoctors = async () => {
             const token = JSON.parse(await EncryptedStorage.getItem(Token_Secret)).token;

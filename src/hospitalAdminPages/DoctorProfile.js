@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from 'react';
-import { useState } from 'react';
+import React, { useRef } from 'react';
+import { useState, useEffect } from 'react';
 
 import {
   ScrollView,
@@ -12,21 +12,200 @@ import {
   Pressable,
   TouchableOpacity,
   FlatList,
+  Modal,
+  Button,
 } from 'react-native';
 
+import SelectDropdown from 'react-native-select-dropdown';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import Icon from 'react-native-vector-icons/dist/FontAwesome';
+import Icon5 from 'react-native-vector-icons/dist/FontAwesome5';
 
 import axios from "axios";
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { Server_URL, Token_Secret, Credintials_Secret } from '@env';
 
+/*
+dbachmann0@ning.com
+n8RPhN
+*/
+
 export default function ProfileScreen({ navigation, route }) {
+  // const [doctor, setDoctor] = useState(route.params);
+  const Day = ['Saterday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+  const [doctor, setDoctor] = useState(route.params);
+  const [workingDays, setWorkingDays] = useState([]);
+
+  const [tempDoctor, setTempDoctor] = useState({});
+
+  const [today,] = useState(new Date());
+  const [day, setDay] = useState('');
+  const [fromText, setFromText] = useState('From');
+  const [from, setFrom] = useState(today);
+  const [toText, setToText] = useState('To');
+  const [to, setTo] = useState(today);
+  const [showFrom, setShowFrom] = useState(false);
+  const [showTo, setShowTo] = useState(false);
+
+  const [errorMessage, setErrorMessage] = useState('');
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const getDoctor = async () => {
+    const token = JSON.parse(await EncryptedStorage.getItem(Token_Secret)).token;
+    console.log(Server_URL);
+    axios
+      .get(`${Server_URL}:3000/hospital/getDoctor/${route.params._id}`, {
+        headers: {
+          'x-auth-token': token
+        }
+      })
+      .then(function (response) {
+        setDoctor(response.data);
+        setWorkingDays(response.data.workingDays);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+
+  }
+  useEffect(() => {
+
+    getDoctor();
+    //console.log(doctor.workingDays);
+
+  }, []);
+
+  const OpenFromWindow = () => {
+    setShowFrom(true);
+  }
+  const OpenToWindow = () => {
+    setShowTo(true);
+  }
+  const handelFrom = (event, selectedTime) => {
+    setShowFrom(false);
+    setFrom(selectedTime);
+    const time = selectedTime.getHours() + ':' + selectedTime.getMinutes()
+    setFromText(time);
+    // console.log(from);
+  }
+  const handelTo = (event, selectedTime) => {
+    setShowTo(false);
+    setTo(selectedTime);
+    const time = selectedTime.getHours() + ':' + selectedTime.getMinutes()
+    setToText(time);
+    // console.log(to);
+  }
+  const handelWorkingDay = (d, f, t) => {
+    const workingDay = {
+      day: d,
+      // from: f.getHours() + ':' + f.getMinutes(),
+      // to: t.getHours() + ':' + t.getMinutes()
+      from: from,
+      to: to
+    };
+    // console.log(checkWorkingDays(workingDay, workingDays));
+    console.log(d);
+    if (d == '') {
+      setErrorMessage('Select a Day');
+    }
+    else if (f == today) {
+      setErrorMessage('Select a From');
+    }
+    else if (t == today) {
+      setErrorMessage('Select a To');
+    }
+    else if (!checkWorkingDays(workingDay, workingDays)) {
+      setErrorMessage('Working day is already exists');
+    }
+    else {
+      // console.log('handel Working Days');
+      console.log(workingDay);
+      setWorkingDays([...workingDays, workingDay]);
+      setErrorMessage('');
+      setModalVisible(!modalVisible);
+      handelCloseModal();
+      AddWorkingDay(workingDay)
+    }
+  }
+
+  const AddWorkingDay = async (workingDay) => {
+    try {
+      const token = JSON.parse(await EncryptedStorage.getItem(Token_Secret)).token;
+      //console.log(token);
+      // console.log(doctor._id, workingDay._id, Server_URL);
+      axios({
+        method: 'put',
+        url: `${Server_URL}:3000/hospital/addWorkingDay`,
+        data: {
+          doctorID: doctor._id,
+          day: workingDay.day,
+          from: workingDay.from.getHours()+':'+workingDay.from.getMinutes(),
+          to: workingDay.to.getHours()+':'+workingDay.to.getMinutes()
+        },
+        headers: {
+          'x-auth-token': token
+        }
+      })
+        .then(function (response) {
+          console.log(response.data);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+      }
+      catch (error) {
+        console.log(error);
+        // console.log("no try");
+      }
+      getDoctor();
+    }
+  const checkWorkingDays = (newWD, WDs) => {
+    if (WDs.length == 0) return true;
+    for (var i = 0; i < WDs.length; i++) {
+      if (newWD.day == WDs[i].day) {
+        if (newWD.from <= WDs[i].from && newWD.to >= WDs[i].to) {
+          return false;
+        }
+        else if (newWD.from <= WDs[i].from && newWD.to >= WDs[i].from) {
+          return false;
+        }
+        else if (newWD.from >= WDs[i].from && newWD.to <= WDs[i].to) {
+          return false;
+        }
+        else if (newWD.from >= WDs[i].from && newWD.from <= WDs[i].to) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+  const handelCloseModal = () => {
+    setDay('');
+    setFrom(today);
+    setFromText('From');
+    setTo(today);
+    setToText('To');
+    setErrorMessage('');
+  }
+  const makeValidWorkingDays = () => {
+    const newWorkingDays = [];
+    for (var i = 0; i < workingDays.length; i++) {
+      newWorkingDays.push({
+        day: workingDays[i].day,
+        from: workingDays[i].from.getHours() + ':' + workingDays[i].from.getMinutes(),
+        to: workingDays[i].to.getHours() + ':' + workingDays[i].to.getMinutes()
+      });
+    }
+    // console.log("helloooo", newWorkingDays);
+    return newWorkingDays;
+  }
   const removeSchedle = async (workingDay) => {
     try {
       const token = JSON.parse(await EncryptedStorage.getItem(Token_Secret)).token;
       //console.log(token);
-      console.log(route.params._id, workingDay._id, Server_URL);
+      console.log(doctor._id, workingDay._id, Server_URL);
       axios({
         method: 'put',
         url: `${Server_URL}:3000/hospital/removeWorkingDay`,
@@ -43,48 +222,14 @@ export default function ProfileScreen({ navigation, route }) {
         })
         .catch(function (error) {
           console.log(error);
-        });;
+        });
     }
     catch (error) {
       console.log(error);
       // console.log("no try");
     }
+    getDoctor();
   }
-
-  const review = [
-    {
-      key: 1,
-      reviewer_name: 'Maram Ghazal',
-      date: '9/3/2022',
-      review:
-        'Hello, this is my first review, why dont you try to add some important features like telegeram like: separete tabs for audio, video and photo',
-    },
-    {
-      key: 2,
-      reviewer_name: 'Alaa Abdelmajied',
-      date: '11/3/2022',
-      review:
-        'Hello, this is my first review, why dont you try to add some important features like telegeram',
-    },
-    {
-      key: 3,
-      reviewer_name: 'Mayar Adel',
-      date: '12/3/2022',
-      review: 'Hello, this is my first review',
-    },
-    {
-      key: 4,
-      reviewer_name: 'Nadeen Elgazar',
-      date: '14/3/2022',
-      review: 'I dont like this style btw',
-    },
-    {
-      key: 5,
-      reviewer_name: 'Omar Shalaby',
-      date: '15/3/2022',
-      review: 'This is too much scrolling',
-    },
-  ];
 
   const [defaultRating, setDefaultRating] = useState(2);
   const [maxRating, setMaxRating] = useState([1, 2, 3, 4, 5]);
@@ -105,8 +250,8 @@ export default function ProfileScreen({ navigation, route }) {
           />
           <View style={styles.body}>
             {/* <View style={styles.bodyContent}> */}
-            <Text style={styles.dr_name}>{route.params.name}</Text>
-            <Text style={styles.speciality}>{route.params.specialization}</Text>
+            <Text style={styles.dr_name}>{doctor.name}</Text>
+            <Text style={styles.speciality}>{doctor.specialization}</Text>
           </View>
         </View>
         <View style={styles.appointmentsContainer}>
@@ -120,7 +265,7 @@ export default function ProfileScreen({ navigation, route }) {
               { useNativeDriver: false },
             )}
             scrollEventThrottle={16}>
-            {route.params.workingDays.map((card, cardIndex) => {
+            {doctor._id ? doctor.workingDays.map((card, cardIndex) => {
               return (
                 <Animated.View style={{ width: windowWidth }} key={card.key}>
                   <View style={styles.scheduleCard}>
@@ -143,10 +288,10 @@ export default function ProfileScreen({ navigation, route }) {
                   </View>
                 </Animated.View>
               );
-            })}
+            }) : null}
           </ScrollView>
           <View style={styles.indicatorContainer}>
-            {route.params.workingDays.map((card, cardIndex) => {
+            {doctor._id ? doctor.workingDays.map((card, cardIndex) => {
               const width = scrollX.interpolate({
                 inputRange: [
                   windowWidth * (cardIndex - 1),
@@ -167,14 +312,122 @@ export default function ProfileScreen({ navigation, route }) {
                   key={cardIndex}
                 />
               );
-            })}
+            }) : null}
           </View>
         </View>
-
+        <View>
+          <View style={styles.addNewScheduleContainter}>
+            <TouchableOpacity
+              style={styles.touchableOpacity}
+              onPress={() => {
+                //handelWorkingDay(day, from, to);
+                setModalVisible(!modalVisible);
+              }}
+            >
+              <Icon5 style={styles.newDay} name='calendar-plus' />
+            </TouchableOpacity>
+          </View>
+        </View>
         <View style={styles.reviewsArea}>
+          <Modal
+            animationType="slide"
+            transparent={true}
+            hardwareAccelerated={true}
+            visible={modalVisible}
+            onRequestClose={() => {
+              Alert.alert("Modal has been closed.");
+              setModalVisible(!modalVisible);
+            }}
+          >
+            <View style={[styles.centeredView]}>
+              <View style={[styles.modalView]}>
+                <View style={[styles.workingDay, { width: '100%', alignItems: 'center' }]}>
+                  <SelectDropdown
+                    renderDropdownIcon={() => <Ionicons
+                      name={'chevron-down'}
+                      size={20}
+                      color={'#000'}
+                    />}
+                    dropdownBackgroundColor='#fff'
+                    dropdownOverlayColor='transparent'
+                    buttonStyle={styles.dayInput}
+                    defaultButtonText='Day'
+                    buttonTextStyle={{ color: '#a1a1a1', fontSize: 16 }}
+                    data={Day}
+                    onSelect={(selectedItem, index) => {
+                      setDay(selectedItem[0] + selectedItem[1] + selectedItem[2]);
+                    }}
+                    buttonTextAfterSelection={(selectedItem, index) => {
+                      return selectedItem
+                    }}
+                    rowTextForSelection={(item, index) => {
+                      return item
+                    }}
+                  />
+                  <View style={{ width: '200%', flexDirection: 'row', marginTop: 10 }}>
+                    <View style={styles.timeInput}>
+                      <Button
+                        value={today}
+                        style={styles.dateInput}
+                        title={fromText}
+                        color={'#1c1bad'}
+                        onPress={OpenFromWindow}
+                      />
+                    </View>
+                    {showFrom &&
+                      <DateTimePicker
+                        mode='time'
+                        value={from}
+                        onChange={handelFrom}
+                      />
+                    }
+                    <View style={styles.timeInput}>
+                      <Button
+                        title={toText}
+                        color={'#1c1bad'}
+                        onPress={OpenToWindow}
+                      />
+                    </View>
+
+                    {showTo &&
+                      <DateTimePicker
+                        mode='time'
+                        value={to}
+                        onChange={handelTo}
+                      />
+                    }
+                  </View>
+                </View>
+                {errorMessage != '' &&
+                  <Text style={{ color: '#f00' }}>{errorMessage}</Text>
+                }
+                <View style={{ flexDirection: 'row' }}>
+                  <Pressable
+                    style={[styles.button, styles.buttonClose]}
+                    onPress={() => {
+                      handelWorkingDay(day, from, to);
+                      console.log(day, from, to);
+                    }
+                    }
+                  >
+                    <Icon style={styles.newDay} name='check' />
+                  </Pressable>
+                  <Pressable
+                    style={[styles.button, styles.buttonClose, { backgroundColor: "#f00" }]}
+                    onPress={() => {
+                      handelCloseModal();
+                      setModalVisible(!modalVisible)
+                    }}
+                  >
+                    <Icon style={styles.newDay} name='close' />
+                  </Pressable>
+                </View>
+              </View>
+            </View>
+          </Modal>
           <Text style={styles.title}>Ratings and Reviews</Text>
 
-          {route.params.reviews.map((reviewCard, cardIndex) => {
+          {doctor._id ? doctor.reviews.map((reviewCard, cardIndex) => {
             return (
               <View
                 style={{
@@ -221,7 +474,7 @@ export default function ProfileScreen({ navigation, route }) {
                 </View>
               </View>
             );
-          })}
+          }) : null}
         </View>
         {/* <View style={{ backgroundColor: '#FDCC0D', width: '100%', height: 100, justifyContent: 'center', alignItems: 'center' }}><Text style={styles.title}>Comments Section - To be continued</Text></View> */}
       </View>
@@ -368,20 +621,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
-  bookButton: {
-    width: 100,
-    paddingTop: '6%',
-    paddingBottom: '6%',
-    borderRadius: 30,
-    backgroundColor: '#1c1bad',
-    borderWidth: 1,
-    alignItems: 'center',
-    textAlign: 'center',
-    borderColor: '#fff',
-    color: '#fff',
-  },
-
   customRatingBar: {
     justifyContent: 'center',
     flexDirection: 'row',
@@ -418,5 +657,118 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     borderColor: '#fff',
     color: '#fff',
+  },
+  touchableOpacity: {
+    backgroundColor: '#1c1bad',
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+    width: 50,
+    height: 50,
+    borderRadius: 100,
+    elevation: 10,
+  },
+  addNewScheduleContainter: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 10,
+  },
+  newDay: {
+    fontSize: 25,
+    color: 'white',
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5
+  },
+  // button: {
+  //     borderRadius: 20,
+  //     padding: 10,
+  //     elevation: 2
+  // },
+  buttonClose: {
+    backgroundColor: "#2196F3",
+  },
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center"
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center"
+  },
+  name: {
+    fontSize: 18,
+    color: '#000',
+    marginLeft: 5,
+    // marginTop: 10,
+    // textAlign: 'center'
+  },
+  workingDay: {
+    // flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-evenly',
+  },
+  dayInput: {
+    // width: '50%',
+    borderRadius: 10,
+    padding: 15,
+    justifyContent: 'center',
+    // margin: 5,
+    backgroundColor: '#fff',
+    shadowColor: '#000000',
+    shadowOffset: { width: -1, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1,
+    elevation: 2,
+  },
+  timeInput: {
+    width: '20%',
+    margin: 5,
+  },
+  dateInput: {
+    flex: 1,
+    borderRadius: 10,
+    padding: 15,
+    justifyContent: 'center',
+    margin: 5,
+    backgroundColor: '#fff',
+    shadowColor: '#000000',
+    shadowOffset: { width: -1, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1,
+    elevation: 2,
+  },
+  button: {
+    width: 100,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 10,
+    margin: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    elevation: 5,
   },
 });
