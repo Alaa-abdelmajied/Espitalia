@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import {
   Button,
@@ -15,37 +15,108 @@ import {
   ImageBackground,
   Pressable,
   Dimensions,
-  TouchableOpacity
+  TouchableOpacity,
+  BackHandler
 } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
+import axios from 'axios';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import { Server_URL, Token_Secret, Credintials_Secret } from '@env';
 
 
 export default function HomeScreen({ navigation }) {
 
+  const [showButton, setShowButton] = useState(false);
+
+  useEffect(() => {
+    const autoLogin = async () => {
+      try {
+        const { email, password, type } = JSON.parse(
+          await EncryptedStorage.getItem(Credintials_Secret),
+        );
+        console.log(email, password, type);
+        switch (type) {
+          case "patient":
+            patientLogin(email, password);
+            break;
+          case "doctor":
+            console.log("It's a doctor");
+            break;
+          case "receptionist":
+            console.log("It's a receptionist");
+            break;
+          case "hospital":
+            console.log("It's a hosptial");
+            break;
+          default:
+            console.log("Undefined");
+        }
+      } catch (err) {
+        setShowButton(true);
+      }
+    };
+    autoLogin();
+  }, []);
+
+  const patientLogin = async (email, password) => {
+    axios
+      .post(`${Server_URL}:3000/patient/login`, {
+        email: email,
+        password: password
+      })
+      .then(async function (response) {
+        const { verified, token } = response.data;
+        try {
+          await EncryptedStorage.setItem(
+            Token_Secret,
+            JSON.stringify({ token: token }),
+          );
+        } catch (err) {
+          Alert.alert('Error', err.code, [
+            { text: 'Exit', onPress: () => BackHandler.exitApp() },
+          ]);
+        }
+        if (verified) {
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'Patient' }],
+          });
+        } else {
+          navigation.navigate('OTP', { isForgotten: false });
+        }
+      })
+      .catch(function (error) {
+        const err = error.response.data;
+        if (err == 'Incorrect email or password') {
+          setShowButton(true);
+        }
+      });
+  }
 
   return (
 
     <View style={styles.body}>
       <Image style={styles.logo} source={require('../images/logo_withoutBG.png')}></Image>
       <Text style={{ fontSize: 40, fontWeight: 'bold', color: '#1c1bad' }}>eSpitalia</Text>
-      <View style={styles.main}>
-        <Pressable style={styles.userButton} onPress={() => navigation.navigate({
-          name: 'Login',
-          params: {
-            staff: false,
-          },
-        })}>
-          <Text style={[styles.buttonText, { color: '#000' }]}> USER </Text>
-        </Pressable>
-        <Pressable style={styles.staffButton} onPress={() => navigation.navigate({
-          name: 'Login',
-          params: {
-            staff: true,
-          },
-        })}>
-          <Text style={[styles.buttonText, { color: '#fff' }]}> STAFF </Text>
-        </Pressable>
-      </View>
+      {showButton ?
+        <View style={styles.main}>
+          <Pressable style={styles.userButton} onPress={() => navigation.navigate({
+            name: 'Login',
+            params: {
+              staff: false,
+            },
+          })}>
+            <Text style={[styles.buttonText, { color: '#000' }]}> USER </Text>
+          </Pressable>
+          <Pressable style={styles.staffButton} onPress={() => navigation.navigate({
+            name: 'Login',
+            params: {
+              staff: true,
+            },
+          })}>
+            <Text style={[styles.buttonText, { color: '#fff' }]}> STAFF </Text>
+          </Pressable>
+        </View> : null}
     </View>
   )
 }
