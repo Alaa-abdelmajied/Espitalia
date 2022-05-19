@@ -6,18 +6,32 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {Rating} from 'react-native-ratings';
 
 const DoctorsCard = ({card, navigation, hospitalName, hospitalAddress}) => {
-  const onPress = () => {
+
+  const onPress = (id, name, specialization, averageRating) => {
     navigation.navigate('DoctorDetails', {
-      drID: card._id,
-      drName: card.name,
-      speciality: card.specialization,
-      hospitalName: card.doctorHospitalName,
-      averageRating: card.averageRating,
+      drID: id,
+      drName: name,
+      specialization: specialization,
+      hospitalName: hospitalName,
+      hospitalAddress: hospitalAddress,
+      averageRating: averageRating,
+      fromSearch: false,
     });
   };
 
   return (
-    <TouchableOpacity style={styles.card} onPress={onPress}>
+    <TouchableOpacity
+      style={styles.card}
+      onPress={() =>
+        onPress(
+          card._id,
+          card.name,
+          card.specialization,
+          card.hospitalName,
+          card.hospitalAddress,
+          card.averageRating,
+        )
+      }>
       <View style={styles.card_header}>
         <Image
           style={styles.doctorImg}
@@ -57,7 +71,7 @@ const DoctorsCard = ({card, navigation, hospitalName, hospitalAddress}) => {
             tintColor="#fff"
             ratingCount={5}
             imageSize={25}
-            startingValue={card.averageRating}
+            startingValue={card.rating}
             fractions={1}
             readonly={true}
             style={{
@@ -72,8 +86,8 @@ const DoctorsCard = ({card, navigation, hospitalName, hospitalAddress}) => {
 };
 
 const styles = StyleSheet.create({
+  
   card: {
-    // flexDirection:'column',
     width: '95%',
     borderRadius: 15,
     overflow: 'hidden',

@@ -1,19 +1,13 @@
-import React, { useState } from 'react';
-import Svg, { Path } from 'react-native-svg';
+import React, {useState} from 'react';
+import Svg, {Path} from 'react-native-svg';
 
-import {
-  StyleSheet,
-  Text,
-  View,
-  TextInput,
-  Pressable,
-} from 'react-native';
+import {StyleSheet, Text, View, TextInput, Pressable} from 'react-native';
 
 import DateTimePicker from '@react-native-community/datetimepicker';
-import SelectDropdown from 'react-native-select-dropdown'
+import SelectDropdown from 'react-native-select-dropdown';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-export default function SignUp({ navigation }) {
+export default function SignUp({navigation}) {
   const today = new Date();
   const [text, setText] = useState('📅 Date of Birth');
   const [show, setShow] = useState(false);
@@ -27,12 +21,19 @@ export default function SignUp({ navigation }) {
 
   const OpenDateWindow = () => {
     setShow(true);
-  }
+  };
   const handleDate = (event, selectedDate) => {
     const currentDate = selectedDate || new Date(1999, 11, 31);
     setShow(false);
     setDate(currentDate);
     let tmpDate = new Date(currentDate);
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  // const [date, setDate] = useState(new Date())
+  const [open, setOpen] = useState(false);
+    
     let fullDate = "📅 " + tmpDate.getDate() + "/" + (tmpDate.getMonth() + 1) + "/" + tmpDate.getFullYear();
     setText(fullDate);    
     setSelectedDate(tmpDate.getFullYear() + "-" + (tmpDate.getMonth() + 1) + "-" + tmpDate.getDate());
@@ -55,8 +56,8 @@ export default function SignUp({ navigation }) {
     });
   }
 
-  return (
 
+  return (
     <View style={styles.Body}>
       <View style={styles.WaveHeader}>
         <Svg
@@ -65,18 +66,16 @@ export default function SignUp({ navigation }) {
         >
           <Path
             fill="#1c1bad"
-            d='M0,192L60,170.7C120,149,240,107,360,112C480,117,600,171,720,197.3C840,224,960,224,1080,208C1200,192,1320,160,1380,144L1440,128L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z'
+            d="M0,192L60,170.7C120,149,240,107,360,112C480,117,600,171,720,197.3C840,224,960,224,1080,208C1200,192,1320,160,1380,144L1440,128L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z"
           />
-
         </Svg>
       </View>
 
       <View style={styles.RegisterRegion}>
         <View style={styles.RegisterCard}>
-          <Text style={styles.TitleText}>
-            Sign Up
-          </Text>
+          <Text style={styles.TitleText}>Sign Up</Text>
           <View style={styles.InputsRegion}>
+
             <TextInput style={styles.Input} placeholder="Enter your email" placeholderTextColor={'#a1a1a1'}
               onChangeText={text => setEmail(text)}>
             </TextInput>
@@ -89,57 +88,66 @@ export default function SignUp({ navigation }) {
             <TextInput secureTextEntry={true} style={styles.Input} placeholder="Confirm your password"
               placeholderTextColor={'#a1a1a1'} onChangeText={text => setConfirmPassword(text)}>
             </TextInput>
+
             <View style={styles.view}>
-              <View style={{ flex: 1, alignItems: 'flex-start' }}>
+              <View style={{flex: 1, alignItems: 'flex-start'}}>
                 <Pressable onPress={OpenDateWindow} style={styles.dateInput}>
-                  <Text style={{ textAlign: 'center', color: '#a1a1a1' }}>{text}</Text>
+                  <Text style={{textAlign: 'center', color: '#a1a1a1'}}>
+                    {text}
+                  </Text>
                   {show && (
                     <DateTimePicker
-                      mode='date'
+                      mode="date"
                       value={date}
+
                       format='yyyy-MM-dd'
                       maximumDate={new Date()}
+
                       onChange={handleDate}
                       isDatePickerVisible
-                    />)}
+                    />
+                  )}
                 </Pressable>
               </View>
-              <View style={{ flex: 1, alignItems: 'flex-end' }}>
-                <SelectDropdown renderDropdownIcon={() => <Ionicons
-                  name={'chevron-down'}
-                  size={20}
-                  color={'#000'}
-                />} dropdownBackgroundColor='#fff' dropdownOverlayColor='transparent' buttonStyle={styles.dateInput} defaultButtonText='Gender' buttonTextStyle={{ color: '#a1a1a1', fontSize: 16 }}
+              <View style={{flex: 1, alignItems: 'flex-end'}}>
+                <SelectDropdown
+                  renderDropdownIcon={() => (
+                    <Ionicons name={'chevron-down'} size={20} color={'#000'} />
+                  )}
+                  dropdownBackgroundColor="#fff"
+                  dropdownOverlayColor="transparent"
+                  buttonStyle={styles.dateInput}
+                  defaultButtonText="Gender"
+                  buttonTextStyle={{color: '#a1a1a1', fontSize: 16}}
                   data={gender}
                   onSelect={(selectedItem, index) => {
+
                     setSelectedGender(selectedItem);
                     console.log(selectedItem, index)
                   }}
                   buttonTextAfterSelection={(selectedItem, index) => {
-                    return selectedItem
+                    return selectedItem;
                   }}
                   rowTextForSelection={(item, index) => {
-                    return item
+                    return item;
                   }}
                 />
               </View>
             </View>
 
+
             <Pressable style={styles.nextButton} onPress={() => onPressNextHandler()}>
               <Text style={{ color: '#fff' }}>Next</Text>
             </Pressable>
-
           </View>
         </View>
       </View>
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
-
   Body: {
-
     flex: 1,
     flexDirection: 'column',
     backgrundColor: '#ffffff',
@@ -168,20 +176,20 @@ const styles = StyleSheet.create({
     margin: 10,
     fontWeight: 'bold',
     textAlign: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
 
   RegisterCard: {
     // width: '85%',
     marginHorizontal: 25,
     // alignSelf: 'center',
-    overflow: 'hidden'
+    overflow: 'hidden',
   },
 
   InputsRegion: {
     // backgroundColor: '#7a94f0',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
 
   Input: {
@@ -193,7 +201,7 @@ const styles = StyleSheet.create({
     margin: 10,
     backgroundColor: '#fff',
     shadowColor: '#000000',
-    shadowOffset: { width: -1, height: 1 },
+    shadowOffset: {width: -1, height: 1},
     shadowOpacity: 0.2,
     shadowRadius: 1,
     elevation: 2,
@@ -211,7 +219,7 @@ const styles = StyleSheet.create({
     // margin: 10,
     backgroundColor: '#fff',
     shadowColor: '#000000',
-    shadowOffset: { width: -1, height: 1 },
+    shadowOffset: {width: -1, height: 1},
     shadowOpacity: 0.2,
     shadowRadius: 1,
     elevation: 2,
@@ -220,9 +228,8 @@ const styles = StyleSheet.create({
   view: {
     flexDirection: 'row',
     width: '95%',
-    margin: 10
+    margin: 10,
   },
-
 
   nextButton: {
     width: '95%',
@@ -233,6 +240,4 @@ const styles = StyleSheet.create({
     backgroundColor: '#1c1bad',
     alignItems: 'center',
   },
-
 });
-

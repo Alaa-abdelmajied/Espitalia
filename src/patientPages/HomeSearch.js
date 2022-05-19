@@ -53,6 +53,32 @@ export default function Search({navigation}) {
       });
   };
 
+  const onPressDr = (id, name) => {
+    navigation.navigate('DoctorDetails', {
+      drID: id,
+      drName: name,
+      fromSearch: true,
+    });
+    console.log(id, name);
+  };
+
+  const onPressHosp = (id, name, address) => {
+    navigation.navigate('SpecializationScreen', {
+      hospitalID: id,
+      hospitalName: name,
+      hospitalAddress: address,
+      isAllSpecializations: false,
+    });
+    console.log(id, name);
+  };
+
+  const onPressSpec = specialization => {
+    navigation.navigate('DoctorsScreen', {
+      speciality: specialization,
+      fromSearch: true,
+    });
+  };
+
   return (
     <View style={styles.container}>
       <SearchBar
@@ -79,11 +105,13 @@ export default function Search({navigation}) {
         )}
         renderItem={({item}) => {
           return (
-            <TouchableOpacity style={styles.specializationCard}>
+            <TouchableOpacity
+              style={styles.searchCard}
+              onPress={() => onPressDr(item._id, item.name)}>
               <View
                 style={{justifyContent: 'center', alignItems: 'center'}}></View>
               <View style={{flex: 2, justifyContent: 'center'}}>
-                <Text style={styles.speciality}>{item.name}</Text>
+                <Text style={styles.searchText}>{item.name}</Text>
               </View>
             </TouchableOpacity>
           );
@@ -108,11 +136,19 @@ export default function Search({navigation}) {
         )}
         renderItem={({item}) => {
           return (
-            <TouchableOpacity style={styles.specializationCard}>
+            <TouchableOpacity
+              style={styles.searchCard}
+              onPress={() => onPressHosp(item._id, item.name, item.address)}>
               <View
                 style={{justifyContent: 'center', alignItems: 'center'}}></View>
-              <View style={{flex: 2, justifyContent: 'center'}}>
-                <Text style={styles.speciality}>{item.name}</Text>
+              <View
+                style={{
+                  flex: 2,
+                  justifyContent: 'center',
+                  flexDirection: 'column',
+                }}>
+                <Text style={styles.searchText}>{item.name}</Text>
+                <Text style={styles.searchText}>{item.address}</Text>
               </View>
             </TouchableOpacity>
           );
@@ -136,17 +172,19 @@ export default function Search({navigation}) {
         )}
         renderItem={({item}) => {
           return (
-            <TouchableOpacity style={styles.specializationCard}>
+            <TouchableOpacity
+              style={styles.searchCard}
+              onPress={() => onPressSpec(item.name)}>
               <View
                 style={{justifyContent: 'center', alignItems: 'center'}}></View>
               <View style={{flex: 2, justifyContent: 'center'}}>
-                <Text style={styles.speciality}>{item.name}</Text>
+                <Text style={styles.searchText}>{item.name}</Text>
               </View>
             </TouchableOpacity>
           );
         }}
         ListEmptyComponent={
-          <Text style={{fontSize: 18, alignSelf: 'center'}}>No Results</Text>
+          <Text style={{fontSize: 20, alignSelf: 'center'}}>No Results</Text>
         }
       />
     </View>
@@ -208,15 +246,14 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     justifyContent: 'center',
   },
-  specializationCard: {
-    // width: '100%',
-    paddingTop: 5,
-    paddingBottom: 5,
-    // margin: '1%',
-    margin: 3,
+  searchCard: {
+    alignSelf: 'center',
+    width: '95%',
+    paddingVertical: 5,
+    margin: 5,
     backgroundColor: '#FFFFFF',
     flexDirection: 'row',
-    borderRadius: 10,
+    borderRadius: 5,
     shadowColor: '#000',
     shadowOpacity: 1,
     shadowOffset: {
@@ -232,7 +269,7 @@ const styles = StyleSheet.create({
   },
   seeMoreButton: {
     flex: 1,
-    margin:5,
+    margin: 5,
     alignSelf: 'flex-end',
     borderRadius: 10,
     backgroundColor: '#1c1bad',
@@ -254,24 +291,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
 
-  specializationCard: {
-    // width: '100%',
-    paddingTop: 5,
-    paddingBottom: 5,
-    // margin: '1%',
-    margin: 3,
-    backgroundColor: '#FFFFFF',
-    flexDirection: 'row',
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOpacity: 1,
-    shadowOffset: {
-      width: 3,
-      height: 3,
-    },
-    elevation: 2,
-  },
-
   image: {
     width: 45,
     height: 45,
@@ -279,16 +298,11 @@ const styles = StyleSheet.create({
     marginLeft: 20,
   },
 
-  speciality: {
-    fontSize: 20,
+  searchText: {
+    fontSize: 15,
     color: '#000000',
     marginLeft: 10,
     alignSelf: 'center',
-  },
-
-  search: {
-    borderRadius: 20,
-    height: 50,
   },
 
   titleText: {

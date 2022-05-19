@@ -38,19 +38,20 @@ export default function PatientHome({navigation}) {
     displayHomepage();
   }, []);
 
-  const onPressHospitals = () => {
+  const onPressHospital = (id, name, address) => {
     navigation.navigate('SpecializationScreen', {
-      hospitalID: hospitals._id,
-      hospitalName: hospitals.name,
-      hospitalAddress: hospitals.address,
-      // fromHomepage: true,
+      hospitalID: id,
+      hospitalName: name,
+      hospitalAddress: address,
+      isAllSpecializations:false,
     });
+    console.log(id, name, address);
   };
 
-  const onPressDoctors = (
+  const onPressDoctor = (
     id,
     name,
-    speciality,
+    specialization,
     hospitalName,
     hospitalAddress,
     averageRating,
@@ -58,20 +59,28 @@ export default function PatientHome({navigation}) {
     navigation.navigate('DoctorDetails', {
       drID: id,
       drName: name,
-      speciality: speciality,
+      specialization: specialization,
       hospitalName: hospitalName,
       hospitalAddress: hospitalAddress,
       averageRating: averageRating,
-      // fromHomepage: true,
+      fromSearch:false,
     });
+    console.log(
+      id,
+      name,
+      specialization,
+      hospitalName,
+      hospitalAddress,
+      averageRating,
+    );
   };
 
-  const onPressSpecializations = specialization => {
+  const onPressSpecialization = speciality => {
     navigation.navigate('DoctorsScreen', {
-      speciality: specialization,
+      speciality: speciality,
       fromHomepage: true,
     });
-    console.log(specialization);
+    console.log(speciality);
   };
 
   const seeAllHospitals = () => {
@@ -81,10 +90,11 @@ export default function PatientHome({navigation}) {
     navigation.navigate('DoctorList', {isAllDoctors: true});
   };
   const seeAllSpecializations = () => {
-    navigation.navigate('SpecializationScreen', {
+    navigation.navigate('SpecializationScreen',
+     {
       isAllSpecializations: true,
-      // ,fromHomepage:false
-    });
+    }
+    );
   };
 
   return (
@@ -111,7 +121,9 @@ export default function PatientHome({navigation}) {
             <TouchableOpacity
               style={styles.cards}
               key={cardIndex}
-              onPress={onPressHospitals}>
+              onPress={() =>
+                onPressHospital(card._id, card.name, card.address)
+              }>
               <View style={styles.card_header}>
                 <Text style={styles.name}> {card.name} </Text>
               </View>
@@ -147,7 +159,7 @@ export default function PatientHome({navigation}) {
               style={styles.cards}
               key={cardIndex}
               onPress={() =>
-                onPressDoctors(
+                onPressDoctor(
                   card._id,
                   card.name,
                   card.speciality,
@@ -221,7 +233,7 @@ export default function PatientHome({navigation}) {
             <TouchableOpacity
               style={styles.specializationCard}
               key={cardIndex}
-              onPress={() => onPressSpecializations(card)}>
+              onPress={() => onPressSpecialization(card)}>
               <View style={{justifyContent: 'center', alignItems: 'center'}}>
                 <FontAwesome
                   name={'stethoscope'}

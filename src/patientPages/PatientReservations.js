@@ -15,22 +15,28 @@ import {Server_URL, Token_Secret} from '@env';
 
 export default function Reservation({}) {
   const [upcomingAppointments, setUpcomingAppointments] = useState([]);
-  // const [refreshFlatlist, setRefreshFlatList] = useState(false);
+  const [loadData, setLoadData] = useState(true);
+
+  const getUpcomingAppointments = async () => {
+    const token = JSON.parse(
+      await EncryptedStorage.getItem(Token_Secret),
+    ).token;
+    await axios
+      .get(`${Server_URL}:3000/patient/upcomingAppointment/${token}`)
+      .then(response => {
+        setUpcomingAppointments(response.data);
+        setLoadData(false);
+      })
+      .catch(function (error) {
+        console.log(error.message);
+      });
+  };
 
   useEffect(() => {
-    const getUpcomingAppointments = async () => {
-      const token = JSON.parse(
-        await EncryptedStorage.getItem(Token_Secret),
-      ).token;
-      await axios
-        .get(`${Server_URL}:3000/patient/upcomingAppointment/${token}`)
-        .then(response => setUpcomingAppointments(response.data))
-        .catch(function (error) {
-          console.log(error.message);
-        });
-    };
-    getUpcomingAppointments();
-  }, []);
+    if (loadData) {
+      getUpcomingAppointments();
+    }
+  }, [loadData]);
 
   const cancelAppointment = appointmentID => {
     // setRefreshFlatList(!refreshFlatlist);
@@ -40,7 +46,10 @@ export default function Reservation({}) {
       axios
         .delete(`${Server_URL}:3000/patient/cancel/${appointmentID}`)
         .then(function (response) {
+          // upcomingAppointments.splice(upcomingAppointments,upcomingAppointments.indexOf(appointmentID));
+          // upcomingAppointments.splice();
           Alert.alert('Appointment cancelled successfully');
+          setLoadData(true);
         })
         .catch(function (error) {
           const err = error.response.data;
@@ -65,10 +74,10 @@ export default function Reservation({}) {
       </View>
 
       <FlatList
-        // return item.appointmentID;
-        data={upcomingAppointments}
         extraData={upcomingAppointments}
+        data={upcomingAppointments}
         keyExtractor={(item, index) => index.toString()}
+        // return item.appointmentID;
         renderItem={({item}) => (
           <View style={styles.appointmentsCard}>
             <View style={styles.infoView}>
@@ -77,6 +86,7 @@ export default function Reservation({}) {
               </Text>
               <Text style={styles.infoText}>Doctor Name: {item.drName} </Text>
               <Text style={styles.infoText}>Date: {item.date} </Text>
+              <Text style={styles.infoText}>From: {item.from} </Text>
               <Text style={styles.infoText}>Reservation No: {item.resNum}</Text>
             </View>
             <View style={styles.view2}>

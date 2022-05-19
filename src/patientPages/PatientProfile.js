@@ -115,11 +115,11 @@ export default function Profile({ navigation }) {
     });
   };
 
-  const [showModal, setShowModal] = useState(false);
+  // const [showModal, setShowModal] = useState(false);
 
   return (
     <ScrollView>
-      <Modal visible={showModal} animationType="fade" transparent={true}>
+      {/* <Modal visible={showModal} animationType="fade" transparent={true}>
         <View style={styles.logoutModal}>
           <FontAwesome
             name={'close'}
@@ -139,51 +139,79 @@ export default function Profile({ navigation }) {
             <Text style={{ fontSize: 15, color: '#fff' }}>Change Password</Text>
           </Pressable>
         </View>
-      </Modal>
+      </Modal> */}
       <View style={styles.header}></View>
       <Image
         style={styles.avatar}
         source={{ uri: 'https://bootdey.com/img/Content/avatar/avatar6.png' }}
       />
       <View
-        style={{ position: 'absolute', alignSelf: 'flex-end', marginTop: 15 }}>
-        <TouchableOpacity style={{ margin: 5 }} onPress={onPressLogout}>
-          {/* <Text>Logout</Text> */}
-          <Ionicons
-            name="ellipsis-vertical"
-            size={30}
-            color="#fff"
-            onPress={() => setShowModal(true)}></Ionicons>
+
+        style={{position: 'absolute', alignSelf: 'flex-end', marginTop: 15}}>
+        <TouchableOpacity style={{margin: 5}} onPress={onPressLogout}>
+          <Pressable onPress={onPressLogout}>
+            <Text style={{fontSize: 15, color: '#fff'}}>Logout</Text>
+          </Pressable>
+
         </TouchableOpacity>
       </View>
       <View style={styles.body}>
         <View style={styles.bodyContent}>
           <Text style={styles.name}>{personalData.name}</Text>
-          <Text style={styles.subtitle}>BASIC DATA</Text>
-          <TouchableOpacity
-            style={{flexDirection: 'row'}}
-            onPress={onPressEdit}>
-            <FontAwesome name="edit" size={25} color="#000"></FontAwesome>
-            <Text
-              style={{
-                fontSize: 15,
-                color: '#000',
-                alignSelf: 'center',
-                marginHorizontal: 5,
-              }}>
-              Edit
-            </Text>
-          </TouchableOpacity>
+          <View style={{flexDirection:'row',margin:5}}>
+            <Text style={styles.subtitle}>BASIC DATA</Text>
+            <TouchableOpacity
+              style={{flexDirection: 'row' ,justifyContent:'center',alignItems:'center'}}
+              onPress={onPressEdit}>
+              <FontAwesome name="edit" size={20} color="#1c1bad"></FontAwesome>
+              <Text
+                style={{
+                  fontSize: 15,
+                  color: '#1c1bad',
+                  marginHorizontal: 5,
+                }}>
+                Edit
+              </Text>
+            </TouchableOpacity>
+          </View>
           <View style={styles.description}>
-            <Text style={styles.mainText}>Email: {personalData.email}</Text>
-            <Text style={styles.mainText}>
-              Phone number: {personalData.phoneNumber}
-            </Text>
-            <Text style={styles.mainText}>Age: 22</Text>
-            <Text style={styles.mainText}>Blood Type: A+</Text>
+            <View
+              style={{flexDirection: 'row', alignItems: 'center', margin: 2}}>
+              <Ionicons name={'mail'} size={20} color={'#000'}></Ionicons>
+              <Text style={styles.mainText}>{personalData.email}</Text>
+            </View>
+            <View
+              style={{flexDirection: 'row', alignItems: 'center', margin: 2}}>
+              <FontAwesome
+                name={'phone'}
+                size={20}
+                color={'#000'}></FontAwesome>
+              <Text style={styles.mainText}>{personalData.phoneNumber}</Text>
+            </View>
+            <View
+              style={{flexDirection: 'row', alignItems: 'center', margin: 2}}>
+              <FontAwesome
+                name={'calendar'}
+                size={20}
+                color={'#000'}></FontAwesome>
+              <Text style={styles.mainText}>27-6-2022</Text>
+            </View>
+            <View
+              style={{flexDirection: 'row', alignItems: 'center', margin: 2}}>
+              <Ionicons
+                name={'information-circle-outline'}
+                size={20}
+                color={'#000'}></Ionicons>
+              <Pressable>
+                <Text style={{marginLeft: 10, color: '#000'}}>
+                  More info...
+                </Text>
+              </Pressable>
+            </View>
+            {/* <Text style={styles.mainText}>Blood Type: A+</Text>
             <Text style={styles.mainText}>Diabetic: No</Text>
             <Text style={styles.mainText}>Diabetic: No</Text>
-            <Text style={styles.mainText}>Blood Pressure Problems: No</Text>
+            <Text style={styles.mainText}>Blood Pressure Problems: No</Text> */}
           </View>
           <View style={styles.lineStyle} />
           <Text style={styles.subtitle}>OLD RESERVATIONS</Text>
@@ -230,6 +258,7 @@ const styles = StyleSheet.create({
     margin: 3,
     color: '#000',
     fontSize: 18,
+    marginLeft: 10,
   },
 
   name: {

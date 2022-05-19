@@ -48,6 +48,7 @@ export default function Report({route}) {
         rate: rate,
         doctorId: report.drId,
         token: token,
+        appointmentID: appointmentID,
       })
       .then(response => {
         setReport(response.data);
@@ -64,7 +65,6 @@ export default function Report({route}) {
     saveReview();
     setShowModal(false);
     console.log(rate);
-
   };
 
   return (
@@ -96,21 +96,7 @@ export default function Report({route}) {
                 backgroundColor: 'transparent',
                 fontSize: 15,
               }}></Rating>
-            {/* {maxRating.map((item, key) => {
-              return (
-                <TouchableOpacity
-                  activeOpacity={0.7}
-                  key={key}
-                  style={{marginVertical: 5}}
-                  onPress={() => setDefaultRating(item)}>
-                  <FontAwesome
-                    name={item <= defaultRating ? 'star' : 'star-o'}
-                    size={25}
-                    color="#FDCC0D"
-                  />
-                </TouchableOpacity>
-              );
-            })} */}
+  
           </View>
           <View style={styles.modalInput}>
             <TextInput
@@ -141,6 +127,7 @@ export default function Report({route}) {
         </Text>
         <Text style={styles.infoText}>Date: {report.date} </Text>
         <Pressable
+          // visible={showReviewButton}
           style={styles.modalButton}
           onPress={() => setShowModal(true)}>
           <Text style={styles.modalText}>Rate and Review</Text>
