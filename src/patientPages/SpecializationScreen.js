@@ -58,61 +58,82 @@ export default function Speciality({navigation, route}) {
     }, []);
   }
 
-  // const [search, setSearch] = useState('');
-  // const [doctorsResult, setDoctorsResult] = useState([]);
+  const [searchResult, setSearchResult] = useState(false);
+  const [search, setSearch] = useState('');
+  const [specializationSearch, setSpecializationSearch] = useState([]);
 
-  // const doctorSearch = search => {
-  //   axios
-  //   .get(`${Server_URL}:3000/patient/searchAllSpecializations/${search}`)
-  //   .then(response => {
-  //     setDoctorsResult(response.data.doctors);
-  //   })
-  //   .catch(function (error) {
-  //     const err = error.response.data;
-  //     if (err == 'No specializations found') {
-  //       setDoctorsResult([]);
-  //     }
-  //   });
-  // };
+  const specSearch = search => {
+    axios
+      .get(`${Server_URL}:3000/patient/searchAllSpecializations/${search}`)
+      .then(response => {
+        setSpecializationSearch(response.data);
+      })
+      .catch(function (error) {
+        const err = error.response.data;
+        if (err == 'No specializations found') {
+          setSpecializationSearch([]);
+        }
+      });
+  };
 
-  // const updateSearch = search => {
-  //   setSearch(search);
-  //   if (search.length > 0) {
-  //     doctorSearch(search);
-  //   } else {
-  //     setDoctorsResult([]);
-  //   }
-  // };
+  const updateSearch = search => {
+    setSearch(search);
+    if (search.length > 0) {
+      specSearch(search);
+    } else {
+      setSpecializationSearch([]);
+    }
+  };
 
-  const onPress = item => {
+  const onPressSpecInHosp = item => {
     navigation.navigate('DoctorsScreen', {
-      hospitalID: hospitalID,
       specialization: item,
+      hospitalID: hospitalID,
       hospitalName: hospitalName,
       hospitalAddress: hospitalAddress,
       isAllDoctors: false,
       fromHomepage: false,
     });
+    console.log(item, hospitalID, hospitalName, hospitalAddress);
+  };
+  const onPressSpec = item => {
+    navigation.navigate('DoctorsScreen', {
+      speciality: item,
+      isAllDoctors: false,
+      fromHomepage: true,
+    });
+    console.log(item);
   };
 
   return (
     <View style={styles.container}>
       <SearchBar
         lightTheme={true}
-        placeholder="search"
+        placeholder="search for specialization"
         containerStyle={{backgroundColor: '#f0f0f0'}}
-        // onChangeText={value=> updateSearch(value)}
-        // value={search}
+        onChangeText={value => updateSearch(value)}
+        value={search}
         inputContainerStyle={{borderRadius: 50, backgroundColor: '#fff'}}
       />
       <FlatList
         keyExtractor={(item, index) => index.toString()}
-        data={!isAllSpecializations ? specialization : allSpecializations}
+        data={
+          !searchResult
+            ? !isAllSpecializations
+              ? specialization
+              : allSpecializations
+            : specializationSearch
+        }
         renderItem={({item}) => {
           return (
             <TouchableOpacity
               style={styles.specializationCard}
-              onPress={() => onPress(item)}>
+              // onPress={() => onPress(!isAllSpecializations ? item : item.name)}
+              onPress={
+                !isAllSpecializations
+                  ? () => onPressSpecInHosp(item)
+                  : () => onPressSpec(item.name)
+              }>
               <View style={{justifyContent: 'center', alignItems: 'center'}}>
                 <FontAwesome
                   name={'stethoscope'}

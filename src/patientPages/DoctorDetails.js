@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {Rating} from 'react-native-ratings';
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
@@ -22,20 +23,24 @@ export default function ProfileScreen({route}) {
   const {
     drID,
     drName,
-    speciality,
+    specialization,
     hospitalName,
     hospitalAddress,
     averageRating,
-    // fromHomepage
+    fromSearch,
   } = route.params;
+
+  const [data, setData] = useState([]);
+
   const [comments, setComments] = useState([]);
   const [schedule, setSchedule] = useState([]);
 
   useEffect(() => {
-    const getReviews = async () => {
+    const getDoctorDetails = async () => {
       await axios
         .get(`${Server_URL}:3000/patient/doctor/${drID}`)
         .then(response => {
+          setData(response.data.doctorData);
           setComments(response.data.reviewDetails);
           setSchedule(response.data.scheduleDetails);
         })
@@ -43,7 +48,7 @@ export default function ProfileScreen({route}) {
           console.log(error.message);
         });
     };
-    getReviews();
+    getDoctorDetails();
   }, []);
 
   const bookAppointment = async (date, from, to) => {
@@ -52,7 +57,6 @@ export default function ProfileScreen({route}) {
       const token = JSON.parse(
         await EncryptedStorage.getItem(Token_Secret),
       ).token;
-
       axios
         .post(`${Server_URL}:3000/patient/book`, {
           token: token,
@@ -93,33 +97,65 @@ export default function ProfileScreen({route}) {
             style={styles.avatar}
             source={{uri: 'https://bootdey.com/img/Content/avatar/avatar6.png'}}
           />
-          <View style={styles.body}>
-            {/* <View style={styles.bodyContent}> */}
-            <Text style={styles.dr_name}>{drName}</Text>
-            <Text style={styles.speciality}>{speciality}</Text>
-            <View style={{flexDirection: 'row'}}>
-              <Ionicons
-                name={'location-sharp'}
-                size={25}
-                color="#1c1bad"
-                style={{margin: 5}}></Ionicons>
-              <Text style={styles.description}>
-                {hospitalName} {hospitalAddress}
-              </Text>
+          {/* <View style={styles.body}> */}
+          {/* <View style={styles.bodyContent}> */}
+          {!fromSearch ? (
+            <View style={styles.body}>
+              <Text style={styles.dr_name}>{drName}</Text>
+              <Text style={styles.description}>{specialization}</Text>
+              <View style={{flexDirection: 'row'}}>
+                <FontAwesome
+                  name={'hospital-o'}
+                  size={25}
+                  color="#1c1bad"
+                  style={{margin: 5}}></FontAwesome>
+                <Text style={styles.description}>{hospitalName}</Text>
+              </View>
+              <View style={{flexDirection: 'row'}}>
+                <Ionicons
+                  name={'location-sharp'}
+                  size={25}
+                  color="#1c1bad"
+                  style={{margin: 5}}></Ionicons>
+                <Text style={styles.description}>{hospitalAddress}</Text>
+              </View>
             </View>
-            <View style={styles.customRatingBar}>
-              <Rating
-                type="custom"
-                ratingBackgroundColor="#bfbfbf"
-                tintColor="#f0f0f0"
-                ratingCount={5}
-                imageSize={30}
-                startingValue={averageRating}
-                fractions={1}
-                readonly={true}></Rating>
-              <Text style={styles.text}>{averageRating}/5</Text>
+          ) : (
+            <View style={styles.body}>
+              <Text style={styles.dr_name}>{data.drName}</Text>
+              <Text style={styles.description}>{data.specialization}</Text>
+              <View style={{flexDirection: 'row'}}>
+                <FontAwesome
+                  name={'hospital-o'}
+                  size={25}
+                  color="#1c1bad"
+                  style={{margin: 5}}></FontAwesome>
+                <Text style={styles.description}>{data.hospitalName}</Text>
+              </View>
+              <View style={{flexDirection: 'row'}}>
+                <Ionicons
+                  name={'location-sharp'}
+                  size={25}
+                  color="#1c1bad"
+                  style={{margin: 5}}></Ionicons>
+                <Text style={styles.description}>{data.hospitalAddress}</Text>
+              </View>
             </View>
+          )}
+
+          <View style={styles.customRatingBar}>
+            <Rating
+              type="custom"
+              ratingBackgroundColor="#bfbfbf"
+              tintColor="#f0f0f0"
+              ratingCount={5}
+              imageSize={30}
+              startingValue={averageRating}
+              fractions={1}
+              readonly={true}></Rating>
+            <Text style={styles.text}>{averageRating}/5</Text>
           </View>
+          {/* </View> */}
         </View>
         <View style={styles.appointmentsContainer}>
           <ScrollView
@@ -138,7 +174,7 @@ export default function ProfileScreen({route}) {
                   <View style={styles.scheduleCard}>
                     <View style={styles.dateHeader}>
                       <Text style={{color: '#fff', fontSize: 20}}>
-                        {card.date}
+                        {card.displayDate}
                       </Text>
                     </View>
                     <View style={{margin: 30, alignItems: 'center'}}>
@@ -259,8 +295,9 @@ const styles = StyleSheet.create({
   },
 
   body: {
+    width: '99%',
     flexDirection: 'column',
-    marginTop: '15%',
+    marginTop: 70,
     alignItems: 'center',
     justifyContent: 'center',
     // backgroundColor:'#ff0ff0',
