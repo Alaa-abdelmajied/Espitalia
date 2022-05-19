@@ -15,22 +15,23 @@ export default function Homepage({ navigation, route }) {
   }
   const getReceptionists = async () => {
     const token = JSON.parse(await EncryptedStorage.getItem(Token_Secret)).token;
-    console.log(token);
+    // console.log(token);
     console.log(Server_URL);
-    axios
-      .get(`${Server_URL}:3000/hospital/viewReceptionists`, {
-        headers: {
-          'x-auth-token': token
-        },
-        
-      })
-      .then(async function (response) {
-        //console.log(response.data);
-        navigation.navigate('Reciptionist', response.data);
-      })
-      .catch (function (error){
-        console.log(error);
-      }); 
+    navigation.navigate('Reciptionist');
+    // axios
+    //   .get(`${Server_URL}:3000/hospital/viewReceptionists`, {
+    //     headers: {
+    //       'x-auth-token': token
+    //     },
+
+    //   })
+    //   .then(async function (response) {
+    //     // console.log(response.data);
+    //     navigation.navigate('Reciptionist', response.data);
+    //   })
+    //   .catch (function (error){
+    //     console.log(error);
+    //   }); 
 
   }
   return (

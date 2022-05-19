@@ -120,13 +120,13 @@ export default function Login({ navigation, route }) {
       //   setIsVisible(true);
       // }
       const url = `${Server_URL}:3000/${selectedStaff.id}/login`;
-      console.log(email, password, selectedStaff.id, url);
       axios
-        .post(url, {
-          email: email,
-          password: password
-        })
-        .then(async function (response) {
+      .post(url, {
+        email: email,
+        password: password
+      })
+      .then(async function (response) {
+          console.log(email, password, url);
           setIsVisible(false);
           const token = response.headers['x-auth-token'];
           try {

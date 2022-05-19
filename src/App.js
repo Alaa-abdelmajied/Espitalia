@@ -118,7 +118,7 @@ function HosptialAdminStackView() {
       <Stack.Screen name="Profile" component={HospitalAdminProfilepage} />
       <Stack.Screen name="Doctors" component={HospitalAdminDoctorsPage} />
       <Stack.Screen name="DoctorProfile" component={HospitalDoctorProfile} />
-      <Stack.Screen name="ReceptionistProfile" component={HospitalDoctorProfile} />
+      <Stack.Screen name="ReceptionistProfile" component={HospitalReceptionistProfile} />
       <Stack.Screen
         name="Reciptionist"
         component={HospitalAdminReceptionistPage}

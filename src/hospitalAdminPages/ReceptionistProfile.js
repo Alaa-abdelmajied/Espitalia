@@ -1,5 +1,5 @@
-import React, {useRef} from 'react';
-import {useState} from 'react';
+import React, { useRef } from 'react';
+import { useState, useEffect } from 'react';
 
 import {
   ScrollView,
@@ -12,91 +12,274 @@ import {
   Pressable,
   TouchableOpacity,
   FlatList,
+  Modal,
+  Button,
 } from 'react-native';
 
+import SelectDropdown from 'react-native-select-dropdown';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import Icon from 'react-native-vector-icons/dist/FontAwesome';
+import Icon5 from 'react-native-vector-icons/dist/FontAwesome5';
+import AntDesign from 'react-native-vector-icons/dist/AntDesign';
 
-export default function ProfileScreen() {
-  const appointments = [
-    {
-      key: 1,
-      date: 'Thurs. 9/3/2022',
-      from: '14:00',
-      to: '16:00',
-      color: '#1c1bad',
-    },
-    {
-      key: 2,
-      date: 'Sat. 11/3/2022',
-      from: '11:00',
-      to: '17:00',
-      color: '#1c1bad',
-    },
-    {
-      key: 3,
-      date: 'Sun. 12/3/2022',
-      from: '11:00',
-      to: '17:00',
-      color: '#1c1bad',
-    },
-    {
-      key: 4,
-      date: 'Tues. 14/3/2022',
-      from: '16:00',
-      to: '19:00',
-      color: '#1c1bad',
-    },
-    {
-      key: 5,
-      date: 'Wed.: 15/3/2022',
-      from: '16:00',
-      to: '19:00',
-      color: '#1c1bad',
-    },
-  ];
+import axios from "axios";
+import EncryptedStorage from 'react-native-encrypted-storage';
+import { Server_URL, Token_Secret, Credintials_Secret } from '@env';
 
-  const review = [
-    {
-      key: 1,
-      reviewer_name: 'Maram Ghazal',
-      date: '9/3/2022',
-      review:
-        'Hello, this is my first review, why dont you try to add some important features like telegeram like: separete tabs for audio, video and photo',
-    },
-    {
-      key: 2,
-      reviewer_name: 'Alaa Abdelmajied',
-      date: '11/3/2022',
-      review:
-        'Hello, this is my first review, why dont you try to add some important features like telegeram',
-    },
-    {
-      key: 3,
-      reviewer_name: 'Mayar Adel',
-      date: '12/3/2022',
-      review: 'Hello, this is my first review',
-    },
-    {
-      key: 4,
-      reviewer_name: 'Nadeen Elgazar',
-      date: '14/3/2022',
-      review: 'I dont like this style btw',
-    },
-    {
-      key: 5,
-      reviewer_name: 'Omar Shalaby',
-      date: '15/3/2022',
-      review: 'This is too much scrolling',
-    },
-  ];
+/*
+dbachmann0@ning.com
+n8RPhN
+*/
 
-  const [defaultRating, setDefaultRating] = useState(2);
-  const [maxRating, setMaxRating] = useState([1, 2, 3, 4, 5]);
+export default function ProfileScreen({ navigation, route }) {
+  
+  const Day = ['Saterday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+
+  const [recepitionist, setRecepitionist] = useState(route.params);
+  const [workingDays, setWorkingDays] = useState([]);
+
+  const [today,] = useState(new Date());
+  const [day, setDay] = useState('');
+  const [fromText, setFromText] = useState('From');
+  const [from, setFrom] = useState(today);
+  const [toText, setToText] = useState('To');
+  const [to, setTo] = useState(today);
+  const [showFrom, setShowFrom] = useState(false);
+  const [showTo, setShowTo] = useState(false);
+
+  const [errorMessage, setErrorMessage] = useState('');
+  // const [errorMessage2, setErrorMessage2] = useState('');
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const getReceptionist = async () => {
+    const token = JSON.parse(await EncryptedStorage.getItem(Token_Secret)).token;
+    console.log(Server_URL);
+    axios
+      .get(`${Server_URL}:3000/hospital/getReceptionist/${route.params._id}`, {
+        headers: {
+          'x-auth-token': token
+        }
+      })
+      .then(function (response) {
+        setRecepitionist(response.data);
+        setWorkingDays(response.data.workingDays);
+        // console.log(response.data.workingDays);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+
+  }
+  useEffect(() => {
+    getReceptionist();
+  }, []);
+
+  const OpenFromWindow = () => {
+    setShowFrom(true);
+  }
+  const OpenToWindow = () => {
+    setShowTo(true);
+  }
+  const handelFrom = (event, selectedTime) => {
+    setShowFrom(false);
+    setFrom(selectedTime);
+    const time = selectedTime.getHours() + ':' + selectedTime.getMinutes()
+    setFromText(time);
+    // console.log(from);
+  }
+  const handelTo = (event, selectedTime) => {
+    setShowTo(false);
+    setTo(selectedTime);
+    const time = selectedTime.getHours() + ':' + selectedTime.getMinutes()
+    setToText(time);
+    // console.log(to);
+  }
+  const handelWorkingDay = (d, f, t) => {
+    const workingDay = {
+      day: d,
+      from: f,
+      to: t
+    };
+    if (d == '') {
+      setErrorMessage('Select a Day');
+      console.log('day error');
+    }
+    else if (f == today) {
+      setErrorMessage('Select a From');
+      console.log('from error');
+    }
+    else if (t == today) {
+      setErrorMessage('Select a To');
+      console.log('to error');
+    }
+    else if (!checkWorkingDays(workingDay, workingDays)) {
+      setErrorMessage('Working day is already exists');
+      console.log('overlapping error');
+    }
+    else {
+      console.log('adding workingday...');
+      setWorkingDays([...workingDays, workingDay]);
+      setErrorMessage('');
+      setModalVisible(!modalVisible);
+      handelCloseModal();
+      AddWorkingDay(workingDay)
+    }
+  }
+
+  const AddWorkingDay = async (workingDay) => {
+    try {
+      const token = JSON.parse(await EncryptedStorage.getItem(Token_Secret)).token;
+      //console.log(token);
+      axios({
+        method: 'put',
+        url: `${Server_URL}:3000/hospital/addWorkingDayRecept`,
+        data: {
+          receptionistID: recepitionist._id,
+          day: workingDay.day,
+          from: workingDay.from.getHours() + ':' + workingDay.from.getMinutes(),
+          to: workingDay.to.getHours() + ':' + workingDay.to.getMinutes()
+        },
+        headers: {
+          'x-auth-token': token
+        }
+      })
+        .then(function (response) {
+          console.log(response.data);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    }
+    catch (error) {
+      console.log(error);
+      // console.log("no try");
+    }
+    getReceptionist();
+  }
+  const checkWorkingDays = (newWD, WDs) => {
+    if (WDs.length == 0) return true;
+    for (var i = 0; i < WDs.length; i++) {
+      if (newWD.day == WDs[i].day) {
+        const fromTime = {
+          hours: WDs[i].from.split(':')[0],
+          minutes: WDs[i].from.split(':')[1],
+        }
+        const toTime = {
+          hours: WDs[i].to.split(':')[0],
+          minutes: WDs[i].to.split(':')[1],
+        }
+        const tempFrom = new Date();
+        tempFrom.setHours(fromTime.hours);
+        tempFrom.setMinutes(fromTime.minutes);
+        tempFrom.setSeconds(0);
+
+        const tempTo = new Date();
+        tempTo.setHours(toTime.hours);
+        tempTo.setMinutes(toTime.minutes);
+        tempTo.setSeconds(0);
+
+        newWD.from.setSeconds(0);
+        newWD.to.setSeconds(0);
+        console.log(newWD.from, "->", newWD.to);
+        console.log(tempFrom, "->", tempTo);
+        if (newWD.from <= tempFrom && newWD.to >= tempTo) {
+          return false;
+        }
+        else if (newWD.from <= tempFrom && newWD.to >= tempFrom) {
+          return false;
+        }
+        else if (newWD.from >= tempFrom && newWD.to <= tempTo) {
+          return false;
+        }
+        else if (newWD.from >= tempFrom && newWD.from <= tempTo) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+  const handelCloseModal = () => {
+    setDay('');
+    setFrom(today);
+    setFromText('From');
+    setTo(today);
+    setToText('To');
+    setErrorMessage('');
+  }
+  const makeValidWorkingDays = () => {
+    const newWorkingDays = [];
+    for (var i = 0; i < workingDays.length; i++) {
+      newWorkingDays.push({
+        day: workingDays[i].day,
+        from: workingDays[i].from.getHours() + ':' + workingDays[i].from.getMinutes(),
+        to: workingDays[i].to.getHours() + ':' + workingDays[i].to.getMinutes()
+      });
+    }
+    // console.log("helloooo", newWorkingDays);
+    return newWorkingDays;
+  }
+  const removeSchedle = async (workingDay) => {
+    try {
+      const token = JSON.parse(await EncryptedStorage.getItem(Token_Secret)).token;
+      //console.log(token);
+      console.log(recepitionist._id, workingDay._id, Server_URL);
+      axios({
+        method: 'put',
+        url: `${Server_URL}:3000/hospital/removeWorkingDayRecept`,
+        data: {
+          receptionistID: route.params._id,
+          workingDay: workingDay._id,
+        },
+        headers: {
+          'x-auth-token': token
+        }
+      })
+        .then(function (response) {
+          console.log(response.data);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    }
+    catch (error) {
+      console.log(error);
+      // console.log("no try");
+    }
+    getReceptionist();
+  }
+  const deactivateReceptionist = async () => {
+    // console.log('deactivate');
+    try {
+      const token = JSON.parse(await EncryptedStorage.getItem(Token_Secret)).token;
+      //console.log(token);
+      axios({
+        method: 'put',
+        url: `${Server_URL}:3000/hospital/deactivateReceptionist`,
+        data: {
+          receptionistID: route.params._id,
+        },
+        headers: {
+          'x-auth-token': token
+        }
+      })
+        .then(function (response) {
+          console.log(response.data);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    }
+    catch (error) {
+      console.log(error);
+      // console.log("no try");
+    }
+  }
 
   const scrollX = useRef(new Animated.Value(0)).current;
 
-  let {width: windowWidth, height: windowHeight} = useWindowDimensions();
+  let { width: windowWidth, height: windowHeight } = useWindowDimensions();
   windowHeight = windowHeight - 300;
 
   return (
@@ -106,39 +289,14 @@ export default function ProfileScreen() {
           <View style={styles.header}></View>
           <Image
             style={styles.avatar}
-            source={{uri: 'https://bootdey.com/img/Content/avatar/avatar6.png'}}
+            source={{ uri: 'https://bootdey.com/img/Content/avatar/avatar6.png' }}
           />
           <View style={styles.body}>
             {/* <View style={styles.bodyContent}> */}
-            <Text style={styles.dr_name}>Dr Alaa</Text>
-            <Text style={styles.speciality}>Dermatologist</Text>
-            <View style={{flexDirection: 'row'}}>
-              <Ionicons
-                name={'location-sharp'}
-                size={25}
-                color="#1c1bad"
-                style={{margin: 5}}></Ionicons>
-              <Text style={styles.description}>
-                Working at Andalusia Hospital
-              </Text>
-            </View>
-            {/* <View style={styles.customRatingBar}>
-              {maxRating.map((item, key) => {
-                return (
-                  <TouchableOpacity
-                    activeOpacity={0.7}
-                    key={i + 1}
-                    onPress={() => setDefaultRating(item)}>
-                    <FontAwesome
-                      name={item <= defaultRating ? 'star' : 'star-o'}
-                      size={25}
-                      color="#FDCC0D"
-                    />
-                  </TouchableOpacity>
-                );
-              })}
-            </View> */}
+            <Text style={styles.dr_name}>{recepitionist.name}</Text>
+            <Text style={styles.speciality}>{recepitionist.specialization}</Text>
           </View>
+
         </View>
         <View style={styles.appointmentsContainer}>
           <ScrollView
@@ -147,37 +305,37 @@ export default function ProfileScreen() {
             pagingEnabled
             showsHorizontalScrollIndicator={false}
             onScroll={Animated.event(
-              [{nativeEvent: {contentOffset: {x: scrollX}}}],
-              {useNativeDriver: false},
+              [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+              { useNativeDriver: false },
             )}
             scrollEventThrottle={16}>
-            {appointments.map((card, cardIndex) => {
+            {recepitionist._id ? recepitionist.workingDays.map((card, cardIndex) => {
               return (
-                <Animated.View style={{width: windowWidth}} key={card.key}>
+                <Animated.View style={{ width: windowWidth }} key={cardIndex.toString()}>
                   <View style={styles.scheduleCard}>
                     <View style={styles.dateHeader}>
-                      <Text style={{color: '#fff', fontSize: 20}}>
-                        {card.date}
+                      <Text style={{ color: '#fff', fontSize: 20 }}>
+                        {card.day}
                       </Text>
                     </View>
-                    <View style={{margin: 30, alignItems: 'center'}}>
-                      <Text style={{color: '#000', fontSize: 20}}>
+                    <View style={{ margin: 30, alignItems: 'center' }}>
+                      <Text style={{ color: '#000', fontSize: 20 }}>
                         From: {card.from}
                       </Text>
-                      <Text style={{color: '#000', fontSize: 20}}>
+                      <Text style={{ color: '#000', fontSize: 20 }}>
                         To: {card.to}
                       </Text>
                     </View>
-                    <Pressable style={styles.bookButton}>
-                      <Text style={{color: '#fff'}}>Book</Text>
+                    <Pressable style={styles.bookButton} onPress={() => removeSchedle(card)}>
+                      <Text style={{ color: '#fff' }}>Remove</Text>
                     </Pressable>
                   </View>
                 </Animated.View>
               );
-            })}
+            }) : null}
           </ScrollView>
           <View style={styles.indicatorContainer}>
-            {appointments.map((card, cardIndex) => {
+            {recepitionist._id ? recepitionist.workingDays.map((card, cardIndex) => {
               const width = scrollX.interpolate({
                 inputRange: [
                   windowWidth * (cardIndex - 1),
@@ -192,124 +350,134 @@ export default function ProfileScreen() {
                 <Animated.View
                   style={[
                     styles.normalDots,
-                    {width},
-                    {backgroundColor: card.color},
+                    { width },
+                    { backgroundColor: card.color },
                   ]}
-                  key={cardIndex}
+                  key={cardIndex.toString()}
                 />
               );
-            })}
+            }) : null}
           </View>
         </View>
-
+        <View>
+          <View style={styles.addNewScheduleContainter}>
+            <TouchableOpacity
+              style={styles.touchableOpacity}
+              onPress={() => {
+                //handelWorkingDay(day, from, to);
+                setModalVisible(!modalVisible);
+              }}
+            >
+              <Icon5 style={styles.newDay} name='calendar-plus' />
+            </TouchableOpacity>
+          </View>
+        </View>
         <View style={styles.reviewsArea}>
-          <Text style={styles.title}>Ratings and Reviews</Text>
-          {/* <FlatList
-            data={review}
-            keyExtractor={item => {
-              return item.key;
+          <Modal
+            animationType="slide"
+            transparent={true}
+            hardwareAccelerated={true}
+            visible={modalVisible}
+            onRequestClose={() => {
+              Alert.alert("Modal has been closed.");
+              setModalVisible(!modalVisible);
             }}
-            renderItem={({item}) => {
-              return (
-                <View
-                  style={{
-                    backgroundColor: '#fff',
-                    width: '95%',
-                    margin: 5,
-                    justifyContent: 'center',
-                    alignSelf: 'center',
-                    borderRadius: 10,
-                    shadowColor: '#000000',
-                    shadowOffset: {width: -2, height: 2},
-                    shadowOpacity: 0.2,
-                    shadowRadius: 3,
-                    elevation: 2,
-                  }}>
-                  <View
-                    style={{height: 150, width: '97%', alignSelf: 'center'}}
-                    >
-                    <View style={{flexDirection: 'row'}}>
-                      <Text style={styles.name}>
-                        {item.reviewer_name}
-                      </Text>
-                      <Text style={styles.name}>{item.date}</Text>
+          >
+            <View style={[styles.centeredView]}>
+              <View style={[styles.modalView]}>
+                <View style={[styles.workingDay, { width: '100%', alignItems: 'center' }]}>
+                  <SelectDropdown
+                    renderDropdownIcon={() => <Ionicons
+                      name={'chevron-down'}
+                      size={20}
+                      color={'#000'}
+                    />}
+                    dropdownBackgroundColor='#fff'
+                    dropdownOverlayColor='transparent'
+                    buttonStyle={styles.dayInput}
+                    defaultButtonText='Day'
+                    buttonTextStyle={{ color: '#a1a1a1', fontSize: 16 }}
+                    data={Day}
+                    onSelect={(selectedItem, index) => {
+                      setDay(selectedItem[0] + selectedItem[1] + selectedItem[2]);
+                    }}
+                    buttonTextAfterSelection={(selectedItem, index) => {
+                      return selectedItem
+                    }}
+                    rowTextForSelection={(item, index) => {
+                      return item
+                    }}
+                  />
+                  <View style={{ width: '200%', flexDirection: 'row', marginTop: 10 }}>
+                    <View style={styles.timeInput}>
+                      <Button
+                        value={today}
+                        style={styles.dateInput}
+                        title={fromText}
+                        color={'#1c1bad'}
+                        onPress={OpenFromWindow}
+                      />
                     </View>
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        marginLeft: '3%',
-                      }}>
-                      {maxRating.map((item, key) => {
-                        return (
-                          <TouchableOpacity
-                            activeOpacity={0.7}
-                            key={key}
-                            onPress={() => setDefaultRating(item)}>
-                            <FontAwesome
-                              name={item <= defaultRating ? 'star' : 'star-o'}
-                              size={25}
-                              color="#FDCC0D"
-                            />
-                          </TouchableOpacity>
-                        );
-                      })}
+                    {showFrom &&
+                      <DateTimePicker
+                        mode='time'
+                        value={from}
+                        onChange={handelFrom}
+                      />
+                    }
+                    <View style={styles.timeInput}>
+                      <Button
+                        title={toText}
+                        color={'#1c1bad'}
+                        onPress={OpenToWindow}
+                      />
                     </View>
-                    <Text style={styles.review}>{item.review}</Text>
+
+                    {showTo &&
+                      <DateTimePicker
+                        mode='time'
+                        value={to}
+                        onChange={handelTo}
+                      />
+                    }
                   </View>
                 </View>
-              );
-            }}
-          /> */}
-          {review.map((reviewCard, cardIndex) => {
-            return (
-              <View
-                style={{
-                  backgroundColor: '#fff',
-                  width: '95%',
-                  margin: 5,
-                  justifyContent: 'center',
-                  alignSelf: 'center',
-                  borderRadius: 10,
-                  shadowColor: '#000000',
-                  shadowOffset: {width: -2, height: 2},
-                  shadowOpacity: 0.2,
-                  shadowRadius: 3,
-                  elevation: 2,
-                }}>
-                <View
-                  style={{height: 150, width: '97%', alignSelf: 'center'}}
-                  key={reviewCard.key}>
-                  <View style={{flexDirection: 'row'}}>
-                    <Text style={styles.name}>{reviewCard.reviewer_name}</Text>
-                    <Text style={styles.name}>{reviewCard.date}</Text>
-                  </View>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      marginLeft: 5,
-                    }}>
-                    {maxRating.map((item, key) => {
-                      return (
-                        <TouchableOpacity
-                          activeOpacity={0.7}
-                          key={key}
-                          onPress={() => setDefaultRating(item)}>
-                          <FontAwesome
-                            name={item <= defaultRating ? 'star' : 'star-o'}
-                            size={25}
-                            color="#FDCC0D"
-                          />
-                        </TouchableOpacity>
-                      );
-                    })}
-                  </View>
-                  <Text style={styles.review}>{reviewCard.review}</Text>
+                {errorMessage != '' &&
+                  <Text style={{ color: '#f00' }}>{errorMessage}</Text>
+                }
+                <View style={{ flexDirection: 'row' }}>
+                  <Pressable
+                    style={[styles.button, styles.buttonClose]}
+                    onPress={() => {
+                      handelWorkingDay(day, from, to);
+                      console.log(day, from, to);
+                    }
+                    }
+                  >
+                    <Icon style={styles.newDay} name='check' />
+                  </Pressable>
+                  <Pressable
+                    style={[styles.button, styles.buttonClose, { backgroundColor: "#f00" }]}
+                    onPress={() => {
+                      handelCloseModal();
+                      setModalVisible(!modalVisible)
+                    }}
+                  >
+                    <Icon style={styles.newDay} name='close' />
+                  </Pressable>
                 </View>
               </View>
-            );
-          })}
+            </View>
+          </Modal>
         </View>
-        {/* <View style={{ backgroundColor: '#FDCC0D', width: '100%', height: 100, justifyContent: 'center', alignItems: 'center' }}><Text style={styles.title}>Comments Section - To be continued</Text></View> */}
+        <View style={{ alignItems: 'center', margin: 20 }}>
+          <TouchableOpacity
+            style={[styles.touchableOpacity, { width: 150, backgroundColor: '#f00', flexDirection: 'row', justifyContent: 'space-evenly' }]}
+            onPress={deactivateReceptionist}
+          >
+            <AntDesign style={styles.newDay} name='deleteuser' /><Text style={{ color: '#fff' }}>Deactivate</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </ScrollView>
   );
@@ -323,14 +491,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     // backgroundColor: '#fff000'
   },
-
   headerContainer: {
     flex: 1,
     flexDirection: 'column',
     width: '100%',
     // backgroundColor: "#fff0f0",
   },
-
   header: {
     // flex: 1,
     backgroundColor: '#1c1bad',
@@ -348,7 +514,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     marginTop: 80,
   },
-
   body: {
     flexDirection: 'column',
     marginTop: '15%',
@@ -356,80 +521,37 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     // backgroundColor:'#ff0ff0',
   },
-
-  // bodyContent: {
-  //   // flex: 1,
-  //   // flexDirection: 'column',
-  //   alignItems: 'center',
-  //   // backgroundColor: '#f0ff7f',
-  //   // padding: 30,
-  //   // marginTop:150,
-  // },
-
-  name: {
-    fontSize: 20,
-    color: '#000',
-    marginLeft: 5,
-    // marginTop: 10,
-    // textAlign: 'center'
-  },
-
   dr_name: {
     fontSize: 28,
     color: '#000',
     fontWeight: 'bold',
   },
-
   speciality: {
     fontSize: 16,
     color: '#1c1bad',
     margin: 5,
     fontWeight: 'bold',
   },
-
-  description: {
-    fontSize: 16,
-    color: '#000',
-    margin: 5,
-    textAlign: 'center',
-  },
-
   review: {
     fontSize: 16,
     color: '#000',
     marginLeft: 5,
   },
-
-  // scheduleContainer:
-  // {
-  //   height: 280,
-  //   margin: '2%',
-  //   flexDirection: 'column',
-  //   // backgroundColor: '#ff0fff',
-  //   // justifyContent: 'space-evenly'
-  // },
-
   appointmentsContainer: {
     height: 280,
     flexDirection: 'column',
-    // backgroundColor: '#ff0',
   },
-
   indicatorContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    // marginBottom: 20,
-    // backgroundColor: '#ff0fff',
   },
-
   normalDots: {
     width: 8,
     height: 8,
     borderRadius: 4,
     marginHorizontal: 4,
   },
-
   scheduleCard: {
     flex: 1,
     margin: 8,
@@ -441,12 +563,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 35,
     shadowColor: '#000000',
-    shadowOffset: {width: -2, height: 2},
+    shadowOffset: { width: -2, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 3,
     elevation: 2,
   },
-
   dateHeader: {
     backgroundColor: '#1c1bad',
     height: '25%',
@@ -454,32 +575,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
-  bookButton: {
-    width: 100,
-    paddingTop: '6%',
-    paddingBottom: '6%',
-    borderRadius: 30,
-    backgroundColor: '#1c1bad',
-    borderWidth: 1,
-    alignItems: 'center',
-    textAlign: 'center',
-    borderColor: '#fff',
-    color: '#fff',
-  },
-
-  customRatingBar: {
-    justifyContent: 'center',
-    flexDirection: 'row',
-    margin: 5,
-  },
-
-  starImg: {
-    width: 25,
-    height: 25,
-    resizeMode: 'cover',
-  },
-
   title: {
     // textAlign: 'center',
     fontSize: 22,
@@ -492,5 +587,116 @@ const styles = StyleSheet.create({
   reviewsArea: {
     width: '100%',
     // backgroundColor:'#f0f'
+  },
+  bookButton: {
+    width: 100,
+    paddingTop: '6%',
+    paddingBottom: '6%',
+    borderRadius: 30,
+    backgroundColor: '#bf0000',
+    borderWidth: 1,
+    alignItems: 'center',
+    textAlign: 'center',
+    borderColor: '#fff',
+    color: '#fff',
+  },
+  touchableOpacity: {
+    backgroundColor: '#1c1bad',
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+    width: 50,
+    height: 50,
+    borderRadius: 100,
+    elevation: 10,
+  },
+  addNewScheduleContainter: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 10,
+  },
+  newDay: {
+    fontSize: 25,
+    color: 'white',
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5
+  },
+  buttonClose: {
+    backgroundColor: "#2196F3",
+  },
+  name: {
+    fontSize: 18,
+    color: '#000',
+    marginLeft: 5,
+    // marginTop: 10,
+    // textAlign: 'center'
+  },
+  workingDay: {
+    // flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-evenly',
+  },
+  dayInput: {
+    // width: '50%',
+    borderRadius: 10,
+    padding: 15,
+    justifyContent: 'center',
+    // margin: 5,
+    backgroundColor: '#fff',
+    shadowColor: '#000000',
+    shadowOffset: { width: -1, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1,
+    elevation: 2,
+  },
+  timeInput: {
+    width: '20%',
+    margin: 5,
+  },
+  dateInput: {
+    flex: 1,
+    borderRadius: 10,
+    padding: 15,
+    justifyContent: 'center',
+    margin: 5,
+    backgroundColor: '#fff',
+    shadowColor: '#000000',
+    shadowOffset: { width: -1, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1,
+    elevation: 2,
+  },
+  button: {
+    width: 100,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 10,
+    margin: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    elevation: 5,
   },
 });

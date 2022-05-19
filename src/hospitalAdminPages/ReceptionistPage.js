@@ -1,37 +1,67 @@
-import React, { useState } from 'react';
-import {SafeAreaView, View, StyleSheet, Text, Input, TextInput, FlatList, TouchableOpacity, Image} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { SafeAreaView, View, StyleSheet, Text, Input, TextInput, FlatList, TouchableOpacity, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/dist/FontAwesome';
-import ReceptionistCard from './ReceptionistCard' 
+import Ionicons from 'react-native-vector-icons/dist/Ionicons';
+import AntDesign from 'react-native-vector-icons/dist/AntDesign';
+import ReceptionistCard from './ReceptionistCard'
 
-const Receptionistpage = ({navigation, route}) => {
-    const [text,setText] = useState('');
+import axios from "axios";
+import EncryptedStorage from 'react-native-encrypted-storage';
+import { Server_URL, Token_Secret, Credintials_Secret } from '@env';
+
+const Receptionistpage = ({ navigation, route }) => {
+    const [recepitionists, setRecepitionists] = useState();
     const onChange = (textValue) => setText(textValue);
-    // const [Reciptionists, setReciptionist] = useState([
-    //     {name: 'Omar Shalaby', age: 40},
-    //     {name: 'Nadeen el Gazzar', age: 45},
-    //     {name: 'Maram Ghazal', age: 12},
-    //     {name: 'Mayar Adel', age: 20},
-    //     {name: 'Alaa Abdel Majied',age: 15}
-    // ]);
-
+    useEffect(() => {
+        const getReceptionists = async () => {
+            const token = JSON.parse(await EncryptedStorage.getItem(Token_Secret)).token;
+            // console.log('token',token);
+            axios
+                .get(`${Server_URL}:3000/hospital/viewReceptionists`, {
+                    headers: {
+                        'x-auth-token': token
+                    }
+                })
+                .then(function (response) {
+                    // console.log(response.data);
+                    setRecepitionists(response.data);
+                })
+                .catch(function (error) {
+                    console.log(error);
+                })
+        }
+        getReceptionists();
+    }, []);
+    const [text, setText] = useState('');
     return (
         <SafeAreaView style={styles.container}>
-        <View style={styles.container}>
-            <View>
-                <TextInput placeholder='🔍Search' style={styles.input} onChangeText={onChange} />
-            </View>
-            <FlatList
-                data={route.params}
-                renderItem={({item}) => <ReceptionistCard item={item} />}
-            />
-            <TouchableOpacity
+            <View style={styles.container}>
+                <View>
+                    <TextInput placeholder='🔍Search' style={styles.input} onChangeText={onChange} />
+                </View>
+                <FlatList
+                    data={recepitionists}
+                    renderItem={({ item }) =>
+                        <TouchableOpacity style={styles.doctorCard} onPress={() => navigation.navigate('ReceptionistProfile', item)}>
+                            <View style={styles.doctorView}>
+                                <View>
+                                    <Text style={styles.doctorText}>{item.name}</Text>
+                                    <Text style={styles.doctorText}>{item.specialization}</Text>
+                                </View>
+                                <Icon name='angle-double-right' style={styles.icon} />
+
+                            </View>
+                        </TouchableOpacity>
+                    }
+                />
+                <TouchableOpacity
                     style={styles.touchableOpacity}
                     onPress={() => navigation.navigate('AddnewReceptionist')}
                 >
-                    <Icon style={styles.addButton} name='user-plus' />
-                    
+                    <Ionicons style={styles.addButton} name='ios-person-add' />
+
                 </TouchableOpacity>
-        </View>
+            </View>
         </SafeAreaView>
     );
 };
@@ -73,13 +103,36 @@ const styles = StyleSheet.create({
         right: 40,
         bottom: 40,
         elevation: 10,
+
     },
     addButton: {
-        fontSize:30,
-        color:'white',
+        fontSize: 30,
+        color: 'white',
     },
-    
-  });
+    doctorCard: {
+        padding: 15,
+        backgroundColor: 'white',
+        borderRadius: 10,
+        borderColor: 'gray',
+        margin: 5,
+        elevation: 5,
+    },
+    doctorView: {
+        borderRadius: 10,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    doctorText: {
+        fontSize: 15,
+        color: 'black'
+    },
+    icon: {
+        color: 'black',
+        fontSize: 30,
+    },
+
+});
 
 export default Receptionistpage;
 

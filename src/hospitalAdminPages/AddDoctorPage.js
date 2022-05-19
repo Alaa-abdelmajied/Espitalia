@@ -50,8 +50,8 @@ const AddDoctorPage = ({ navigation, route }) => {
         }
         getSpecialization();
     }, []);
+    // const [nameError, setNameError] = useState('');
     const [name, setName] = useState('');
-    const [nameError, setNameError] = useState('');
     const [email, setEmail] = useState('');
     const [emailError, setEmailError] = useState('');
 
@@ -316,6 +316,7 @@ const AddDoctorPage = ({ navigation, route }) => {
                 {workingDays.length != 0 ? workingDays.map((workingDayCard, cardIndex) => {
                     return (
                         <View
+                        key={cardIndex.toString()}
                             style={{
                                 backgroundColor: '#fff',
                                 width: '95%',
@@ -639,8 +640,8 @@ const styles = StyleSheet.create({
         textAlign: "center"
     },
     name: {
-        fontSize: 18,
-        color: '#000',
+        // fontSize: 18,
+        // color: '#000',
         marginLeft: 5,
         // marginTop: 10,
         // textAlign: 'center'

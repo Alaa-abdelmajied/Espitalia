@@ -22,6 +22,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Icon from 'react-native-vector-icons/dist/FontAwesome';
 import Icon5 from 'react-native-vector-icons/dist/FontAwesome5';
+import AntDesign from 'react-native-vector-icons/dist/AntDesign';
 
 import axios from "axios";
 import EncryptedStorage from 'react-native-encrypted-storage';
@@ -64,6 +65,7 @@ export default function ProfileScreen({ navigation, route }) {
       .then(function (response) {
         setDoctor(response.data);
         setWorkingDays(response.data.workingDays);
+        // console.log(response.data.workingDays);
       })
       .catch(function (error) {
         console.log(error);
@@ -102,26 +104,32 @@ export default function ProfileScreen({ navigation, route }) {
       day: d,
       // from: f.getHours() + ':' + f.getMinutes(),
       // to: t.getHours() + ':' + t.getMinutes()
-      from: from,
-      to: to
+      from: f,
+      to: t
     };
+    console.log(f, t);
     // console.log(checkWorkingDays(workingDay, workingDays));
     console.log(d);
     if (d == '') {
       setErrorMessage('Select a Day');
+      console.log('day error');
     }
     else if (f == today) {
       setErrorMessage('Select a From');
+      console.log('from error');
     }
     else if (t == today) {
       setErrorMessage('Select a To');
+      console.log('to error');
     }
     else if (!checkWorkingDays(workingDay, workingDays)) {
       setErrorMessage('Working day is already exists');
+      console.log('overlapping error');
     }
     else {
       // console.log('handel Working Days');
-      console.log(workingDay);
+      // console.log(workingDay);
+      console.log('entered the working part');
       setWorkingDays([...workingDays, workingDay]);
       setErrorMessage('');
       setModalVisible(!modalVisible);
@@ -141,8 +149,8 @@ export default function ProfileScreen({ navigation, route }) {
         data: {
           doctorID: doctor._id,
           day: workingDay.day,
-          from: workingDay.from.getHours()+':'+workingDay.from.getMinutes(),
-          to: workingDay.to.getHours()+':'+workingDay.to.getMinutes()
+          from: workingDay.from.getHours() + ':' + workingDay.from.getMinutes(),
+          to: workingDay.to.getHours() + ':' + workingDay.to.getMinutes()
         },
         headers: {
           'x-auth-token': token
@@ -154,27 +162,55 @@ export default function ProfileScreen({ navigation, route }) {
         .catch(function (error) {
           console.log(error);
         });
-      }
-      catch (error) {
-        console.log(error);
-        // console.log("no try");
-      }
-      getDoctor();
     }
+    catch (error) {
+      console.log(error);
+      // console.log("no try");
+    }
+    getDoctor();
+  }
   const checkWorkingDays = (newWD, WDs) => {
     if (WDs.length == 0) return true;
+    // const newWD = {
+    //   day: WD.day,
+    //   from: WD.from.getHours()+':'+WD.from.getMinutes(),
+    //   to: WD.to.getHours()+':'+WD.to.getMinutes()
+    // }
+
     for (var i = 0; i < WDs.length; i++) {
       if (newWD.day == WDs[i].day) {
-        if (newWD.from <= WDs[i].from && newWD.to >= WDs[i].to) {
+        const fromTime = {
+          hours: WDs[i].from.split(':')[0],
+          minutes: WDs[i].from.split(':')[1],
+        }
+        const toTime = {
+          hours: WDs[i].to.split(':')[0],
+          minutes: WDs[i].to.split(':')[1],
+        }
+        const tempFrom = new Date();
+        tempFrom.setHours(fromTime.hours);
+        tempFrom.setMinutes(fromTime.minutes);
+        tempFrom.setSeconds(0);
+
+        const tempTo = new Date();
+        tempTo.setHours(toTime.hours);
+        tempTo.setMinutes(toTime.minutes);
+        tempTo.setSeconds(0);
+
+        newWD.from.setSeconds(0);
+        newWD.to.setSeconds(0);
+        console.log(newWD.from, "->", newWD.to);
+        console.log(tempFrom, "->", tempTo);
+        if (newWD.from <= tempFrom && newWD.to >= tempTo) {
           return false;
         }
-        else if (newWD.from <= WDs[i].from && newWD.to >= WDs[i].from) {
+        else if (newWD.from <= tempFrom && newWD.to >= tempFrom) {
           return false;
         }
-        else if (newWD.from >= WDs[i].from && newWD.to <= WDs[i].to) {
+        else if (newWD.from >= tempFrom && newWD.to <= tempTo) {
           return false;
         }
-        else if (newWD.from >= WDs[i].from && newWD.from <= WDs[i].to) {
+        else if (newWD.from >= tempFrom && newWD.from <= tempTo) {
           return false;
         }
       }
@@ -230,6 +266,35 @@ export default function ProfileScreen({ navigation, route }) {
     }
     getDoctor();
   }
+  const deactivateDoctor = async () => {
+    // console.log('deactivate');
+    try {
+      const token = JSON.parse(await EncryptedStorage.getItem(Token_Secret)).token;
+      //console.log(token);
+      // console.log(doctor._id, workingDay._id, Server_URL);
+      axios({
+        method: 'put',
+        url: `${Server_URL}:3000/hospital/deactivateDoctor`,
+        data: {
+          DoctorID: route.params._id,
+        },
+        headers: {
+          'x-auth-token': token
+        }
+      })
+        .then(function (response) {
+          console.log(response.data);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    }
+    catch (error) {
+      console.log(error);
+      // console.log("no try");
+    }
+    // getDoctor();
+  }
 
   const [defaultRating, setDefaultRating] = useState(2);
   const [maxRating, setMaxRating] = useState([1, 2, 3, 4, 5]);
@@ -253,6 +318,7 @@ export default function ProfileScreen({ navigation, route }) {
             <Text style={styles.dr_name}>{doctor.name}</Text>
             <Text style={styles.speciality}>{doctor.specialization}</Text>
           </View>
+
         </View>
         <View style={styles.appointmentsContainer}>
           <ScrollView
@@ -267,7 +333,7 @@ export default function ProfileScreen({ navigation, route }) {
             scrollEventThrottle={16}>
             {doctor._id ? doctor.workingDays.map((card, cardIndex) => {
               return (
-                <Animated.View style={{ width: windowWidth }} key={card.key}>
+                <Animated.View style={{ width: windowWidth }} key={cardIndex.toString()}>
                   <View style={styles.scheduleCard}>
                     <View style={styles.dateHeader}>
                       <Text style={{ color: '#fff', fontSize: 20 }}>
@@ -309,7 +375,7 @@ export default function ProfileScreen({ navigation, route }) {
                     { width },
                     { backgroundColor: card.color },
                   ]}
-                  key={cardIndex}
+                  key={cardIndex.toString()}
                 />
               );
             }) : null}
@@ -427,9 +493,10 @@ export default function ProfileScreen({ navigation, route }) {
           </Modal>
           <Text style={styles.title}>Ratings and Reviews</Text>
 
-          {doctor._id ? doctor.reviews.map((reviewCard, cardIndex) => {
+          {doctor._id && doctor.reviews.length != 0 ? doctor.reviews.map((reviewCard, cardIndex) => {
             return (
               <View
+                key={cardIndex.toString()}
                 style={{
                   backgroundColor: '#fff',
                   width: '95%',
@@ -474,9 +541,17 @@ export default function ProfileScreen({ navigation, route }) {
                 </View>
               </View>
             );
-          }) : null}
+          }) : <Text style={{ marginLeft: 30 }}>no review found</Text>}
+
         </View>
-        {/* <View style={{ backgroundColor: '#FDCC0D', width: '100%', height: 100, justifyContent: 'center', alignItems: 'center' }}><Text style={styles.title}>Comments Section - To be continued</Text></View> */}
+        <View style={{ alignItems: 'center', margin: 20 }}>
+          <TouchableOpacity
+            style={[styles.touchableOpacity, { width: 150, backgroundColor: '#f00', flexDirection: 'row', justifyContent: 'space-evenly' }]}
+            onPress={deactivateDoctor}
+          >
+            <AntDesign style={styles.newDay} name='deleteuser' /><Text style={{ color: '#fff' }}>Deactivate</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </ScrollView>
   );
@@ -490,14 +565,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     // backgroundColor: '#fff000'
   },
-
   headerContainer: {
     flex: 1,
     flexDirection: 'column',
     width: '100%',
     // backgroundColor: "#fff0f0",
   },
-
   header: {
     // flex: 1,
     backgroundColor: '#1c1bad',
@@ -515,7 +588,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     marginTop: 80,
   },
-
   body: {
     flexDirection: 'column',
     marginTop: '15%',
@@ -523,80 +595,37 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     // backgroundColor:'#ff0ff0',
   },
-
-  // bodyContent: {
-  //   // flex: 1,
-  //   // flexDirection: 'column',
-  //   alignItems: 'center',
-  //   // backgroundColor: '#f0ff7f',
-  //   // padding: 30,
-  //   // marginTop:150,
-  // },
-
-  name: {
-    fontSize: 20,
-    color: '#000',
-    marginLeft: 5,
-    // marginTop: 10,
-    // textAlign: 'center'
-  },
-
   dr_name: {
     fontSize: 28,
     color: '#000',
     fontWeight: 'bold',
   },
-
   speciality: {
     fontSize: 16,
     color: '#1c1bad',
     margin: 5,
     fontWeight: 'bold',
   },
-
-  description: {
-    fontSize: 16,
-    color: '#000',
-    margin: 5,
-    textAlign: 'center',
-  },
-
   review: {
     fontSize: 16,
     color: '#000',
     marginLeft: 5,
   },
-
-  // scheduleContainer:
-  // {
-  //   height: 280,
-  //   margin: '2%',
-  //   flexDirection: 'column',
-  //   // backgroundColor: '#ff0fff',
-  //   // justifyContent: 'space-evenly'
-  // },
-
   appointmentsContainer: {
     height: 280,
     flexDirection: 'column',
-    // backgroundColor: '#ff0',
   },
-
   indicatorContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    // marginBottom: 20,
-    // backgroundColor: '#ff0fff',
   },
-
   normalDots: {
     width: 8,
     height: 8,
     borderRadius: 4,
     marginHorizontal: 4,
   },
-
   scheduleCard: {
     flex: 1,
     margin: 8,
@@ -613,7 +642,6 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 2,
   },
-
   dateHeader: {
     backgroundColor: '#1c1bad',
     height: '25%',
@@ -621,18 +649,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  customRatingBar: {
-    justifyContent: 'center',
-    flexDirection: 'row',
-    margin: 5,
-  },
-
-  starImg: {
-    width: 25,
-    height: 25,
-    resizeMode: 'cover',
-  },
-
   title: {
     // textAlign: 'center',
     fontSize: 22,
@@ -698,22 +714,8 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5
   },
-  // button: {
-  //     borderRadius: 20,
-  //     padding: 10,
-  //     elevation: 2
-  // },
   buttonClose: {
     backgroundColor: "#2196F3",
-  },
-  textStyle: {
-    color: "white",
-    fontWeight: "bold",
-    textAlign: "center"
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: "center"
   },
   name: {
     fontSize: 18,
