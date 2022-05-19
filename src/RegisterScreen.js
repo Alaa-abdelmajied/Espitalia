@@ -12,6 +12,12 @@ export default function SignUp({navigation}) {
   const [text, setText] = useState('📅 Date of Birth');
   const [show, setShow] = useState(false);
   const [date, setDate] = useState(new Date());
+  const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [selecteddate, setSelectedDate] = useState();
+  const [selectedGender, setSelectedGender] = useState('');
 
   const OpenDateWindow = () => {
     setShow(true);
@@ -20,25 +26,36 @@ export default function SignUp({navigation}) {
     const currentDate = selectedDate || new Date(1999, 11, 31);
     setShow(false);
     setDate(currentDate);
-
     let tmpDate = new Date(currentDate);
-    let fullDate =
-      '📅 ' +
-      tmpDate.getDate() +
-      '/' +
-      (tmpDate.getMonth() + 1) +
-      '/' +
-      tmpDate.getFullYear();
-    setText(fullDate);
-  };
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   // const [date, setDate] = useState(new Date())
   const [open, setOpen] = useState(false);
+    
+    let fullDate = "📅 " + tmpDate.getDate() + "/" + (tmpDate.getMonth() + 1) + "/" + tmpDate.getFullYear();
+    setText(fullDate);    
+    setSelectedDate(tmpDate.getFullYear() + "-" + (tmpDate.getMonth() + 1) + "-" + tmpDate.getDate());
+  }
 
-  const gender = ['Female', 'Male'];
-  const [selectedValue, setSelectedValue] = useState('no');
+
+  // const [date, setDate] = useState(new Date())
+  // const [open, setOpen] = useState(false)
+
+  const gender = ["Female", "Male"]
+  const [selectedValue, setSelectedValue] = useState("no");
+
+  const onPressNextHandler = () => {
+    navigation.navigate('SignUpQuestions', {
+      email: email,
+      name: name,
+      password: password,
+      date: selecteddate,
+      selectedGender: selectedGender
+    });
+  }
+
 
   return (
     <View style={styles.Body}>
@@ -58,24 +75,20 @@ export default function SignUp({navigation}) {
         <View style={styles.RegisterCard}>
           <Text style={styles.TitleText}>Sign Up</Text>
           <View style={styles.InputsRegion}>
-            <TextInput
-              style={styles.Input}
-              placeholder="Enter your email"
-              placeholderTextColor={'#a1a1a1'}></TextInput>
-            <TextInput
-              style={styles.Input}
-              placeholder="Enter your username"
-              placeholderTextColor={'#a1a1a1'}></TextInput>
-            <TextInput
-              secureTextEntry={true}
-              style={styles.Input}
-              placeholder="Enter your password"
-              placeholderTextColor={'#a1a1a1'}></TextInput>
-            <TextInput
-              secureTextEntry={true}
-              style={styles.Input}
-              placeholder="Confirm your password"
-              placeholderTextColor={'#a1a1a1'}></TextInput>
+
+            <TextInput style={styles.Input} placeholder="Enter your email" placeholderTextColor={'#a1a1a1'}
+              onChangeText={text => setEmail(text)}>
+            </TextInput>
+            <TextInput style={styles.Input} placeholder="Enter your name" placeholderTextColor={'#a1a1a1'}
+              onChangeText={text => setName(text)}>
+            </TextInput>
+            <TextInput secureTextEntry={true} style={styles.Input} placeholder="Enter your password"
+              placeholderTextColor={'#a1a1a1'} onChangeText={text => setPassword(text)}>
+            </TextInput>
+            <TextInput secureTextEntry={true} style={styles.Input} placeholder="Confirm your password"
+              placeholderTextColor={'#a1a1a1'} onChangeText={text => setConfirmPassword(text)}>
+            </TextInput>
+
             <View style={styles.view}>
               <View style={{flex: 1, alignItems: 'flex-start'}}>
                 <Pressable onPress={OpenDateWindow} style={styles.dateInput}>
@@ -86,7 +99,10 @@ export default function SignUp({navigation}) {
                     <DateTimePicker
                       mode="date"
                       value={date}
-                      maximumDate={new Date(today.getFullYear() - 25, 11, 31)}
+
+                      format='yyyy-MM-dd'
+                      maximumDate={new Date()}
+
                       onChange={handleDate}
                       isDatePickerVisible
                     />
@@ -105,7 +121,9 @@ export default function SignUp({navigation}) {
                   buttonTextStyle={{color: '#a1a1a1', fontSize: 16}}
                   data={gender}
                   onSelect={(selectedItem, index) => {
-                    console.log(selectedItem, index);
+
+                    setSelectedGender(selectedItem);
+                    console.log(selectedItem, index)
                   }}
                   buttonTextAfterSelection={(selectedItem, index) => {
                     return selectedItem;
@@ -117,10 +135,9 @@ export default function SignUp({navigation}) {
               </View>
             </View>
 
-            <Pressable
-              style={styles.nextButton}
-              onPress={() => navigation.navigate('SignUpQuestions')}>
-              <Text style={{color: '#fff'}}>Next</Text>
+
+            <Pressable style={styles.nextButton} onPress={() => onPressNextHandler()}>
+              <Text style={{ color: '#fff' }}>Next</Text>
             </Pressable>
           </View>
         </View>

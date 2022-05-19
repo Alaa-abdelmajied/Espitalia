@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -13,9 +13,9 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {Server_URL, Token_Secret} from '@env';
+import { Server_URL, Token_Secret, Credintials_Secret } from '@env';
 
-export default function Profile({navigation}) {
+export default function Profile({ navigation }) {
   const [personalData, setPersonalData] = useState('');
   const [oldAppointments, setOldAppointments] = useState([]);
 
@@ -37,7 +37,7 @@ export default function Profile({navigation}) {
           });
       } catch (err) {
         Alert.alert('Error', err.code, [
-          {text: 'Exit', onPress: () => BackHandler.exitApp()},
+          { text: 'Exit', onPress: () => BackHandler.exitApp() },
         ]);
       }
     };
@@ -58,7 +58,7 @@ export default function Profile({navigation}) {
           });
       } catch (err) {
         Alert.alert('Error', err.code, [
-          {text: 'Exit', onPress: () => BackHandler.exitApp()},
+          { text: 'Exit', onPress: () => BackHandler.exitApp() },
         ]);
       }
     };
@@ -84,13 +84,14 @@ export default function Profile({navigation}) {
         .then(async function (response) {
           try {
             await EncryptedStorage.removeItem(Token_Secret);
+            await EncryptedStorage.removeItem(Credintials_Secret);
             navigation.reset({
               index: 0,
-              routes: [{name: 'WelcomePage'}],
+              routes: [{ name: 'WelcomePage' }],
             });
           } catch (err) {
             Alert.alert('Error', err.code, [
-              {text: 'Exit', onPress: () => BackHandler.exitApp()},
+              { text: 'Exit', onPress: () => BackHandler.exitApp() },
             ]);
           }
         })
@@ -100,7 +101,7 @@ export default function Profile({navigation}) {
         });
     } catch (err) {
       Alert.alert('Error', err.code, [
-        {text: 'Exit', onPress: () => BackHandler.exitApp()},
+        { text: 'Exit', onPress: () => BackHandler.exitApp() },
       ]);
     }
   };
@@ -126,7 +127,7 @@ export default function Profile({navigation}) {
             color={'#fff'}
             onPress={() => setShowModal(false)}></FontAwesome>
           <Pressable onPress={onPressLogout}>
-            <Text style={{fontSize: 15, color: '#fff'}}>Logout</Text>
+            <Text style={{ fontSize: 15, color: '#fff' }}>Logout</Text>
           </Pressable>
           <Pressable
             onPress={() => {
@@ -135,26 +136,23 @@ export default function Profile({navigation}) {
               }),
                 setShowModal(false);
             }}>
-            <Text style={{fontSize: 15, color: '#fff'}}>Change Password</Text>
+            <Text style={{ fontSize: 15, color: '#fff' }}>Change Password</Text>
           </Pressable>
         </View>
       </Modal> */}
       <View style={styles.header}></View>
       <Image
         style={styles.avatar}
-        source={{uri: 'https://bootdey.com/img/Content/avatar/avatar6.png'}}
+        source={{ uri: 'https://bootdey.com/img/Content/avatar/avatar6.png' }}
       />
       <View
+
         style={{position: 'absolute', alignSelf: 'flex-end', marginTop: 15}}>
         <TouchableOpacity style={{margin: 5}} onPress={onPressLogout}>
           <Pressable onPress={onPressLogout}>
             <Text style={{fontSize: 15, color: '#fff'}}>Logout</Text>
           </Pressable>
-          {/* <Ionicons
-            name="ellipsis-vertical"
-            size={30}
-            color="#fff"
-            onPress={() => setShowModal(true)}></Ionicons> */}
+
         </TouchableOpacity>
       </View>
       <View style={styles.body}>

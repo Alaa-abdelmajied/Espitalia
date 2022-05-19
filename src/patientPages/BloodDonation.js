@@ -1,75 +1,99 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, FlatList, Pressable } from 'react-native';
 import axios from 'axios';
 import { Server_URL } from '@env';
+import Item from '../../utils/ItemCard';
+
 
 export default function DonateBlood({ navigation }) {
   const [bloodRequests, setBloodRequests] = useState([]);
   const [skipNumber, setSkipNumber] = useState(0);
+  const [loadMore, setLoadMore] = useState(true);
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [refreshing, setRefreshing] = useState(false);
+  const [isMounted, setIsMounted] = useState(true);
 
   useEffect(() => {
-    const getRequests = async () => {
-      await axios
-        .get(`${Server_URL}:3000/patient/getBloodRequests/${skipNumber}`)
-        .then((response) => { setBloodRequests(bloodRequests => [...bloodRequests, ...response.data]) })
-        .catch(function (error) {
-          console.log(error.message);
-        });
-    };
-    getRequests();
+    if (isMounted && !refreshing) {
+      console.log("load use effect");
+      getRequests(skipNumber);
+    }
   }, [skipNumber]);
 
-  const onEndReachedHandler = () => {
-    setSkipNumber(skipNumber + 5);
+  useEffect(() => {
+    if (isMounted && refreshing) {
+      console.log("refresh use effect");
+      getRequests(0);
+    }
+  }, [refreshing]);
+
+  useEffect(() => {
+    return () => {
+      setIsMounted(false);
+    }
+  }, []);
+
+  const getRequests = async (skipNumber) => {
+    console.log("skip Number:", skipNumber);
+    await axios
+      .get(`${Server_URL}:3000/patient/getBloodRequests/${skipNumber}`)
+      .then((response) => {
+        if (loadMore) {
+          setBloodRequests(bloodRequests => [...bloodRequests, ...response.data]);
+          setLoadMore(false);
+        } else if (refreshing) {
+          setBloodRequests(response.data);
+          setRefreshing(false);
+        }
+      })
+      .catch(function (error) {
+        console.log(error.message);
+      });
+  };
+
+  const checkForUpdates = async () => {
+    await axios
+      .get(`${Server_URL}:3000/patient/isBloodReqUpdated/${currentDate}`)
+      .then((response) => {
+        setCurrentDate(new Date());
+        setSkipNumber(response.data.newEntries + bloodRequests.length);
+      })
+      .catch(function (error) {
+        console.log(error.message);
+      });
   }
 
-  // const [Items, setItems] = useState([
-  //   {
-  //     key: '1',
-  //     Hname: 'Middle East Hospital ',
-  //     bloodType: 'A+',
-  //     date: '22/3/2022',
-  //   },
-  //   { key: '2', Hname: 'ICC Hospital', bloodType: 'AB+', date: '25/3/2022' },
-  //   { key: '3', Hname: 'German Hospital', bloodType: 'O-', date: '28/3/2022' },
-  //   { key: '4', Hname: 'Royal Hospital', bloodType: 'O+', date: '13/4/2022' },
-  //   { key: '5', Hname: 'Alex Scan', bloodType: 'B-', date: '13/4/2022' },
-  //   { key: '6', Hname: 'Bet El Ne3ma', bloodType: 'AB-', date: '20/4/2022' },
-  //   {
-  //     key: '7',
-  //     Hname: 'Al Andalusia Hospital',
-  //     bloodType: 'A-',
-  //     date: '25/4/2022',
-  //   },
-  // ]);
-    return (
-      <View style={styles.container}>
-        <FlatList
-          data={bloodRequests}
-          keyExtractor={item => {
-            return item.id;
-          }}
-          onEndReached={onEndReachedHandler}
-          onEndReachedThreshold={0.35}
-          renderItem={({ item }) => (
-            <View style={styles.appointmentsCard}>
-              <View style={styles.infoView}>
-                <Text style={styles.infoText}>
-                  Hospital Name: {item.hospital_Name}{' '}
-                </Text>
-                <Text style={styles.infoText}>Blood Type: {item.bloodType} </Text>
-                <Text style={styles.infoText}>Date : {item.quantity} </Text>
-              </View>
-              <View style={styles.buttonView}>
-                <Pressable style={styles.button}>
-                  <Text style={styles.buttonText}>ACCEPT</Text>
-                </Pressable>
-              </View>
-            </View>
-          )}
-        />
-      </View>
-    );
+  const onEndReachedHandler = () => {
+    setLoadMore(true);
+    checkForUpdates();
+    console.log(currentDate);
+  }
+
+  const onRefreshing = () => {
+    setCurrentDate(new Date());
+    setRefreshing(true);
+    setSkipNumber(0);
+  }
+
+  return (
+    <View style={styles.container}>
+      <FlatList
+        data={bloodRequests}
+        keyExtractor={item => {
+          return item.id;
+        }}
+        onRefresh={onRefreshing}
+        refreshing={refreshing}
+        onEndReached={onEndReachedHandler}
+        onEndReachedThreshold={0.35}
+        renderItem={({ item }) => (
+          <Item
+            item={item}
+          />
+        )}
+      />
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
