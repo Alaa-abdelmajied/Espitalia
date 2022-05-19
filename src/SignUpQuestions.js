@@ -1,17 +1,61 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 
-import {StyleSheet, Text, View, Pressable, TextInput} from 'react-native';
+import { StyleSheet, Text, View, Pressable, TextInput } from 'react-native';
 
-import {Picker} from '@react-native-picker/picker';
-import Svg, {Path} from 'react-native-svg';
-import {ScrollView} from 'react-native-gesture-handler';
+import { Picker } from '@react-native-picker/picker';
+import Svg, { Path } from 'react-native-svg';
+import { ScrollView } from 'react-native-gesture-handler';
+import axios from 'axios';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import { Server_URL, Token_Secret, Credintials_Secret } from '@env';
 
-export default function Questions({navigation}) {
+
+export default function Questions({ navigation, route }) {
   const [diabetic, setDiabetic] = useState('no');
   const [bloodPressure, setBloodPressure] = useState('no');
   const [allergic, setAllergic] = useState('no');
   const [bloodType, setBloodType] = useState('a+');
+  const { email, name, password, date, selectedGender } = route.params;
 
+  const onPressHandler = () => {
+    axios
+      .post(`${Server_URL}:3000/patient/signup`, {
+        email: email,
+        password: password,
+        name: name,
+        phoneNumber: "0123",
+        dateOfBirth: date,
+        gender: selectedGender,
+        questions: diabetic
+      })
+      .then(async function (response) {
+        const { token } = response.data;
+        try {
+          await EncryptedStorage.setItem(
+            Token_Secret,
+            JSON.stringify({ token: token }),
+          );
+          await EncryptedStorage.setItem(
+            Credintials_Secret,
+            JSON.stringify({
+              email: email,
+              password: password,
+              type: "patient"
+            }),
+          );
+        } catch (err) {
+          Alert.alert('Error', err.code, [
+            { text: 'Exit', onPress: () => BackHandler.exitApp() },
+          ]);
+        }
+        navigation.navigate('OTP', { isForgotten: false });
+      })
+      .catch(function (error) {
+        const err = error.response.data;
+        //alert signup issue
+        console.log('alert');
+      });
+  };
   return (
     <ScrollView>
       <View style={styles.WaveHeader}>
@@ -97,13 +141,8 @@ export default function Questions({navigation}) {
           </View>
           <Pressable
             style={styles.RegisterButton}
-            onPress={() =>
-              navigation.reset({
-                index: 0,
-                routes: [{name: 'Patient'}],
-              })
-            }>
-            <Text style={{color: '#fff'}}>Sign up</Text>
+            onPress={() => onPressHandler()}>
+            <Text style={{ color: '#fff' }}>Sign up</Text>
           </Pressable>
         </View>
       </View>
@@ -159,7 +198,7 @@ const styles = StyleSheet.create({
     height: 50,
     width: 200,
     shadowColor: '#000000',
-    shadowOffset: {width: -2, height: 2},
+    shadowOffset: { width: -2, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 3,
     elevation: 2,
