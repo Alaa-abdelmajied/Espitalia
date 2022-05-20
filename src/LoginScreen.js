@@ -121,11 +121,11 @@ export default function Login({ navigation, route }) {
       // }
       const url = `${Server_URL}:3000/${selectedStaff.id}/login`;
       axios
-      .post(url, {
-        email: email,
-        password: password
-      })
-      .then(async function (response) {
+        .post(url, {
+          email: email,
+          password: password
+        })
+        .then(async function (response) {
           console.log(email, password, url);
           setIsVisible(false);
           const token = response.headers['x-auth-token'];
@@ -146,10 +146,26 @@ export default function Login({ navigation, route }) {
               { text: 'Exit', onPress: () => BackHandler.exitApp() },
             ]);
           }
-          navigation.dispatch(StackActions.popToTop());
-          navigation.dispatch(
-            StackActions.replace('HosptialAdminHomePage', { screen: 'Home', params: response.data })
-          );
+          if (selectedStaff.id == 'hospital') {
+            navigation.dispatch(StackActions.popToTop());
+            navigation.dispatch(
+              StackActions.replace('HosptialAdminHomePage', { screen: 'Home', params: response.data })
+            );
+          }
+          else if(selectedStaff.id == 'receptionist'){
+            navigation.dispatch(StackActions.popToTop());
+            navigation.dispatch(
+              StackActions.replace('ReceptHomePage', { screen: 'Home', params: response.data })
+            );
+            // console.log(selectedStaff.id);
+          }
+          else if(selectedStaff.id == 'doctor'){
+            navigation.dispatch(StackActions.popToTop());
+            navigation.dispatch(
+              StackActions.replace('HosptialAdminHomePage', { screen: 'Home', params: response.data })
+            );
+            console.log(selectedStaff.id);
+          }
         })
         .catch(function (error) {
           setIsVisible(true);
