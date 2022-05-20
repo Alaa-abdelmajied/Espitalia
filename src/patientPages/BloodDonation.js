@@ -3,51 +3,61 @@ import { StyleSheet, Text, View, FlatList, Pressable } from 'react-native';
 import axios from 'axios';
 import { Server_URL } from '@env';
 import Item from '../../utils/ItemCard';
+import { useIsFocused } from '@react-navigation/native';
 
 
 export default function DonateBlood({ navigation }) {
   const [bloodRequests, setBloodRequests] = useState([]);
   const [skipNumber, setSkipNumber] = useState(0);
-  const [loadMore, setLoadMore] = useState(true);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [refreshing, setRefreshing] = useState(false);
-  const [isMounted, setIsMounted] = useState(true);
+  const [loadData, setLoadData] = useState(true);
+  const isFocused = useIsFocused();
 
+  //first time the page is opened 
+  //and when the page is closed
   useEffect(() => {
-    if (isMounted && !refreshing) {
-      console.log("load use effect");
+    setLoadData(true);
+    if (isFocused) {
+      getRequests(skipNumber);
+    } else {
+      setSkipNumber(0);
+      setBloodRequests([]);
+      setRefreshing(false);
+    }
+  }, [isFocused]);
+
+  //load more when bottom is reached
+  useEffect(() => {
+    if (isFocused) {
       getRequests(skipNumber);
     }
   }, [skipNumber]);
 
+  //refreshing
   useEffect(() => {
-    if (isMounted && refreshing) {
-      console.log("refresh use effect");
+    if (isFocused && refreshing) {
       getRequests(0);
     }
-  }, [refreshing]);
-
-  useEffect(() => {
-    return () => {
-      setIsMounted(false);
-    }
-  }, []);
+  }, [refreshing])
 
   const getRequests = async (skipNumber) => {
     console.log("skip Number:", skipNumber);
     await axios
       .get(`${Server_URL}:3000/patient/getBloodRequests/${skipNumber}`)
       .then((response) => {
-        if (loadMore) {
-          setBloodRequests(bloodRequests => [...bloodRequests, ...response.data]);
-          setLoadMore(false);
-        } else if (refreshing) {
+        if (skipNumber == 0) {
           setBloodRequests(response.data);
-          setRefreshing(false);
+        } else {
+          setBloodRequests(bloodRequests => [...bloodRequests, ...response.data]);
         }
+        setRefreshing(false);
+        setLoadData(false);
       })
       .catch(function (error) {
         console.log(error.message);
+        setRefreshing(false);
+        setLoadData(false);
       });
   };
 
@@ -64,7 +74,7 @@ export default function DonateBlood({ navigation }) {
   }
 
   const onEndReachedHandler = () => {
-    setLoadMore(true);
+    // setLoadMore(true);
     checkForUpdates();
     console.log(currentDate);
   }
@@ -72,7 +82,6 @@ export default function DonateBlood({ navigation }) {
   const onRefreshing = () => {
     setCurrentDate(new Date());
     setRefreshing(true);
-    setSkipNumber(0);
   }
 
   return (
@@ -85,12 +94,24 @@ export default function DonateBlood({ navigation }) {
         onRefresh={onRefreshing}
         refreshing={refreshing}
         onEndReached={onEndReachedHandler}
-        onEndReachedThreshold={0.35}
+        onEndReachedThreshold={0.1}
         renderItem={({ item }) => (
           <Item
             item={item}
           />
         )}
+        ListEmptyComponent={
+          loadData ? null :
+            <Text
+              style={{
+                fontSize: 20,
+                alignSelf: 'center',
+                color: '#000',
+                margin: '10%',
+              }}>
+              No blood donation requests :)
+            </Text>
+        }
       />
     </View>
   );

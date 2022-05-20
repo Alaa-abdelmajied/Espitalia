@@ -143,7 +143,7 @@ function HosptialAdminStackView() {
 
 function PatientNavBar() {
   return (
-    <bottomTab.Navigator
+    <Tab.Navigator
       screenOptions={({route}) => ({
         tabBarIcon: ({focused, color, size}) => {
           let iconName;
@@ -168,10 +168,10 @@ function PatientNavBar() {
           return <Ionicons name={iconName} size={size} color={color} />;
         },
         header: () => null,
-        // tabBarActiveTintColor: '#0d259e',
-        // tabBarInactiveTintColor: '#000',
+        tabBarActiveTintColor: '#1c1bad',
+        tabBarInactiveTintColor: '#000',
       })}
-      activeColor="#0d259e"
+      activeColor="#1c1bad"
       inactiveColor="#000"
       barStyle={{backgroundColor: '#fff'}}>
       <bottomTab.Screen name="Home" component={PatientStackNav} />
@@ -187,7 +187,7 @@ function PatientNavBar() {
         name="BloodDonation"
         component={BloodDonation}
       /> */}
-    </bottomTab.Navigator>
+    </Tab.Navigator>
   );
 }
 
