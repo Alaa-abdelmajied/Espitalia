@@ -10,6 +10,7 @@ import {
   Pressable,
   BackHandler,
   Alert,
+  ActivityIndicator
 } from 'react-native';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -37,10 +38,12 @@ export default function ProfileScreen({route}) {
   const [data, setData] = useState([]);
   const [comments, setComments] = useState([]);
   const [schedule, setSchedule] = useState([]);
+  const [loadData, setLoadData] = useState(true);
   const isFocused = useIsFocused();
 
   useEffect(() => {
     if (isFocused) {
+      setLoadData(true);
       const getDoctorDetails = async () => {
         await axios
           .get(`${Server_URL}:3000/patient/doctor/${drID}`)
@@ -48,12 +51,13 @@ export default function ProfileScreen({route}) {
             setData(response.data.doctorData);
             setComments(response.data.reviewDetails);
             setSchedule(response.data.scheduleDetails);
+            setLoadData(false);
           })
           .catch(function (error) {
             console.log(error.message);
+            setLoadData(false);
           });
       };
-      console.log('done');
       getDoctorDetails();
     } else {
       setData([]);
@@ -105,28 +109,52 @@ export default function ProfileScreen({route}) {
   windowHeight = windowHeight - 300;
 
   return (
-    // (data.length == 0) ? null :
-    <ScrollView>
-      <View style={styles.container}>
-        <View style={styles.headerContainer}>
-          <View style={styles.header}></View>
-          <Image
-            style={styles.avatar}
-            source={{uri: 'https://bootdey.com/img/Content/avatar/avatar6.png'}}
-          />
-          {/* <View style={styles.body}> */}
-          {/* <View style={styles.bodyContent}> */}
-          {!fromSearch ? (
-            <View style={styles.body}>
-              <Text style={styles.dr_name}>{drName}</Text>
-              <Text style={styles.description}>{specialization}</Text>
-              <View style={{flexDirection: 'row'}}>
-                <FontAwesome
-                  name={'hospital-o'}
-                  size={25}
-                  color="#1c1bad"
-                  style={{margin: 5}}></FontAwesome>
-                <Text style={styles.description}>{hospitalName}</Text>
+    loadData ?
+      <View style={styles.loadingIcon}>
+        <ActivityIndicator size="large" color="#0451cc" />
+      </View> :
+      <ScrollView>
+        <View style={styles.container}>
+          <View style={styles.headerContainer}>
+            <View style={styles.header}></View>
+            <Image
+              style={styles.avatar}
+              source={{ uri: 'https://bootdey.com/img/Content/avatar/avatar6.png' }}
+            />
+            {/* <View style={styles.body}> */}
+            {/* <View style={styles.bodyContent}> */}
+            {!fromSearch ? (
+              <View style={styles.body}>
+                <Text style={styles.dr_name}>{drName}</Text>
+                <Text style={styles.description}>{specialization}</Text>
+                <View style={{ flexDirection: 'row' }}>
+                  <FontAwesome
+                    name={'hospital-o'}
+                    size={25}
+                    color="#1c1bad"
+                    style={{ margin: 5 }}></FontAwesome>
+                  <Text style={styles.description}>{hospitalName}</Text>
+                </View>
+                <View style={{ flexDirection: 'row' }}>
+                  <Ionicons
+                    name={'location-sharp'}
+                    size={25}
+                    color="#1c1bad"
+                    style={{ margin: 5 }}></Ionicons>
+                  <Text style={styles.description}>{hospitalAddress}</Text>
+                </View>
+                <View style={styles.customRatingBar}>
+                  <Rating
+                    type="custom"
+                    ratingBackgroundColor="#bfbfbf"
+                    tintColor="#f0f0f0"
+                    ratingCount={5}
+                    imageSize={30}
+                    startingValue={averageRating}
+                    fractions={1}
+                    readonly={true}></Rating>
+                  <Text style={styles.text}>{averageRating}/5</Text>
+                </View>
               </View>
               <View style={{flexDirection: 'row'}}>
                 <Ionicons
@@ -460,4 +488,9 @@ const styles = StyleSheet.create({
   reviewsArea: {
     width: '100%',
   },
+  loadingIcon: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center'
+  }
 });

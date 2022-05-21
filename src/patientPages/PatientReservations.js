@@ -8,6 +8,7 @@ import {
   Image,
   Alert,
   BackHandler,
+  ActivityIndicator
 } from 'react-native';
 import FlashMessage from 'react-native-flash-message';
 import {showMessage, hideMessage} from 'react-native-flash-message';
@@ -31,6 +32,7 @@ export default function Reservation({}) {
       .then(response => {
         setUpcomingAppointments(response.data);
         setLoadData(false);
+        console.log("done");
       })
       .catch(function (error) {
         console.log(error.message);
@@ -113,7 +115,9 @@ export default function Reservation({}) {
           </View>
         )}
         ListEmptyComponent={
-          loadData ? null : (
+          loadData ? <View>
+            <ActivityIndicator size="large" color="#0451cc" />
+          </View> :
             <Text
               style={{
                 fontSize: 20,

@@ -1,10 +1,11 @@
-import React, {useEffect, useState} from 'react';
-import {StyleSheet, View, TouchableOpacity, FlatList, Text} from 'react-native';
-import {Button, SearchBar} from 'react-native-elements';
-import {Server_URL} from '@env';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, View, TouchableOpacity, FlatList, Text } from 'react-native';
+import { Button, SearchBar } from 'react-native-elements';
+import { Server_URL } from '@env';
 import axios from 'axios';
+import { useIsFocused } from '@react-navigation/native';
 
-export default function Search({navigation}) {
+export default function Search({ navigation }) {
   const [search, setSearch] = useState('');
   const [doctorsResult, setDoctorsResult] = useState([]);
   const [doctorSeeMore, setDoctorSeeMore] = useState(false);
@@ -12,6 +13,13 @@ export default function Search({navigation}) {
   const [hospitalSeeMore, setHospitalSeeMore] = useState(false);
   const [specializationsResult, setSpecializationsResult] = useState([]);
   const [specializationSeeMore, setSpecializationSeeMore] = useState(false);
+  const isFocused = useIsFocused();
+
+  // useEffect(() => {
+  //   if (!isFocused) {
+  //     setSearch('');
+  //   }
+  // }, [isFocused])
 
   const updateSearch = search => {
     setSearch(search);
@@ -87,8 +95,8 @@ export default function Search({navigation}) {
         onChangeText={value => updateSearch(value)}
         value={search}
         fontSize={15}
-        containerStyle={{backgroundColor: '#f0f0f0'}}
-        inputContainerStyle={{borderRadius: 50, backgroundColor: '#fff'}}
+        containerStyle={{ backgroundColor: '#f0f0f0' }}
+        inputContainerStyle={{ borderRadius: 50, backgroundColor: '#fff' }}
       />
       <FlatList
         keyExtractor={item => item._id}
@@ -98,26 +106,26 @@ export default function Search({navigation}) {
             <Text style={styles.titleText}>Doctors</Text>
             {doctorSeeMore ? (
               <TouchableOpacity style={styles.seeMoreButton}>
-                <Text style={{color: '#fff', fontSize: 15}}>See More</Text>
+                <Text style={{ color: '#fff', fontSize: 15 }}>See More</Text>
               </TouchableOpacity>
             ) : null}
           </View>
         )}
-        renderItem={({item}) => {
+        renderItem={({ item }) => {
           return (
             <TouchableOpacity
               style={styles.searchCard}
               onPress={() => onPressDr(item._id, item.name)}>
               <View
-                style={{justifyContent: 'center', alignItems: 'center'}}></View>
-              <View style={{flex: 2, justifyContent: 'center'}}>
+                style={{ justifyContent: 'center', alignItems: 'center' }}></View>
+              <View style={{ flex: 2, justifyContent: 'center' }}>
                 <Text style={styles.searchText}>{item.name}</Text>
               </View>
             </TouchableOpacity>
           );
         }}
         ListEmptyComponent={
-          <Text style={{fontSize: 20, alignSelf: 'center'}}>No Results</Text>
+          <Text style={{ fontSize: 20, alignSelf: 'center' }}>No Results</Text>
         }
       />
 
@@ -129,18 +137,18 @@ export default function Search({navigation}) {
             <Text style={styles.titleText}>Hospitals</Text>
             {hospitalSeeMore ? (
               <TouchableOpacity style={styles.seeMoreButton}>
-                <Text style={{color: '#fff', fontSize: 15}}>See More</Text>
+                <Text style={{ color: '#fff', fontSize: 15 }}>See More</Text>
               </TouchableOpacity>
             ) : null}
           </View>
         )}
-        renderItem={({item}) => {
+        renderItem={({ item }) => {
           return (
             <TouchableOpacity
               style={styles.searchCard}
               onPress={() => onPressHosp(item._id, item.name, item.address)}>
               <View
-                style={{justifyContent: 'center', alignItems: 'center'}}></View>
+                style={{ justifyContent: 'center', alignItems: 'center' }}></View>
               <View
                 style={{
                   flex: 2,
@@ -154,7 +162,7 @@ export default function Search({navigation}) {
           );
         }}
         ListEmptyComponent={
-          <Text style={{fontSize: 20, alignSelf: 'center'}}>No Results</Text>
+          <Text style={{ fontSize: 20, alignSelf: 'center' }}>No Results</Text>
         }
       />
       <FlatList
@@ -165,26 +173,26 @@ export default function Search({navigation}) {
             <Text style={styles.titleText}>Specializations</Text>
             {specializationSeeMore ? (
               <TouchableOpacity style={styles.seeMoreButton}>
-                <Text style={{color: '#fff', fontSize: 15}}>See More</Text>
+                <Text style={{ color: '#fff', fontSize: 15 }}>See More</Text>
               </TouchableOpacity>
             ) : null}
           </View>
         )}
-        renderItem={({item}) => {
+        renderItem={({ item }) => {
           return (
             <TouchableOpacity
               style={styles.searchCard}
               onPress={() => onPressSpec(item.name)}>
               <View
-                style={{justifyContent: 'center', alignItems: 'center'}}></View>
-              <View style={{flex: 2, justifyContent: 'center'}}>
+                style={{ justifyContent: 'center', alignItems: 'center' }}></View>
+              <View style={{ flex: 2, justifyContent: 'center' }}>
                 <Text style={styles.searchText}>{item.name}</Text>
               </View>
             </TouchableOpacity>
           );
         }}
         ListEmptyComponent={
-          <Text style={{fontSize: 20, alignSelf: 'center'}}>No Results</Text>
+          <Text style={{ fontSize: 20, alignSelf: 'center' }}>No Results</Text>
         }
       />
     </View>

@@ -19,22 +19,36 @@ const DoctorsCard = ({card, navigation, hospitalName, hospitalAddress}) => {
   };
 
   return (
-    console.log(card.rating),
-    (
-      <TouchableOpacity
-        style={styles.card}
-        onPress={() =>
-          onPress(card._id, card.name, card.specialization, card.rating)
-        }>
-        <View style={styles.card_header}>
-          <Image
-            style={styles.doctorImg}
-            source={{
-              uri: 'https://bootdey.com/img/Content/avatar/avatar6.png',
-            }}></Image>
-          <View style={styles.textView}>
-            <Text style={styles.name}>Dr. {card.name}</Text>
-            <Text style={styles.speciality}>{card.specialization}</Text>
+    <TouchableOpacity
+      style={styles.card}
+      onPress={() =>
+        onPress(
+          card._id,
+          card.name,
+          card.specialization,
+          card.rating
+        )
+      }>
+      <View style={styles.card_header}>
+        <Image
+          style={styles.doctorImg}
+          source={{
+            uri: 'https://bootdey.com/img/Content/avatar/avatar6.png',
+          }}></Image>
+        <View style={styles.textView}>
+          <Text style={styles.name}>Dr. {card.name}</Text>
+          <Text style={styles.speciality}>{card.specialization}</Text>
+        </View>
+      </View>
+      <View style={styles.card_content}>
+        <View style={styles.address}>
+          <FontAwesome
+            name={'hospital-o'}
+            size={30}
+            color="#1c1bad"
+            style={{ margin: 10 }}></FontAwesome>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.hospital}>{hospitalName}</Text>
           </View>
         </View>
         <View style={styles.card_content}>

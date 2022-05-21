@@ -1,5 +1,5 @@
-import React, {useState, useEffect} from 'react';
-import {View, FlatList, Pressable, Text} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, FlatList, Pressable, Text, ActivityIndicator } from 'react-native';
 import DoctorsCard from '../../utils/DoctorsCard';
 import {SearchBar} from 'react-native-elements';
 import axios from 'axios';
@@ -76,11 +76,9 @@ export default function Doctors({navigation, route}) {
         };
         getDoctors();
       }
-      console.log('done');
-    } else {
-      // setDoctors([]);
+      console.log("done");
     }
-  }, [isFocused]);
+  }, []);
 
   const [search, setSearch] = useState('');
   const updateSearch = search => {
@@ -108,14 +106,14 @@ export default function Doctors({navigation, route}) {
               card={item}
               navigation={navigation}
               hospitalName={
-                fromHomepage
+                fromHomepage || fromSearch
                   ? item.hospitalName
                   : isAllDoctors
                   ? item.doctorHospitalName
                   : hospitalName
               }
               hospitalAddress={
-                fromHomepage
+                fromHomepage || fromSearch
                   ? item.hospitalAddress
                   : isAllDoctors
                   ? item.doctorHospitalAddress
@@ -125,7 +123,9 @@ export default function Doctors({navigation, route}) {
           );
         }}
         ListEmptyComponent={
-          loadData ? null : (
+          loadData ? <View>
+            <ActivityIndicator size="large" color="#0451cc" />
+          </View> :
             <Text
               style={{
                 fontSize: 20,

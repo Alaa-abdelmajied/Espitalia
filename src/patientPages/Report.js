@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -9,32 +9,41 @@ import {
   Modal,
   TextInput,
   TouchableOpacity,
+  ActivityIndicator
 } from 'react-native';
+
 import FlashMessage from 'react-native-flash-message';
 import {showMessage, hideMessage} from 'react-native-flash-message';
 import {Rating} from 'react-native-ratings';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {Server_URL, Token_Secret} from '@env';
+import { Server_URL, Token_Secret } from '@env';
+import { useIsFocused } from '@react-navigation/native';
 
 export default function Report({route}) {
   const {appointmentID, reviewed} = route.params;
   const [report, setReport] = useState({});
+  const [loadData, setLoadData] = useState(true);
+  const isFocused = useIsFocused();
 
   useEffect(() => {
-    const getReport = async () => {
-      await axios
-        .get(`${Server_URL}:3000/patient/report/${appointmentID}`)
-        .then(response => {
-          setReport(response.data);
-          console.log(reviewed);
-        })
-        .catch(function (error) {
-          console.log(error.message);
-        });
-    };
-    getReport();
+    if (isFocused) {
+      setLoadData(true);
+      const getReport = async () => {
+        await axios
+          .get(`${Server_URL}:3000/patient/report/${appointmentID}`)
+          .then(response => {
+            setReport(response.data);
+            setLoadData(false);
+          })
+          .catch(function (error) {
+            console.log(error.message);
+            setLoadData(false);
+          });
+      };
+      getReport();
+    }
   }, []);
 
   const [rate, setRate] = useState('');
@@ -57,8 +66,6 @@ export default function Report({route}) {
           message: 'Review done',
           type: 'success',
         });
-
-        // setReport(response.data);
         console.log(response.data);
       })
       .catch(function (error) {
@@ -86,29 +93,20 @@ export default function Report({route}) {
   };
 
   return (
-    <ScrollView>
-      <Modal visible={showModal} animationType="fade" transparent={true}>
-        <View style={styles.modal}>
-          <FontAwesome
-            name={'close'}
-            size={20}
-            color={'#1c1bad'}
-            onPress={() => setShowModal(false)}
-            style={{alignSelf: 'flex-start', margin: 5}}></FontAwesome>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignSelf: 'center',
-            }}>
-            <Rating
-              type="star"
-              tintColor="#f0f0f0"
-              ratingCount={5}
-              imageSize={25}
-              startingValue={1}
-              fractions={1}
-              showRating
-              onFinishRating={rate => setRate(rate)}
+    loadData ?
+      <View style={styles.loadingIcon}>
+        <ActivityIndicator size="large" color="#0451cc" />
+      </View> :
+      <ScrollView>
+        <Modal visible={showModal} animationType="fade" transparent={true}>
+          <View style={styles.modal}>
+            <FontAwesome
+              name={'close'}
+              size={20}
+              color={'#1c1bad'}
+              onPress={() => setShowModal(false)}
+              style={{ alignSelf: 'flex-start', margin: 5 }}></FontAwesome>
+            <View
               style={{
                 margin: 5,
                 backgroundColor: 'transparent',
@@ -120,13 +118,72 @@ export default function Report({route}) {
               placeholder="Write Review"
               multiline={true}
               onChangeText={review => setReview(review)}></TextInput>
+                flexDirection: 'row',
+                alignSelf: 'center',
+              }}>
+              <Rating
+                type="star"
+                tintColor="#f0f0f0"
+                ratingCount={5}
+                imageSize={25}
+                startingValue={1}
+                fractions={1}
+                showRating
+                onFinishRating={rate => setRate(rate)}
+                style={{
+                  margin: 5,
+                  backgroundColor: 'transparent',
+                  fontSize: 15,
+                }}></Rating>
+
+            </View>
+            <View style={styles.modalInput}>
+              <TextInput
+                placeholder="Write Review"
+                multiline={true}
+                onChangeText={review => setReview(review)}></TextInput>
+            </View>
+            <FontAwesome
+              name={'save'}
+              size={25}
+              color={'#1c1bad'}
+              style={{ alignSelf: 'center', margin: 5 }}
+              onPress={onPressSave}></FontAwesome>
           </View>
-          <FontAwesome
-            name={'save'}
-            size={25}
-            color={'#1c1bad'}
-            style={{alignSelf: 'center', margin: 5}}
-            onPress={onPressSave}></FontAwesome>
+        </Modal>
+        <View style={styles.header}>
+          <Image
+            style={styles.Image}
+            source={require('../../images/app_logo-removebg-preview.png')}></Image>
+        </View>
+        <View style={{ alignItems: 'center' }}>
+          <Text style={styles.infoText}>
+            Hospital Name: {report.hospitalName}
+          </Text>
+          <Text style={styles.infoText}>Doctor Name: {report.drName} </Text>
+          <Text style={styles.infoText}>
+            Specialization: {report.specialization}
+          </Text>
+          <Text style={styles.infoText}>Date: {report.date} </Text>
+          <Pressable
+            // visible={showReviewButton}
+            style={styles.modalButton}
+            onPress={() => setShowModal(true)}>
+            <Text style={styles.modalText}>Rate and Review</Text>
+          </Pressable>
+        </View>
+        <View style={styles.lineStyle} />
+        <Text style={styles.title}>Diagnosis</Text>
+        <View style={styles.reportCard}>
+          <ScrollView>
+            <Text style={styles.infoText}>{report.diagnosis}</Text>
+          </ScrollView>
+        </View>
+        <Text style={styles.title}>Prescription</Text>
+        <View style={styles.reportCard}>
+          <ScrollView>
+            <Text style={styles.infoText}>{report.prescription}</Text>
+          </ScrollView>
         </View>
       </Modal>
       <View style={styles.header}>
@@ -165,6 +222,7 @@ export default function Report({route}) {
       </View>
       <FlashMessage position="top" icon="auto" />
     </ScrollView>
+
   );
 }
 
@@ -263,4 +321,9 @@ const styles = StyleSheet.create({
     margin: 8,
     backgroundColor: '#000',
   },
+  loadingIcon: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center'
+  }
 });
