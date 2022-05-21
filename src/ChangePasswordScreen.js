@@ -13,6 +13,9 @@ import {
 } from 'react-native';
 
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import FlashMessage from 'react-native-flash-message';
+import {showMessage, hideMessage} from 'react-native-flash-message';
+
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {Server_URL, Token_Secret} from '@env';
@@ -46,7 +49,10 @@ export default function ChangePassword({navigation, route}) {
       .catch(function (error) {
         const err = error.response.data;
         if (err == 'This email does not exist') {
-          console.log('alert');
+          showMessage({
+            message: err,
+            type: 'warning',
+          });
         }
       });
   };
@@ -198,6 +204,7 @@ export default function ChangePassword({navigation, route}) {
           </View>
         )}
       </View>
+      <FlashMessage position="bottom" icon="auto" />
     </View>
   );
 }

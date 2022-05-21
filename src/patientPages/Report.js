@@ -10,6 +10,8 @@ import {
   TextInput,
   TouchableOpacity,
 } from 'react-native';
+import FlashMessage from 'react-native-flash-message';
+import {showMessage, hideMessage} from 'react-native-flash-message';
 import {Rating} from 'react-native-ratings';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import axios from 'axios';
@@ -17,8 +19,7 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import {Server_URL, Token_Secret} from '@env';
 
 export default function Report({route}) {
-  const {appointmentID} = route.params;
-
+  const {appointmentID, reviewed} = route.params;
   const [report, setReport] = useState({});
 
   useEffect(() => {
@@ -27,6 +28,7 @@ export default function Report({route}) {
         .get(`${Server_URL}:3000/patient/report/${appointmentID}`)
         .then(response => {
           setReport(response.data);
+          console.log(reviewed);
         })
         .catch(function (error) {
           console.log(error.message);
@@ -51,7 +53,12 @@ export default function Report({route}) {
         appointmentID: appointmentID,
       })
       .then(response => {
-        setReport(response.data);
+        showMessage({
+          message: 'Review done',
+          type: 'success',
+        });
+
+        // setReport(response.data);
         console.log(response.data);
       })
       .catch(function (error) {
@@ -65,6 +72,17 @@ export default function Report({route}) {
     saveReview();
     setShowModal(false);
     console.log(rate);
+  };
+
+  const onPressRateAndReview = () => {
+    if (reviewed) {
+      showMessage({
+        message: 'This appointment has already been reviewed',
+        type: 'warning',
+      });
+    } else {
+      setShowModal(true);
+    }
   };
 
   return (
@@ -96,7 +114,6 @@ export default function Report({route}) {
                 backgroundColor: 'transparent',
                 fontSize: 15,
               }}></Rating>
-  
           </View>
           <View style={styles.modalInput}>
             <TextInput
@@ -129,7 +146,7 @@ export default function Report({route}) {
         <Pressable
           // visible={showReviewButton}
           style={styles.modalButton}
-          onPress={() => setShowModal(true)}>
+          onPress={onPressRateAndReview}>
           <Text style={styles.modalText}>Rate and Review</Text>
         </Pressable>
       </View>
@@ -146,6 +163,7 @@ export default function Report({route}) {
           <Text style={styles.infoText}>{report.prescription}</Text>
         </ScrollView>
       </View>
+      <FlashMessage position="top" icon="auto" />
     </ScrollView>
   );
 }

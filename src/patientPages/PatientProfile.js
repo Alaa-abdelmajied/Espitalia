@@ -71,9 +71,10 @@ export default function Profile({navigation}) {
   const toggleExpanded = () => {
     setCollapsed(!collapsed);
   };
-  const onPressReport = id => {
+  const onPressReport = (id, reviewed) => {
     navigation.navigate('Report', {
       appointmentID: id,
+      reviewed: reviewed,
     });
   };
 
@@ -242,7 +243,9 @@ export default function Profile({navigation}) {
               <TouchableOpacity
                 style={styles.appointmentsCard}
                 key={item.appointmentID}
-                onPress={() => onPressReport(item.appointmentID)}>
+                onPress={() =>
+                  onPressReport(item.appointmentID, item.reviewed)
+                }>
                 <Text style={styles.infoText}>
                   Hospital Name: {item.hospitalName}
                 </Text>
