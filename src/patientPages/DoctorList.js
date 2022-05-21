@@ -135,7 +135,6 @@ export default function Doctors({navigation, route}) {
               }}>
               No doctors found :(
             </Text>
-          )
         }
       />
     </View>
