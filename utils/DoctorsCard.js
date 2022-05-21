@@ -5,8 +5,8 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Rating } from 'react-native-ratings';
 
-const DoctorsCard = ({ card, navigation, hospitalName, hospitalAddress }) => {
 
+const DoctorsCard = ({ card, navigation, hospitalName, hospitalAddress }) => {
   const onPress = (id, name, specialization, averageRating) => {
     navigation.navigate('DoctorDetails', {
       drID: id,
@@ -15,7 +15,7 @@ const DoctorsCard = ({ card, navigation, hospitalName, hospitalAddress }) => {
       hospitalName: hospitalName,
       hospitalAddress: hospitalAddress,
       averageRating: averageRating,
-      fromSearch: false,
+      // fromSearch: false,
     });
   };
 
@@ -84,7 +84,6 @@ const DoctorsCard = ({ card, navigation, hospitalName, hospitalAddress }) => {
 };
 
 const styles = StyleSheet.create({
-
   card: {
     width: '95%',
     borderRadius: 15,

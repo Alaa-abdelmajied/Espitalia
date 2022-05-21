@@ -15,7 +15,7 @@ export default function Doctors({ navigation, route }) {
     isAllDoctors,
     speciality,
     fromHomepage,
-    fromSearch,
+    // fromSearch,
   } = route.params;
 
   const [doctors, setDoctors] = useState([]);
@@ -54,7 +54,6 @@ export default function Doctors({ navigation, route }) {
               console.log(error.message);
               setLoadData(false);
             });
-
         };
         seeAllDoctors();
       } else {
