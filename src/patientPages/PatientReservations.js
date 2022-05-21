@@ -8,7 +8,7 @@ import {
   Image,
   Alert,
   BackHandler,
-  ActivityIndicator
+  ActivityIndicator,
 } from 'react-native';
 import FlashMessage from 'react-native-flash-message';
 import {showMessage, hideMessage} from 'react-native-flash-message';
@@ -32,7 +32,7 @@ export default function Reservation({}) {
       .then(response => {
         setUpcomingAppointments(response.data);
         setLoadData(false);
-        console.log("done");
+        console.log('done');
       })
       .catch(function (error) {
         console.log(error.message);
@@ -57,20 +57,20 @@ export default function Reservation({}) {
       axios
         .delete(`${Server_URL}:3000/patient/cancel/${appointmentID}`)
         .then(function (response) {
-          // upcomingAppointments.splice(upcomingAppointments,upcomingAppointments.indexOf(appointmentID));
-          // upcomingAppointments.splice();
           showMessage({
             message: 'Appointment cancelled successfully',
             type: 'success',
-          });
-          // Alert.alert('Appointment cancelled successfully');
+          }); // Alert.alert('Appointment cancelled successfully');
           getUpcomingAppointments();
         })
         .catch(function (error) {
           const err = error.response.data;
           console.log(err);
           if (err == 'Error cancelling appointment') {
-            Alert.alert('Error cancelling appointment');
+            showMessage({
+              message: err,
+              type: 'warning',
+            });
           }
         });
     } catch (err) {
@@ -87,7 +87,6 @@ export default function Reservation({}) {
           style={styles.Image}
           source={require('../../images/app_logo-removebg-preview.png')}></Image>
       </View>
-
       <FlatList
         extraData={upcomingAppointments}
         data={upcomingAppointments}
@@ -115,9 +114,11 @@ export default function Reservation({}) {
           </View>
         )}
         ListEmptyComponent={
-          loadData ? <View>
-            <ActivityIndicator size="large" color="#0451cc" />
-          </View> :
+          loadData ? (
+            <View>
+              <ActivityIndicator size="large" color="#0451cc" />
+            </View>
+          ) : (
             <Text
               style={{
                 fontSize: 20,

@@ -10,7 +10,7 @@ import {
   Pressable,
   BackHandler,
   Alert,
-  ActivityIndicator
+  ActivityIndicator,
 } from 'react-native';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -94,7 +94,8 @@ export default function ProfileScreen({route}) {
             showMessage({
               message: err,
               type: 'warning',
-            });          }
+            });
+          }
           console.log(err);
         });
     } catch (err) {
@@ -108,53 +109,32 @@ export default function ProfileScreen({route}) {
   let {width: windowWidth, height: windowHeight} = useWindowDimensions();
   windowHeight = windowHeight - 300;
 
-  return (
-    loadData ?
-      <View style={styles.loadingIcon}>
-        <ActivityIndicator size="large" color="#0451cc" />
-      </View> :
-      <ScrollView>
-        <View style={styles.container}>
-          <View style={styles.headerContainer}>
-            <View style={styles.header}></View>
-            <Image
-              style={styles.avatar}
-              source={{ uri: 'https://bootdey.com/img/Content/avatar/avatar6.png' }}
-            />
-            {/* <View style={styles.body}> */}
-            {/* <View style={styles.bodyContent}> */}
-            {!fromSearch ? (
-              <View style={styles.body}>
-                <Text style={styles.dr_name}>{drName}</Text>
-                <Text style={styles.description}>{specialization}</Text>
-                <View style={{ flexDirection: 'row' }}>
-                  <FontAwesome
-                    name={'hospital-o'}
-                    size={25}
-                    color="#1c1bad"
-                    style={{ margin: 5 }}></FontAwesome>
-                  <Text style={styles.description}>{hospitalName}</Text>
-                </View>
-                <View style={{ flexDirection: 'row' }}>
-                  <Ionicons
-                    name={'location-sharp'}
-                    size={25}
-                    color="#1c1bad"
-                    style={{ margin: 5 }}></Ionicons>
-                  <Text style={styles.description}>{hospitalAddress}</Text>
-                </View>
-                <View style={styles.customRatingBar}>
-                  <Rating
-                    type="custom"
-                    ratingBackgroundColor="#bfbfbf"
-                    tintColor="#f0f0f0"
-                    ratingCount={5}
-                    imageSize={30}
-                    startingValue={averageRating}
-                    fractions={1}
-                    readonly={true}></Rating>
-                  <Text style={styles.text}>{averageRating}/5</Text>
-                </View>
+  return loadData ? (
+    <View style={styles.loadingIcon}>
+      <ActivityIndicator size="large" color="#0451cc" />
+    </View>
+  ) : (
+    <ScrollView>
+      <View style={styles.container}>
+        <View style={styles.headerContainer}>
+          <View style={styles.header}></View>
+          <Image
+            style={styles.avatar}
+            source={{uri: 'https://bootdey.com/img/Content/avatar/avatar6.png'}}
+          />
+          {/* <View style={styles.body}> */}
+          {/* <View style={styles.bodyContent}> */}
+          {!fromSearch ? (
+            <View style={styles.body}>
+              <Text style={styles.dr_name}>{drName}</Text>
+              <Text style={styles.description}>{specialization}</Text>
+              <View style={{flexDirection: 'row'}}>
+                <FontAwesome
+                  name={'hospital-o'}
+                  size={25}
+                  color="#1c1bad"
+                  style={{margin: 5}}></FontAwesome>
+                <Text style={styles.description}>{hospitalName}</Text>
               </View>
               <View style={{flexDirection: 'row'}}>
                 <Ionicons
@@ -211,107 +191,105 @@ export default function ProfileScreen({route}) {
               </View>
             </View>
           )}
-
-          {/* </View> */}
         </View>
-        <View style={styles.appointmentsContainer}>
-          <ScrollView
-            horizontal={true}
-            style={styles.scrollViewStyle}
-            pagingEnabled
-            showsHorizontalScrollIndicator={false}
-            onScroll={Animated.event(
-              [{nativeEvent: {contentOffset: {x: scrollX}}}],
-              {useNativeDriver: false},
-            )}
-            scrollEventThrottle={16}>
-            {schedule.map((card, cardIndex) => {
-              return (
-                <Animated.View style={{width: windowWidth}} key={cardIndex}>
-                  <View style={styles.scheduleCard}>
-                    <View style={styles.dateHeader}>
-                      <Text style={{color: '#fff', fontSize: 20}}>
-                        {card.displayDate}
-                      </Text>
-                    </View>
-                    <View style={{margin: 30, alignItems: 'center'}}>
-                      <Text style={{color: '#000', fontSize: 20}}>
-                        From: {card.from}
-                      </Text>
-                      <Text style={{color: '#000', fontSize: 20}}>
-                        To: {card.to}
-                      </Text>
-                    </View>
-                    <Pressable
-                      style={styles.bookButton}
-                      onPress={() =>
-                        bookAppointment(card.date, card.from, card.to)
-                      }>
-                      <Text style={{color: '#fff'}}>Book</Text>
-                    </Pressable>
-                  </View>
-                </Animated.View>
-              );
-            })}
-          </ScrollView>
-          <View style={styles.indicatorContainer}>
-            {schedule.map((card, cardIndex) => {
-              const width = scrollX.interpolate({
-                inputRange: [
-                  windowWidth * (cardIndex - 1),
-                  windowWidth * cardIndex,
-                  windowWidth * (cardIndex + 1),
-                ],
-                outputRange: [8, 16, 8],
-                extrapolate: 'clamp',
-              });
-
-              return (
-                <Animated.View
-                  style={[
-                    styles.normalDots,
-                    {width},
-                    {backgroundColor: '#1c1bad'},
-                  ]}
-                  key={cardIndex}
-                />
-              );
-            })}
-          </View>
-        </View>
-        <View style={styles.reviewsArea}>
-          <Text style={styles.title}>Ratings and Reviews</Text>
-          {comments.map((reviewCard, cardIndex) => {
+      </View>
+      <View style={styles.appointmentsContainer}>
+        <ScrollView
+          horizontal={true}
+          style={styles.scrollViewStyle}
+          pagingEnabled
+          showsHorizontalScrollIndicator={false}
+          onScroll={Animated.event(
+            [{nativeEvent: {contentOffset: {x: scrollX}}}],
+            {useNativeDriver: false},
+          )}
+          scrollEventThrottle={16}>
+          {schedule.map((card, cardIndex) => {
             return (
-              <View key={cardIndex} style={styles.commentsCard}>
-                <View style={{height: 150, width: '97%', alignSelf: 'center'}}>
-                  <Text style={styles.text}>{reviewCard.name}</Text>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      marginTop: 10,
-                    }}>
-                    <Rating
-                      type="custom"
-                      ratingBackgroundColor="#bfbfbf"
-                      tintColor="#fff"
-                      ratingCount={5}
-                      imageSize={25}
-                      startingValue={reviewCard.rate}
-                      fractions={1}
-                      readonly={true}
-                      style={{
-                        marginRight: 10,
-                      }}></Rating>
-                    <Text style={styles.text}>{reviewCard.date}</Text>
+              <Animated.View style={{width: windowWidth}} key={cardIndex}>
+                <View style={styles.scheduleCard}>
+                  <View style={styles.dateHeader}>
+                    <Text style={{color: '#fff', fontSize: 20}}>
+                      {card.displayDate}
+                    </Text>
                   </View>
-                  <Text style={styles.text}>{reviewCard.review}</Text>
+                  <View style={{margin: 30, alignItems: 'center'}}>
+                    <Text style={{color: '#000', fontSize: 20}}>
+                      From: {card.from}
+                    </Text>
+                    <Text style={{color: '#000', fontSize: 20}}>
+                      To: {card.to}
+                    </Text>
+                  </View>
+                  <Pressable
+                    style={styles.bookButton}
+                    onPress={() =>
+                      bookAppointment(card.date, card.from, card.to)
+                    }>
+                    <Text style={{color: '#fff'}}>Book</Text>
+                  </Pressable>
                 </View>
-              </View>
+              </Animated.View>
+            );
+          })}
+        </ScrollView>
+        <View style={styles.indicatorContainer}>
+          {schedule.map((card, cardIndex) => {
+            const width = scrollX.interpolate({
+              inputRange: [
+                windowWidth * (cardIndex - 1),
+                windowWidth * cardIndex,
+                windowWidth * (cardIndex + 1),
+              ],
+              outputRange: [8, 16, 8],
+              extrapolate: 'clamp',
+            });
+
+            return (
+              <Animated.View
+                style={[
+                  styles.normalDots,
+                  {width},
+                  {backgroundColor: '#1c1bad'},
+                ]}
+                key={cardIndex}
+              />
             );
           })}
         </View>
+      </View>
+      <View style={styles.reviewsArea}>
+        <Text style={styles.title}>Ratings and Reviews</Text>
+        {comments.map((reviewCard, cardIndex) => {
+          return (
+            <View key={cardIndex} style={styles.commentsCard}>
+              <View style={{height: 150, width: '97%', alignSelf: 'center'}}>
+                <Text style={styles.text}>{reviewCard.name}</Text>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    marginTop: 10,
+                  }}>
+                  <Rating
+                    type="custom"
+                    ratingBackgroundColor="#bfbfbf"
+                    tintColor="#fff"
+                    ratingCount={5}
+                    imageSize={25}
+                    startingValue={reviewCard.rate}
+                    fractions={1}
+                    readonly={true}
+                    style={{
+                      marginRight: 10,
+                    }}></Rating>
+                  <Text style={styles.text}>{reviewCard.date}</Text>
+                </View>
+                <Text style={styles.text}>{reviewCard.review}</Text>
+              </View>
+            </View>
+          );
+        })}
       </View>
       <FlashMessage position="top" icon="auto" />
     </ScrollView>
@@ -491,6 +469,6 @@ const styles = StyleSheet.create({
   loadingIcon: {
     flex: 1,
     flexDirection: 'row',
-    justifyContent: 'center'
-  }
+    justifyContent: 'center',
+  },
 });
