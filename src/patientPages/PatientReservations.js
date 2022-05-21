@@ -88,9 +88,9 @@ export default function Reservation({ }) {
           <View style={styles.appointmentsCard}>
             <View style={styles.infoView}>
               <Text style={styles.infoText}>
-                Hospital Name: {item.hospitalName}
+                Hospital: {item.hospitalName}
               </Text>
-              <Text style={styles.infoText}>Doctor Name: {item.drName} </Text>
+              <Text style={styles.infoText}>Doctor: {item.drName} </Text>
               <Text style={styles.infoText}>Date: {item.date} </Text>
               <Text style={styles.infoText}>From: {item.from} </Text>
               <Text style={styles.infoText}>Reservation No: {item.resNum}</Text>

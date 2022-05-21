@@ -28,6 +28,7 @@ export default function ProfileScreen({ route }) {
     hospitalName,
     hospitalAddress,
     averageRating,
+    // fromHomepage,
     fromSearch,
   } = route.params;
 

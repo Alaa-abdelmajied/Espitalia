@@ -53,7 +53,7 @@ import MyProfileHospitalPage from './hospitalAdminPages/MyProfileHospitalPage';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
-const bottomTab = createMaterialBottomTabNavigator();
+// const Tab = createMaterialBottomTabNavigator();
 const TopTabs = createMaterialTopTabNavigator();
 
 function PatientStackNav() {
@@ -66,8 +66,10 @@ function PatientStackNav() {
       <Stack.Screen name="SpecializationScreen" component={Specializaion} />
       <Stack.Screen name="DoctorsScreen" component={DoctorList} />
       <Stack.Screen name="DoctorDetails" component={DoctorDetails} />
-      <Stack.Screen name="DoctorList" component={DoctorList} />
+      {/* <Stack.Screen name="DoctorList" component={DoctorList} /> */}
       <Stack.Screen name="HospitalList" component={HospitalList} />
+      <Stack.Screen name="GeneralSearch" component={Search} />
+
     </Stack.Navigator>
   );
 }
@@ -174,15 +176,15 @@ function PatientNavBar() {
       activeColor="#1c1bad"
       inactiveColor="#000"
       barStyle={{backgroundColor: '#fff'}}>
-      <bottomTab.Screen name="Home" component={PatientStackNav} />
-      <bottomTab.Screen name="Profile" component={PatientProfileStackNav} />
-      <bottomTab.Screen
+      <Tab.Screen name="Home" component={PatientStackNav} />
+      <Tab.Screen name="Profile" component={PatientProfileStackNav} />
+      <Tab.Screen
         name="Notifications"
         component={PatientNotificationsTabNav}
         options={{tabBarBadge: 10}}
       />
-      <bottomTab.Screen name="Reservations" component={PatientReservations} />
-      <bottomTab.Screen name="Search" component={Search} />
+      <Tab.Screen name="Reservations" component={PatientReservations} />
+      <Tab.Screen name="Search" component={Search} />
       {/* <Tab.Screen
         name="BloodDonation"
         component={BloodDonation}
@@ -222,7 +224,7 @@ function DoctorNavBar() {
 
 function ReceptNavBar() {
   return (
-    <bottomTab.Navigator
+    <Tab.Navigator
       screenOptions={({route}) => ({
         tabBarIcon: ({focused, size, color}) => {
           let iconName;
@@ -264,19 +266,19 @@ function ReceptNavBar() {
       activeColor="#f0edf6"
       inactiveColor="#ffffff"
       barStyle={{backgroundColor: '#003da5'}}>
-      <bottomTab.Screen
+      <Tab.Screen
         name="Home"
         component={ReceptStackView}
         //options={{ tabBarBadge: 3 }}
       />
-      <bottomTab.Screen name="Profile" component={ReceptProfile} />
-      <bottomTab.Screen name="Blood Requests" component={ReceptBloodReq} />
-      <bottomTab.Screen
+      <Tab.Screen name="Profile" component={ReceptProfile} />
+      <Tab.Screen name="Blood Requests" component={ReceptBloodReq} />
+      <Tab.Screen
         name="Notifications"
         component={ReceptNotification}
         options={{tabBarBadge: 3}}
       />
-    </bottomTab.Navigator>
+    </Tab.Navigator>
   );
 }
 

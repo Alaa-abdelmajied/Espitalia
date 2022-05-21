@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   StyleSheet,
   Text,
@@ -11,13 +11,16 @@ import {
 } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import Collapsible from 'react-native-collapsible';
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { Server_URL, Token_Secret, Credintials_Secret } from '@env';
+import {Server_URL, Token_Secret, Credintials_Secret} from '@env';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
-export default function Profile({ navigation }) {
+export default function Profile({navigation}) {
   const [personalData, setPersonalData] = useState('');
   const [oldAppointments, setOldAppointments] = useState([]);
+  const [collapsed, setCollapsed] = useState(true);
 
   useEffect(() => {
     const getPersonalData = async () => {
@@ -37,7 +40,7 @@ export default function Profile({ navigation }) {
           });
       } catch (err) {
         Alert.alert('Error', err.code, [
-          { text: 'Exit', onPress: () => BackHandler.exitApp() },
+          {text: 'Exit', onPress: () => BackHandler.exitApp()},
         ]);
       }
     };
@@ -58,13 +61,16 @@ export default function Profile({ navigation }) {
           });
       } catch (err) {
         Alert.alert('Error', err.code, [
-          { text: 'Exit', onPress: () => BackHandler.exitApp() },
+          {text: 'Exit', onPress: () => BackHandler.exitApp()},
         ]);
       }
     };
     getOldAppointments();
   }, []);
 
+  const toggleExpanded = () => {
+    setCollapsed(!collapsed);
+  };
   const onPressReport = id => {
     navigation.navigate('Report', {
       appointmentID: id,
@@ -87,11 +93,11 @@ export default function Profile({ navigation }) {
             await EncryptedStorage.removeItem(Credintials_Secret);
             navigation.reset({
               index: 0,
-              routes: [{ name: 'WelcomePage' }],
+              routes: [{name: 'WelcomePage'}],
             });
           } catch (err) {
             Alert.alert('Error', err.code, [
-              { text: 'Exit', onPress: () => BackHandler.exitApp() },
+              {text: 'Exit', onPress: () => BackHandler.exitApp()},
             ]);
           }
         })
@@ -101,20 +107,18 @@ export default function Profile({ navigation }) {
         });
     } catch (err) {
       Alert.alert('Error', err.code, [
-        { text: 'Exit', onPress: () => BackHandler.exitApp() },
+        {text: 'Exit', onPress: () => BackHandler.exitApp()},
       ]);
     }
   };
 
-  onPressEdit = () => {
+  const edit = () => {
     navigation.navigate('EditProfile', {
       name: personalData.name,
-      email: personalData.email,
-      age: personalData.age,
+      birthdate: personalData.birthdate,
       phoneNumber: personalData.phoneNumber,
     });
   };
-
   // const [showModal, setShowModal] = useState(false);
 
   return (
@@ -143,26 +147,28 @@ export default function Profile({ navigation }) {
       <View style={styles.header}></View>
       <Image
         style={styles.avatar}
-        source={{ uri: 'https://bootdey.com/img/Content/avatar/avatar6.png' }}
+        source={{uri: 'https://bootdey.com/img/Content/avatar/avatar6.png'}}
       />
       <View
-
         style={{position: 'absolute', alignSelf: 'flex-end', marginTop: 15}}>
         <TouchableOpacity style={{margin: 5}} onPress={onPressLogout}>
           <Pressable onPress={onPressLogout}>
             <Text style={{fontSize: 15, color: '#fff'}}>Logout</Text>
           </Pressable>
-
         </TouchableOpacity>
       </View>
       <View style={styles.body}>
         <View style={styles.bodyContent}>
           <Text style={styles.name}>{personalData.name}</Text>
-          <View style={{flexDirection:'row',margin:5}}>
+          <View style={{flexDirection: 'row', margin: 5}}>
             <Text style={styles.subtitle}>BASIC DATA</Text>
             <TouchableOpacity
-              style={{flexDirection: 'row' ,justifyContent:'center',alignItems:'center'}}
-              onPress={onPressEdit}>
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+              onPress={edit}>
               <FontAwesome name="edit" size={20} color="#1c1bad"></FontAwesome>
               <Text
                 style={{
@@ -191,27 +197,43 @@ export default function Profile({ navigation }) {
             <View
               style={{flexDirection: 'row', alignItems: 'center', margin: 2}}>
               <FontAwesome
-                name={'calendar'}
+                name={'birthday-cake'}
                 size={20}
                 color={'#000'}></FontAwesome>
-              <Text style={styles.mainText}>27-6-2022</Text>
+              <Text style={styles.mainText}>{personalData.birthdate}</Text>
             </View>
             <View
               style={{flexDirection: 'row', alignItems: 'center', margin: 2}}>
-              <Ionicons
-                name={'information-circle-outline'}
+              <FontAwesome
+                name={'calendar'}
                 size={20}
-                color={'#000'}></Ionicons>
-              <Pressable>
-                <Text style={{marginLeft: 10, color: '#000'}}>
-                  More info...
-                </Text>
-              </Pressable>
+                color={'#000'}></FontAwesome>
+              <Text style={styles.mainText}>{personalData.age}</Text>
             </View>
-            {/* <Text style={styles.mainText}>Blood Type: A+</Text>
-            <Text style={styles.mainText}>Diabetic: No</Text>
-            <Text style={styles.mainText}>Diabetic: No</Text>
-            <Text style={styles.mainText}>Blood Pressure Problems: No</Text> */}
+            <View style={{flexDirection: 'column'}}>
+              <View
+                style={{flexDirection: 'row', alignItems: 'center', margin: 2}}>
+                <Ionicons
+                  name={'information-circle-outline'}
+                  size={20}
+                  color={'#000'}></Ionicons>
+                <TouchableOpacity onPress={toggleExpanded}>
+                  <Text style={{marginLeft: 10, color: '#000'}}>
+                    More info...
+                  </Text>
+                </TouchableOpacity>
+              </View>
+              <Collapsible collapsed={collapsed} align="center">
+                <View style={{padding: 20}}>
+                  <Text style={styles.mainText}>Blood Type: A+</Text>
+                  <Text style={styles.mainText}>Diabetic: No</Text>
+                  <Text style={styles.mainText}>Diabetic: No</Text>
+                  <Text style={styles.mainText}>
+                    Blood Pressure Problems: No
+                  </Text>
+                </View>
+              </Collapsible>
+            </View>
           </View>
           <View style={styles.lineStyle} />
           <Text style={styles.subtitle}>OLD RESERVATIONS</Text>

@@ -104,6 +104,7 @@ export default function PatientHome({ navigation }) {
     navigation.navigate('DoctorsScreen', {
       speciality: speciality,
       fromHomepage: true,
+      isAllDoctors: false,
     });
     console.log(speciality);
   };
