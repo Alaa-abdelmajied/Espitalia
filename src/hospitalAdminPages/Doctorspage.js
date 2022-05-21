@@ -1,51 +1,68 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import React, { useState } from 'react';
-import {SafeAreaView, View, StyleSheet, Text, Input, Image, TextInput, FlatList, TouchableOpacity, VirtualizedList} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { SafeAreaView, View, StyleSheet, Text, Input, Image, TextInput, FlatList, TouchableOpacity, VirtualizedList } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import DoctorCard from './DoctorCard';
 import Icon from 'react-native-vector-icons/dist/FontAwesome';
 import { normalizeRect } from 'react-native/Libraries/StyleSheet/Rect';
+import axios from "axios";
+import EncryptedStorage from 'react-native-encrypted-storage';
+import { Server_URL, Token_Secret, Credintials_Secret } from '@env';
 
-const Doctorspage = ({navigation, route}) => {
-    const [text,setText] = useState('');
+
+const Doctorspage = ({ navigation, route }) => {
+    const [doctors, setDoctors] = useState();
+    useEffect(() => {
+        const getDoctors = async () => {
+            const token = JSON.parse(await EncryptedStorage.getItem(Token_Secret)).token;
+            console.log(token);
+            axios
+                .get(`${Server_URL}:3000/hospital/viewDoctors`, {
+                    headers: {
+                        'x-auth-token': token
+                    }
+                })
+                .then(function (response) {
+                    //console.log(response.data);
+                    // navigation.navigate('Doctors', response.data);
+                    setDoctors(response.data);
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        }
+        getDoctors();
+    },[]);
+    const [text, setText] = useState('');
     const onChange = (textValue) => setText(textValue);
-    const [Doctors, setDoctor] = useState([
-        {id:1 ,name: 'Omar Shalaby', age: 22, specialization: 'mo5 w 23sab'},
-        {id:2 ,name: 'Nadeen el Gazzar', age: 45, specialization: 'asnan'},
-        {id:3 ,name: 'Maram Ghazal', age: 12, specialization: 'ta8zya'},
-        {id:4 ,name: 'Mayar Adel', age: 20, specialization: 'ay 7aga'},
-        {id:5 ,name: 'Alaa Abdel Majied',age: 15, specialization: 'Doctor w 5alas'},
-        {id:6 ,name: 'Omar Shalaby', age: 22, specialization: 'mo5 w 23sab'},
-        {id:7 ,name: 'Nadeen el Gazzar', age: 45, specialization: 'asnan'},
-        {id:8 ,name: 'Maram Ghazal', age: 12, specialization: 'ta8zya'},
-        {id:9 ,name: 'Mayar Adel', age: 20, specialization: 'ay 7aga'},
-        {id:10 ,name: 'Omar Shalaby', age: 22, specialization: 'mo5 w 23sab'},
-        {id:11 ,name: 'Nadeen el Gazzar', age: 45, specialization: 'asnan'},
-        {id:12 ,name: 'Maram Ghazal', age: 12, specialization: 'ta8zya'},
-        {id:13 ,name: 'Mayar Adel', age: 20, specialization: 'ay 7aga'},
-        {id:14 ,name: 'Alaa Abdel Majied',age: 15, specialization: 'Doctor w 5alas'},
-        {id:15 ,name: 'Alaa Abdel Majied',age: 15, specialization: 'Doctor w 5alas'},
-        {id:16 ,name: 'Alaa Abdel Majied',age: 15, specialization: 'Doctor w 5alas'},
-        {id:17 ,name: 'Omar Shalaby', age: 22, specialization: 'mo5 w 23sab'}
-    ]);
 
-
-    return(
+    return (
         <SafeAreaView style={styles.container}>
             <View style={styles.container}>
-                <View>
+                <View style={styles.titleStyle}>
                     <TextInput placeholder='🔍Search' style={styles.input} onChangeText={onChange} />
                 </View>
                 <FlatList
-                    data={Doctors}
-                    renderItem={({item}) => <DoctorCard item={item} />}
+                    data={doctors}
+                    renderItem={({ item }) =>
+                        <TouchableOpacity style={styles.doctorCard} onPress={() => navigation.navigate('DoctorProfile', item)}>
+                            <View style={styles.doctorView}>
+                                <View>
+                                    <Text style={styles.doctorText}>{item.name}</Text>
+                                    <Text style={styles.doctorText}>{item.specialization}</Text>
+                                </View>
+                                <Icon name='angle-double-right' style={styles.icon} />
+
+                            </View>
+                        </TouchableOpacity>
+                    }
                 />
                 <TouchableOpacity
                     style={styles.touchableOpacity}
                     onPress={() => navigation.navigate('AddnewDoctor')}
                 >
-                    <Image source={require('../../images/plus.png')} style={styles.addButton} />
+                    <Icon style={styles.addButton} name='user-plus' />
                 </TouchableOpacity>
             </View>
         </SafeAreaView>
@@ -64,37 +81,60 @@ const styles = StyleSheet.create({
         fontSize: 28,
         fontWeight: 'bold',
         textAlign: 'center',
-        padding: 10,
-        color: 'black',
     },
     input: {
-      height: 40,
-      padding: 8,
-      margin: 5,
-      fontSize: 16,
-      borderRadius: 5,
-      borderWidth: 2,
-      borderColor: 'black',
-      color: 'black',
-    },
-    addButton: {
-        resizeMode: 'contain',
-        width: 100,
-        height: 100,
+        height: 40,
+        padding: 8,
+        paddingLeft: 15,
+        paddingRight: 15,
+        margin: 5,
+        fontSize: 16,
+        borderRadius: 50,
+        borderWidth: 1,
+        borderColor: '#ddd',
+        color: 'black',
+        elevation: 1,
     },
     touchableOpacity: {
-        //backgroundColor: 'grey',
+        backgroundColor: '#1c1bad',
         alignItems: 'center',
         justifyContent: 'center',
         position: 'absolute',
         width: 60,
         height: 60,
-        
+        borderRadius: 100,
         right: 40,
         bottom: 40,
-    
+        elevation: 10,
+
     },
-    
+    addButton: {
+        fontSize: 30,
+        color: 'white',
+    },
+    doctorCard: {
+        padding: 15,
+        backgroundColor: 'white',
+        borderRadius: 10,
+        borderColor: 'gray',
+        margin: 5,
+        elevation: 5,
+    },
+    doctorView: {
+        borderRadius: 10,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    doctorText: {
+        fontSize: 15,
+        color: 'black'
+    },
+    icon: {
+        color: 'black',
+        fontSize: 30,
+    },
+
 });
 
 export default Doctorspage;

@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import Svg, {Path} from 'react-native-svg';
+import React, { useState } from 'react';
+import Svg, { Path } from 'react-native-svg';
 
 import {
   StyleSheet,
@@ -10,20 +10,64 @@ import {
   Alert,
   BackHandler,
 } from 'react-native';
+//import RadioButtonRN from 'radio-buttons-react-native';
+//import RadioGroup from 'react-native-radio-buttons-group';
+import { CommonActions, StackActions } from '@react-navigation/native';
+import { NavigationActions } from 'react-navigation';
+
+
+import RadioGroup from 'react-native-radio-button-group';
+/*
+TODO: 
+add this line in react-native-radio-button-group/RadioGroup.js in line 15
+  options: PropTypes.arrayOf(PropTypes.shape({
+and in circle.js replace by:
+  <Animated.View
+    style={[
+      styles.fill,
+      {
+        backgroundColor: circleStyle.fillColor,
+        height: this.props.active ? 20 : 0,
+        width: this.props.active ? 20 : 0,
+      },
+    ]}
+  />
+*/
+
+
 
 import FlashMessage from 'react-native-flash-message';
 import {showMessage, hideMessage} from 'react-native-flash-message';
 
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {Server_URL, Token_Secret, Credintials_Secret} from '@env';
+import { Server_URL, Token_Secret, Credintials_Secret } from '@env';
 
-export default function Login({navigation, route}) {
+export default function Login({ navigation, route }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [errorMeesage, setIsVisible] = useState(false);
+  const [selectedStaff, setSelectedStaff] = useState({});
+  var whoIsLogingIn = [
+    {
+      id: 'hospital',
+      label: 'Hospital',
+      // labelView: 'hospital'
+    }, {
+      id: 'doctor',
+      label: 'Doctor',
+      // labelView: 'doctor'
+    }, {
+      id: 'receptionist',
+      label: 'Receptionist',
+      //labelView: 'receptionist'
+    }
+  ];
 
   const onPressHandler = () => {
     //staff -> username -> search for keyword dr or recep or admin
+var staff = route.params.staff;
+if (!staff) {
     axios
       .post(`${Server_URL}:3000/patient/login`, {
         email: email,
@@ -73,6 +117,72 @@ export default function Login({navigation, route}) {
     //   index: 0,
     //   routes: [{ name: route.params.staff ? 'HosptialAdminHomePage' : 'Patient' }],
     // })
+
+    }
+    else {
+      //FIXME: I'm working don't delete me
+      // navigation.dispatch(StackActions.popToTop());
+      // navigation.dispatch(
+      //   StackActions.replace('HosptialAdminHomePage', { screen: 'Home', params: response.data })
+      // );
+      // if (!selectedStaff.id){
+      //   console.log('select hospital');
+      //   setIsVisible(true);
+      // }
+      const url = `${Server_URL}:3000/${selectedStaff.id}/login`;
+      axios
+        .post(url, {
+          email: email,
+          password: password
+        })
+        .then(async function (response) {
+          console.log(email, password, url);
+          setIsVisible(false);
+          const token = response.headers['x-auth-token'];
+          try {
+            await EncryptedStorage.setItem(
+              Token_Secret,
+              JSON.stringify({ token: token }),
+            );
+            await EncryptedStorage.setItem(
+              Credintials_Secret,
+              JSON.stringify({
+                email: email,
+                password: password,
+              }),
+            );
+          } catch (err) {
+            Alert.alert('Error', err.code, [
+              { text: 'Exit', onPress: () => BackHandler.exitApp() },
+            ]);
+          }
+          if (selectedStaff.id == 'hospital') {
+            navigation.dispatch(StackActions.popToTop());
+            navigation.dispatch(
+              StackActions.replace('HosptialAdminHomePage', { screen: 'Home', params: response.data })
+            );
+          }
+          else if(selectedStaff.id == 'receptionist'){
+            navigation.dispatch(StackActions.popToTop());
+            navigation.dispatch(
+              StackActions.replace('ReceptHomePage', { screen: 'Home', params: response.data })
+            );
+            // console.log(selectedStaff.id);
+          }
+          else if(selectedStaff.id == 'doctor'){
+            navigation.dispatch(StackActions.popToTop());
+            navigation.dispatch(
+              StackActions.replace('HosptialAdminHomePage', { screen: 'Home', params: response.data })
+            );
+            console.log(selectedStaff.id);
+          }
+        })
+        .catch(function (error) {
+          setIsVisible(true);
+          console.log(errorMeesage);
+          console.log('ERROR:', error);
+        });
+    }
   };
   return (
     // <ScrollView>
@@ -100,30 +210,37 @@ export default function Login({navigation, route}) {
               placeholder="Enter your password"
               onChangeText={text => setPassword(text)}></TextInput>
 
-            <Pressable
-              onPress={() =>
-                navigation.navigate('ChangePassword', {changePassword: false})
-              }>
+            <Pressable>
               <Text style={styles.QuestionText}>Forgot password?</Text>
             </Pressable>
 
+            {
+              errorMeesage &&
+              <Text style={{ color: '#f00' }}>Something is Wrong</Text>
+            }
+
             <Pressable style={styles.RegisterButton} onPress={onPressHandler}>
-              <Text style={[styles.buttonText, {color: '#fff'}]}>Sign In</Text>
+              <Text style={[styles.buttonText, { color: '#fff' }]}>Sign In</Text>
             </Pressable>
             {!route.params.staff ? (
-              <View style={{flexDirection: 'row', margin: '5%'}}>
+              <View style={{ flexDirection: 'row', margin: '5%' }}>
                 <Text style={styles.QuestionText}>
                   Don't have an account yet?
                 </Text>
 
                 <Pressable onPress={() => navigation.navigate('SignUp')}>
                   <Text
-                    style={{color: '#1c1bad', textDecorationLine: 'underline'}}>
+                    style={{ color: '#1c1bad', textDecorationLine: 'underline' }}>
                     Sign Up
                   </Text>
                 </Pressable>
               </View>
-            ) : null}
+            ) : (
+              <RadioGroup
+                options={whoIsLogingIn}
+                onChange={(option) => setSelectedStaff(option)}
+              />
+            )}
           </View>
         </View>
       </View>
@@ -201,7 +318,7 @@ const styles = StyleSheet.create({
     margin: '3%',
     backgroundColor: '#fff',
     shadowColor: '#000000',
-    shadowOffset: {width: -1, height: 1},
+    shadowOffset: { width: -1, height: 1 },
     shadowOpacity: 0.2,
     shadowRadius: 1,
     elevation: 2,

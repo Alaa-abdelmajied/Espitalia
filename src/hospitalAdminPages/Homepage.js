@@ -1,91 +1,82 @@
-import React, {useState} from "react";
-import {View, StyleSheet, Button, Text, Image} from 'react-native';
+import React, { useState } from "react";
+import { View, StyleSheet, Button, Text, Image } from 'react-native';
 
-const Homepage = ({navigation}) => {
-    /*const [items, setItems] = useState([
-        {id: Math.random(), text: 'Milk'},
-        {id: Math.random(), text: 'Eggs'},
-        {id: Math.random(), text: 'Bread'},
-        {id: Math.random(), text: 'Juice'},
-      ]);
-    
-      const deleteItem = (id) => {
-        setItems(prevItems => {
-          return prevItems.filter(item => item.id !=id);
-        });
-      };
-    
-      const addItem = (text) => {
-        if(!text){
-          Alert.alert('Error','Please Enter an Item');
-        }
-        else{
-          setItems(prevItems => {
-            return [{id: Math.random(), text},...prevItems];
-          });
-        }
-      };
-    
-      return (
-        <View style={styles.container}>
-          <Header />
-          <AddItem addItem = {addItem}/>
-          <FlatList
-            data={items}
-            renderItem={({item}) => <ListItem item={item} deleteItem={deleteItem} />}
-          />
-        </View>
-      );*/
+import EncryptedStorage from 'react-native-encrypted-storage';
+import { Server_URL, Token_Secret, Credintials_Secret } from '@env';
+import axios from "axios";
 
-      const hospitalData = {
-        id: 1,
-        name: 'Andalosia',
-        Address: ['Smouha'],
-      };
+export default function Homepage({ navigation, route }) {
+  //token: JSON.parse(await EncryptedStorage.getItem(Token_Secret)).token,
+  const getDoctors = async () => {
+    const token = JSON.parse(await EncryptedStorage.getItem(Token_Secret)).token;
+    console.log(token);
+    console.log(Server_URL);
+    navigation.navigate('Doctors');
+  }
+  const getReceptionists = async () => {
+    const token = JSON.parse(await EncryptedStorage.getItem(Token_Secret)).token;
+    // console.log(token);
+    console.log(Server_URL);
+    navigation.navigate('Reciptionist');
+    // axios
+    //   .get(`${Server_URL}:3000/hospital/viewReceptionists`, {
+    //     headers: {
+    //       'x-auth-token': token
+    //     },
 
-      return(
-        <View style={styles.container}>
-          <View style={styles.logo}>
-            <Image source={{uri:'https://images.assets-landingi.com/ezfQc3bO/logo_01.png'}} style={styles.img} />  
-          </View>
-          <View style={styles.info}>
-            <Text style={styles.label}>Hospital:{'\t'} <Text style={styles.data}>{hospitalData.name}</Text></Text>
-            
-            <Text style={styles.label}>Adress:{'\t\t\t'} <Text style={styles.data}>{hospitalData.Address}</Text></Text>
-          </View>
-          
-          <View style={styles.buttons}>
-            <Button
-              title="Doctors"
-              color={'#1c1bad'}
-              onPress={() => navigation.navigate('Doctors',hospitalData)}
-            />
-            <Button
-              title="Reciptionists"
-              color={'#1c1bad'}
-              onPress={() => navigation.navigate('Reciptionist',hospitalData)}
-            />
-          </View>
-          <Button
-            title="Go to Profile"
-            color={'#1c1bad'}
-            onPress={() => navigation.navigate('Profile', {name:'Omar'})}
-          />
-        </View>
-        
-      );
+    //   })
+    //   .then(async function (response) {
+    //     // console.log(response.data);
+    //     navigation.navigate('Reciptionist', response.data);
+    //   })
+    //   .catch (function (error){
+    //     console.log(error);
+    //   }); 
+
+  }
+  return (
+    <View style={styles.container}>
+      <View style={styles.logo}>
+        <Image source={{ uri: 'https://images.assets-landingi.com/ezfQc3bO/logo_01.png' }} style={styles.img} />
+      </View>
+      <View style={styles.info}>
+        <Text style={styles.label}>Hospital:{'\t'} <Text style={styles.data}>{route.params.name}</Text></Text>
+
+        <Text style={styles.label}>Adress:{'\t\t\t'} <Text style={styles.data}>{route.params.address}</Text></Text>
+      </View>
+
+      <View style={styles.buttons}>
+        <Button
+          title="Doctors"
+          color={'#1c1bad'}
+          onPress={getDoctors}
+        />
+        <Button
+          title="Reciptionists"
+          color={'#1c1bad'}
+          onPress={getReceptionists}
+        />
+      </View>
+      <Button
+        title="Go to Profile"
+        color={'#1c1bad'}
+        onPress={() => navigation.navigate('Profile', { name: 'Omar' })}
+      />
+    </View>
+
+  );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'space-between',
-    
+
   },
   logo: {
     alignContent: 'center',
     alignItems: 'center'
-  },  
+  },
   img: {
     width: 139,
     height: 74,
@@ -103,7 +94,7 @@ const styles = StyleSheet.create({
     color: 'black',
     fontFamily: 'sans-serif',
   },
-  buttons:{
+  buttons: {
     flex: 2,
     margin: 50,
     justifyContent: 'space-evenly'
@@ -111,10 +102,8 @@ const styles = StyleSheet.create({
   button: {
     margin: 10,
   },
-  data:{
+  data: {
     fontWeight: 'bold',
   },
 
 });
-
-export default Homepage;

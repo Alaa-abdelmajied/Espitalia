@@ -13,7 +13,6 @@ import Login from './LoginScreen';
 import SignUp from './RegisterScreen';
 import Questions from './SignUpQuestions';
 import OTP from './VerificationScreen';
-import ChangePassword from './ChangePasswordScreen';
 
 //Patient pages
 import PatientHome from './patientPages/PatientHome';
@@ -49,6 +48,8 @@ import HospitalAdminDoctorsPage from './hospitalAdminPages/Doctorspage';
 import HospitalAdminReceptionistPage from './hospitalAdminPages/ReceptionistPage';
 import HospitalAdminProfilepage from './hospitalAdminPages/Profilepage';
 import HospitalAdminHomePage from './hospitalAdminPages/Homepage';
+import HospitalDoctorProfile from './hospitalAdminPages/DoctorProfile';
+import HospitalReceptionistProfile from './hospitalAdminPages/ReceptionistProfile';
 import MyProfileHospitalPage from './hospitalAdminPages/MyProfileHospitalPage';
 
 const Stack = createNativeStackNavigator();
@@ -133,6 +134,8 @@ function HosptialAdminStackView() {
       <Stack.Screen name="Home" component={HospitalAdminHomePage} />
       <Stack.Screen name="Profile" component={HospitalAdminProfilepage} />
       <Stack.Screen name="Doctors" component={HospitalAdminDoctorsPage} />
+      <Stack.Screen name="DoctorProfile" component={HospitalDoctorProfile} />
+      <Stack.Screen name="ReceptionistProfile" component={HospitalReceptionistProfile} />
       <Stack.Screen
         name="Reciptionist"
         component={HospitalAdminReceptionistPage}
@@ -339,7 +342,6 @@ export default function App() {
         }}>
         <Stack.Screen name="WelcomePage" component={WelcomePage} />
         <Stack.Screen name="Login" component={Login} />
-        <Stack.Screen name="ChangePassword" component={ChangePassword} />
         <Stack.Screen name="OTP" component={OTP} />
         <Stack.Screen name="SignUp" component={SignUp} />
         <Stack.Screen name="SignUpQuestions" component={Questions} />

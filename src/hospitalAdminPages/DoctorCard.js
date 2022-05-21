@@ -4,13 +4,12 @@ import Icon from 'react-native-vector-icons/dist/FontAwesome';
 
 
 
-const DoctorCard = ({item}) => {
+const DoctorCard = ({item, navigation}) => {
   return (
-    <TouchableOpacity style={styles.doctorCard}>
+    <TouchableOpacity style={styles.doctorCard} onPress={() => navigation.navigate('WelcomePage')}>
         <View style={styles.doctorView}>
             <View>
                 <Text style={styles.doctorText}>{item.name}</Text>
-                <Text style={styles.doctorText}>{item.age}</Text>
                 <Text style={styles.doctorText}>{item.specialization}</Text>
             </View>
             <Icon name='angle-double-right' style={styles.icon}/>
@@ -26,16 +25,13 @@ const styles = StyleSheet.create({
   doctorCard: {
     padding: 15,
     backgroundColor: 'white',
-    borderWidth: 1,
-    borderRightWidth: 1,
-    borderRadius: 10,
     borderRadius: 10,
     borderColor: 'gray',
     margin: 5,
-    shadowOffset: {height:5, width:5},
     elevation: 5,
   },
   doctorView: {
+    borderRadius: 10,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',

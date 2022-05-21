@@ -10,7 +10,6 @@ const HospitalsCard = ({card, navigation}) => {
       hospitalID: card.hospitalID,
       hospitalName: card.hospitalName,
       hospitalAddress: card.address,
-      isAllSpecializations: false,
     });
   };
 
