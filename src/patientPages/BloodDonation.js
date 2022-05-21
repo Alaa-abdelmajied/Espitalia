@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, FlatList, Pressable } from 'react-native';
+import { StyleSheet, Text, View, FlatList, Pressable, ActivityIndicator } from 'react-native';
 import axios from 'axios';
 import { Server_URL } from '@env';
 import Item from '../../utils/ItemCard';
@@ -101,7 +101,9 @@ export default function DonateBlood({ navigation }) {
           />
         )}
         ListEmptyComponent={
-          loadData ? null :
+          loadData ? <View>
+            <ActivityIndicator size="large" color="#0451cc" />
+          </View> :
             <Text
               style={{
                 fontSize: 20,

@@ -8,64 +8,73 @@ import {
   ScrollView,
   Modal,
   Pressable,
+  ActivityIndicator
 } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Collapsible from 'react-native-collapsible';
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {Server_URL, Token_Secret, Credintials_Secret} from '@env';
+import { Server_URL, Token_Secret, Credintials_Secret } from '@env';
+import { useIsFocused } from '@react-navigation/native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 
 export default function Profile({navigation}) {
   const [personalData, setPersonalData] = useState('');
   const [oldAppointments, setOldAppointments] = useState([]);
+  const [loadData, setLoadData] = useState(true);
+  const isFocused = useIsFocused();
+
+  const getPersonalData = async () => {
+    try {
+      const token = JSON.parse(
+        await EncryptedStorage.getItem(Token_Secret),
+      ).token;
+      console.log(token);
+      await axios
+        .get(`${Server_URL}:3000/patient/getPatient/${token}`)
+        .then(response => {
+          setPersonalData(response.data);
+          console.log(response.data.name);
+        })
+        .catch(function (error) {
+          console.log(error.message);
+        });
+    } catch (err) {
+      Alert.alert('Error', err.code, [
+        { text: 'Exit', onPress: () => BackHandler.exitApp() },
+      ]);
+    }
+  };
+
+  const getOldAppointments = async () => {
+    try {
+      const token = JSON.parse(
+        await EncryptedStorage.getItem(Token_Secret),
+      ).token;
+      await axios
+        .get(`${Server_URL}:3000/patient/oldAppointment/${token}`)
+        .then(response => setOldAppointments(response.data))
+        .catch(function (error) {
+          console.log(error.message);
+        });
+    } catch (err) {
+      Alert.alert('Error', err.code, [
+        { text: 'Exit', onPress: () => BackHandler.exitApp() },
+      ]);
+    }
+  };
+
+  useEffect(() => {
+    if (isFocused) {
+      setLoadData(true);
+      getPersonalData();
+      getOldAppointments();
+      setLoadData(false);
+    }
+
   const [collapsed, setCollapsed] = useState(true);
 
-  useEffect(() => {
-    const getPersonalData = async () => {
-      try {
-        const token = JSON.parse(
-          await EncryptedStorage.getItem(Token_Secret),
-        ).token;
-        console.log(token);
-        await axios
-          .get(`${Server_URL}:3000/patient/getPatient/${token}`)
-          .then(response => {
-            setPersonalData(response.data);
-            console.log(response.data.name);
-          })
-          .catch(function (error) {
-            console.log(error.message);
-          });
-      } catch (err) {
-        Alert.alert('Error', err.code, [
-          {text: 'Exit', onPress: () => BackHandler.exitApp()},
-        ]);
-      }
-    };
-    getPersonalData();
-  }, []);
-
-  useEffect(() => {
-    const getOldAppointments = async () => {
-      try {
-        const token = JSON.parse(
-          await EncryptedStorage.getItem(Token_Secret),
-        ).token;
-        await axios
-          .get(`${Server_URL}:3000/patient/oldAppointment/${token}`)
-          .then(response => setOldAppointments(response.data))
-          .catch(function (error) {
-            console.log(error.message);
-          });
-      } catch (err) {
-        Alert.alert('Error', err.code, [
-          {text: 'Exit', onPress: () => BackHandler.exitApp()},
-        ]);
-      }
-    };
-    getOldAppointments();
   }, []);
 
   const toggleExpanded = () => {
@@ -122,8 +131,12 @@ export default function Profile({navigation}) {
   // const [showModal, setShowModal] = useState(false);
 
   return (
-    <ScrollView>
-      {/* <Modal visible={showModal} animationType="fade" transparent={true}>
+    loadData ?
+      <View style={styles.loadingIcon}>
+        <ActivityIndicator size="large" color="#0451cc" />
+      </View> :
+      <ScrollView>
+        {/* <Modal visible={showModal} animationType="fade" transparent={true}>
         <View style={styles.logoutModal}>
           <FontAwesome
             name={'close'}
@@ -144,6 +157,7 @@ export default function Profile({navigation}) {
           </Pressable>
         </View>
       </Modal> */}
+
       <View style={styles.header}></View>
       <Image
         style={styles.avatar}
@@ -235,28 +249,8 @@ export default function Profile({navigation}) {
               </Collapsible>
             </View>
           </View>
-          <View style={styles.lineStyle} />
-          <Text style={styles.subtitle}>OLD RESERVATIONS</Text>
-          {oldAppointments.map(item => {
-            return (
-              <TouchableOpacity
-                style={styles.appointmentsCard}
-                key={item.appointmentID}
-                onPress={() => onPressReport(item.appointmentID)}>
-                <Text style={styles.infoText}>
-                  Hospital Name: {item.hospitalName}
-                </Text>
-                <Text style={styles.infoText}>Doctor Name: {item.drName} </Text>
-                <Text style={styles.infoText}>
-                  Specialization: {item.specialization}
-                </Text>
-                <Text style={styles.infoText}>Date: {item.date} </Text>
-              </TouchableOpacity>
-            );
-          })}
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
   );
 }
 
@@ -389,4 +383,9 @@ const styles = StyleSheet.create({
     },
     elevation: 10,
   },
+  loadingIcon: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center'
+  }
 });
