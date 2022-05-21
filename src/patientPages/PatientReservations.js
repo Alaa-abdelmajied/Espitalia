@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   StyleSheet,
   Text,
@@ -10,12 +10,15 @@ import {
   BackHandler,
   ActivityIndicator
 } from 'react-native';
+import FlashMessage from 'react-native-flash-message';
+import {showMessage, hideMessage} from 'react-native-flash-message';
+
 import EncryptedStorage from 'react-native-encrypted-storage';
 import axios from 'axios';
-import { Server_URL, Token_Secret } from '@env';
-import { useIsFocused } from '@react-navigation/native';
+import {Server_URL, Token_Secret} from '@env';
+import {useIsFocused} from '@react-navigation/native';
 
-export default function Reservation({ }) {
+export default function Reservation({}) {
   const [upcomingAppointments, setUpcomingAppointments] = useState([]);
   const [loadData, setLoadData] = useState(true);
   const isFocused = useIsFocused();
@@ -56,7 +59,11 @@ export default function Reservation({ }) {
         .then(function (response) {
           // upcomingAppointments.splice(upcomingAppointments,upcomingAppointments.indexOf(appointmentID));
           // upcomingAppointments.splice();
-          Alert.alert('Appointment cancelled successfully');
+          showMessage({
+            message: 'Appointment cancelled successfully',
+            type: 'success',
+          });
+          // Alert.alert('Appointment cancelled successfully');
           getUpcomingAppointments();
         })
         .catch(function (error) {
@@ -68,7 +75,7 @@ export default function Reservation({ }) {
         });
     } catch (err) {
       Alert.alert('Error', err.code, [
-        { text: 'Exit', onPress: () => BackHandler.exitApp() },
+        {text: 'Exit', onPress: () => BackHandler.exitApp()},
       ]);
     }
   };
@@ -86,12 +93,10 @@ export default function Reservation({ }) {
         data={upcomingAppointments}
         keyExtractor={(item, index) => index.toString()}
         // return item.appointmentID;
-        renderItem={({ item }) => (
+        renderItem={({item}) => (
           <View style={styles.appointmentsCard}>
             <View style={styles.infoView}>
-              <Text style={styles.infoText}>
-                Hospital: {item.hospitalName}
-              </Text>
+              <Text style={styles.infoText}>Hospital: {item.hospitalName}</Text>
               <Text style={styles.infoText}>Doctor: {item.drName} </Text>
               <Text style={styles.infoText}>Date: {item.date} </Text>
               <Text style={styles.infoText}>From: {item.from} </Text>
@@ -122,8 +127,10 @@ export default function Reservation({ }) {
               }}>
               No upcoming reservations :)
             </Text>
+          )
         }
       />
+      <FlashMessage position="top" icon="auto" />
     </View>
   );
 }

@@ -94,9 +94,10 @@ export default function Profile({ navigation }) {
   const toggleExpanded = () => {
     setCollapsed(!collapsed);
   };
-  const onPressReport = id => {
+  const onPressReport = (id, reviewed) => {
     navigation.navigate('Report', {
       appointmentID: id,
+      reviewed: reviewed,
     });
   };
 
@@ -285,6 +286,27 @@ export default function Profile({ navigation }) {
               );
             })}
           </View>
+          <View style={styles.lineStyle} />
+          <Text style={styles.subtitle}>OLD RESERVATIONS</Text>
+          {oldAppointments.map(item => {
+            return (
+              <TouchableOpacity
+                style={styles.appointmentsCard}
+                key={item.appointmentID}
+                onPress={() =>
+                  onPressReport(item.appointmentID, item.reviewed)
+                }>
+                <Text style={styles.infoText}>
+                  Hospital Name: {item.hospitalName}
+                </Text>
+                <Text style={styles.infoText}>Doctor Name: {item.drName} </Text>
+                <Text style={styles.infoText}>
+                  Specialization: {item.specialization}
+                </Text>
+                <Text style={styles.infoText}>Date: {item.date} </Text>
+              </TouchableOpacity>
+            );
+          })}
         </View>
       </ScrollView>
   );

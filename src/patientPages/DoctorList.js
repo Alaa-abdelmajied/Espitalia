@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { View, FlatList, Pressable, Text, ActivityIndicator } from 'react-native';
 import DoctorsCard from '../../utils/DoctorsCard';
-import { SearchBar } from 'react-native-elements';
+import {SearchBar} from 'react-native-elements';
 import axios from 'axios';
-import { Server_URL } from '@env';
-import { useIsFocused } from '@react-navigation/native';
+import {Server_URL} from '@env';
+import {useIsFocused} from '@react-navigation/native';
 
-export default function Doctors({ navigation, route }) {
+export default function Doctors({navigation, route}) {
   const {
     hospitalID,
     specialization,
@@ -15,7 +15,7 @@ export default function Doctors({ navigation, route }) {
     isAllDoctors,
     speciality,
     fromHomepage,
-    // fromSearch,
+    fromSearch,
   } = route.params;
 
   const [doctors, setDoctors] = useState([]);
@@ -29,7 +29,9 @@ export default function Doctors({ navigation, route }) {
       if (fromHomepage || fromSearch) {
         const getSpecDoctors = async () => {
           await axios
-            .get(`${Server_URL}:3000/patient/searchSpecialization/${speciality}`)
+            .get(
+              `${Server_URL}:3000/patient/searchSpecialization/${speciality}`,
+            )
             .then(response => {
               setDoctors(response.data);
               console.log(response.data);
@@ -39,7 +41,6 @@ export default function Doctors({ navigation, route }) {
               console.log(error.message);
               setLoadData(false);
             });
-
         };
         getSpecDoctors();
       } else if (isAllDoctors) {
@@ -72,7 +73,6 @@ export default function Doctors({ navigation, route }) {
               console.log(error.message);
               setLoadData(false);
             });
-
         };
         getDoctors();
       }
@@ -86,21 +86,21 @@ export default function Doctors({ navigation, route }) {
   };
 
   return (
-    <View style={{ flex: 1, justifyContent: 'center', flexDirection: 'column' }}>
+    <View style={{flex: 1, justifyContent: 'center', flexDirection: 'column'}}>
       <SearchBar
         lightTheme={true}
         placeholder="search"
         onChangeText={updateSearch}
         value={search}
-        containerStyle={{ backgroundColor: '#f0f0f0' }}
-        inputContainerStyle={{ borderRadius: 50, backgroundColor: '#fff' }}
+        containerStyle={{backgroundColor: '#f0f0f0'}}
+        inputContainerStyle={{borderRadius: 50, backgroundColor: '#fff'}}
       />
       <FlatList
         data={doctors}
         keyExtractor={item => {
           return item._id;
         }}
-        renderItem={({ item }) => {
+        renderItem={({item}) => {
           return (
             <DoctorsCard
               card={item}
@@ -109,15 +109,15 @@ export default function Doctors({ navigation, route }) {
                 fromHomepage || fromSearch
                   ? item.hospitalName
                   : isAllDoctors
-                    ? item.doctorHospitalName
-                    : hospitalName
+                  ? item.doctorHospitalName
+                  : hospitalName
               }
               hospitalAddress={
                 fromHomepage || fromSearch
                   ? item.hospitalAddress
                   : isAllDoctors
-                    ? item.doctorHospitalAddress
-                    : hospitalAddress
+                  ? item.doctorHospitalAddress
+                  : hospitalAddress
               }
             />
           );
@@ -135,6 +135,7 @@ export default function Doctors({ navigation, route }) {
               }}>
               No doctors found :(
             </Text>
+          )
         }
       />
     </View>

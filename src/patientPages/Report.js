@@ -11,16 +11,18 @@ import {
   TouchableOpacity,
   ActivityIndicator
 } from 'react-native';
-import { Rating } from 'react-native-ratings';
+
+import FlashMessage from 'react-native-flash-message';
+import {showMessage, hideMessage} from 'react-native-flash-message';
+import {Rating} from 'react-native-ratings';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { Server_URL, Token_Secret } from '@env';
 import { useIsFocused } from '@react-navigation/native';
 
-export default function Report({ route }) {
-  const { appointmentID } = route.params;
-
+export default function Report({route}) {
+  const {appointmentID, reviewed} = route.params;
   const [report, setReport] = useState({});
   const [loadData, setLoadData] = useState(true);
   const isFocused = useIsFocused();
@@ -60,6 +62,10 @@ export default function Report({ route }) {
         appointmentID: appointmentID,
       })
       .then(response => {
+        showMessage({
+          message: 'Review done',
+          type: 'success',
+        });
         console.log(response.data);
       })
       .catch(function (error) {
@@ -73,6 +79,17 @@ export default function Report({ route }) {
     saveReview();
     setShowModal(false);
     console.log(rate);
+  };
+
+  const onPressRateAndReview = () => {
+    if (reviewed) {
+      showMessage({
+        message: 'This appointment has already been reviewed',
+        type: 'warning',
+      });
+    } else {
+      setShowModal(true);
+    }
   };
 
   return (
@@ -91,6 +108,16 @@ export default function Report({ route }) {
               style={{ alignSelf: 'flex-start', margin: 5 }}></FontAwesome>
             <View
               style={{
+                margin: 5,
+                backgroundColor: 'transparent',
+                fontSize: 15,
+              }}></Rating>
+          </View>
+          <View style={styles.modalInput}>
+            <TextInput
+              placeholder="Write Review"
+              multiline={true}
+              onChangeText={review => setReview(review)}></TextInput>
                 flexDirection: 'row',
                 alignSelf: 'center',
               }}>
@@ -158,7 +185,44 @@ export default function Report({ route }) {
             <Text style={styles.infoText}>{report.prescription}</Text>
           </ScrollView>
         </View>
-      </ScrollView>
+      </Modal>
+      <View style={styles.header}>
+        <Image
+          style={styles.Image}
+          source={require('../../images/app_logo-removebg-preview.png')}></Image>
+      </View>
+      <View style={{alignItems: 'center'}}>
+        <Text style={styles.infoText}>
+          Hospital Name: {report.hospitalName}
+        </Text>
+        <Text style={styles.infoText}>Doctor Name: {report.drName} </Text>
+        <Text style={styles.infoText}>
+          Specialization: {report.specialization}
+        </Text>
+        <Text style={styles.infoText}>Date: {report.date} </Text>
+        <Pressable
+          // visible={showReviewButton}
+          style={styles.modalButton}
+          onPress={onPressRateAndReview}>
+          <Text style={styles.modalText}>Rate and Review</Text>
+        </Pressable>
+      </View>
+      <View style={styles.lineStyle} />
+      <Text style={styles.title}>Diagnosis</Text>
+      <View style={styles.reportCard}>
+        <ScrollView>
+          <Text style={styles.infoText}>{report.diagnosis}</Text>
+        </ScrollView>
+      </View>
+      <Text style={styles.title}>Prescription</Text>
+      <View style={styles.reportCard}>
+        <ScrollView>
+          <Text style={styles.infoText}>{report.prescription}</Text>
+        </ScrollView>
+      </View>
+      <FlashMessage position="top" icon="auto" />
+    </ScrollView>
+
   );
 }
 
