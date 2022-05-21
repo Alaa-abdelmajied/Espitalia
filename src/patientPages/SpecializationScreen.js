@@ -110,7 +110,7 @@ export default function Speciality({ navigation, route }) {
     navigation.navigate('DoctorsScreen', {
       speciality: item,
       isAllDoctors: false,
-      fromHomepage: false,
+      fromHomepage: true,
     });
     console.log(item);
   };

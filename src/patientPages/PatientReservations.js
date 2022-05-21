@@ -10,6 +10,7 @@ import {
   BackHandler,
   ActivityIndicator,
 } from 'react-native';
+
 import FlashMessage from 'react-native-flash-message';
 import {showMessage, hideMessage} from 'react-native-flash-message';
 
@@ -57,10 +58,12 @@ export default function Reservation({}) {
       axios
         .delete(`${Server_URL}:3000/patient/cancel/${appointmentID}`)
         .then(function (response) {
+          console.log(appointmentID);
           showMessage({
             message: 'Appointment cancelled successfully',
             type: 'success',
-          }); // Alert.alert('Appointment cancelled successfully');
+          });
+          // Alert.alert('Appointment cancelled successfully');
           getUpcomingAppointments();
         })
         .catch(function (error) {
