@@ -10,6 +10,7 @@ import {
   Pressable,
   BackHandler,
   Alert,
+  ActivityIndicator
 } from 'react-native';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -34,10 +35,12 @@ export default function ProfileScreen({ route }) {
   const [data, setData] = useState([]);
   const [comments, setComments] = useState([]);
   const [schedule, setSchedule] = useState([]);
+  const [loadData, setLoadData] = useState(true);
   const isFocused = useIsFocused();
 
   useEffect(() => {
     if (isFocused) {
+      setLoadData(true);
       const getDoctorDetails = async () => {
         await axios
           .get(`${Server_URL}:3000/patient/doctor/${drID}`)
@@ -45,12 +48,13 @@ export default function ProfileScreen({ route }) {
             setData(response.data.doctorData);
             setComments(response.data.reviewDetails);
             setSchedule(response.data.scheduleDetails);
+            setLoadData(false);
           })
           .catch(function (error) {
             console.log(error.message);
+            setLoadData(false);
           });
       };
-      console.log("done");
       getDoctorDetails();
     } else {
       setData([]);
@@ -97,7 +101,10 @@ export default function ProfileScreen({ route }) {
   windowHeight = windowHeight - 300;
 
   return (
-    // (data.length == 0) ? null :
+    loadData ?
+      <View style={styles.loadingIcon}>
+        <ActivityIndicator size="large" color="#0451cc" />
+      </View> :
       <ScrollView>
         <View style={styles.container}>
           <View style={styles.headerContainer}>
@@ -452,4 +459,9 @@ const styles = StyleSheet.create({
   reviewsArea: {
     width: '100%',
   },
+  loadingIcon: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center'
+  }
 });

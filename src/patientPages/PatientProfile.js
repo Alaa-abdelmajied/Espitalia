@@ -8,61 +8,68 @@ import {
   ScrollView,
   Modal,
   Pressable,
+  ActivityIndicator
 } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { Server_URL, Token_Secret, Credintials_Secret } from '@env';
+import { useIsFocused } from '@react-navigation/native';
 
 export default function Profile({ navigation }) {
   const [personalData, setPersonalData] = useState('');
   const [oldAppointments, setOldAppointments] = useState([]);
+  const [loadData, setLoadData] = useState(true);
+  const isFocused = useIsFocused();
+
+  const getPersonalData = async () => {
+    try {
+      const token = JSON.parse(
+        await EncryptedStorage.getItem(Token_Secret),
+      ).token;
+      console.log(token);
+      await axios
+        .get(`${Server_URL}:3000/patient/getPatient/${token}`)
+        .then(response => {
+          setPersonalData(response.data);
+          console.log(response.data.name);
+        })
+        .catch(function (error) {
+          console.log(error.message);
+        });
+    } catch (err) {
+      Alert.alert('Error', err.code, [
+        { text: 'Exit', onPress: () => BackHandler.exitApp() },
+      ]);
+    }
+  };
+
+  const getOldAppointments = async () => {
+    try {
+      const token = JSON.parse(
+        await EncryptedStorage.getItem(Token_Secret),
+      ).token;
+      await axios
+        .get(`${Server_URL}:3000/patient/oldAppointment/${token}`)
+        .then(response => setOldAppointments(response.data))
+        .catch(function (error) {
+          console.log(error.message);
+        });
+    } catch (err) {
+      Alert.alert('Error', err.code, [
+        { text: 'Exit', onPress: () => BackHandler.exitApp() },
+      ]);
+    }
+  };
 
   useEffect(() => {
-    const getPersonalData = async () => {
-      try {
-        const token = JSON.parse(
-          await EncryptedStorage.getItem(Token_Secret),
-        ).token;
-        console.log(token);
-        await axios
-          .get(`${Server_URL}:3000/patient/getPatient/${token}`)
-          .then(response => {
-            setPersonalData(response.data);
-            console.log(response.data.name);
-          })
-          .catch(function (error) {
-            console.log(error.message);
-          });
-      } catch (err) {
-        Alert.alert('Error', err.code, [
-          { text: 'Exit', onPress: () => BackHandler.exitApp() },
-        ]);
-      }
-    };
-    getPersonalData();
-  }, []);
-
-  useEffect(() => {
-    const getOldAppointments = async () => {
-      try {
-        const token = JSON.parse(
-          await EncryptedStorage.getItem(Token_Secret),
-        ).token;
-        await axios
-          .get(`${Server_URL}:3000/patient/oldAppointment/${token}`)
-          .then(response => setOldAppointments(response.data))
-          .catch(function (error) {
-            console.log(error.message);
-          });
-      } catch (err) {
-        Alert.alert('Error', err.code, [
-          { text: 'Exit', onPress: () => BackHandler.exitApp() },
-        ]);
-      }
-    };
-    getOldAppointments();
+    if (isFocused) {
+      setLoadData(true);
+      getPersonalData();
+      getOldAppointments();
+      setLoadData(false);
+    }
   }, []);
 
   const onPressReport = id => {
@@ -118,8 +125,12 @@ export default function Profile({ navigation }) {
   // const [showModal, setShowModal] = useState(false);
 
   return (
-    <ScrollView>
-      {/* <Modal visible={showModal} animationType="fade" transparent={true}>
+    loadData ?
+      <View style={styles.loadingIcon}>
+        <ActivityIndicator size="large" color="#0451cc" />
+      </View> :
+      <ScrollView>
+        {/* <Modal visible={showModal} animationType="fade" transparent={true}>
         <View style={styles.logoutModal}>
           <FontAwesome
             name={'close'}
@@ -140,101 +151,101 @@ export default function Profile({ navigation }) {
           </Pressable>
         </View>
       </Modal> */}
-      <View style={styles.header}></View>
-      <Image
-        style={styles.avatar}
-        source={{ uri: 'https://bootdey.com/img/Content/avatar/avatar6.png' }}
-      />
-      <View
+        <View style={styles.header}></View>
+        <Image
+          style={styles.avatar}
+          source={{ uri: 'https://bootdey.com/img/Content/avatar/avatar6.png' }}
+        />
+        <View
 
-        style={{position: 'absolute', alignSelf: 'flex-end', marginTop: 15}}>
-        <TouchableOpacity style={{margin: 5}} onPress={onPressLogout}>
-          <Pressable onPress={onPressLogout}>
-            <Text style={{fontSize: 15, color: '#fff'}}>Logout</Text>
-          </Pressable>
+          style={{ position: 'absolute', alignSelf: 'flex-end', marginTop: 15 }}>
+          <TouchableOpacity style={{ margin: 5 }} onPress={onPressLogout}>
+            <Pressable onPress={onPressLogout}>
+              <Text style={{ fontSize: 15, color: '#fff' }}>Logout</Text>
+            </Pressable>
 
-        </TouchableOpacity>
-      </View>
-      <View style={styles.body}>
-        <View style={styles.bodyContent}>
-          <Text style={styles.name}>{personalData.name}</Text>
-          <View style={{flexDirection:'row',margin:5}}>
-            <Text style={styles.subtitle}>BASIC DATA</Text>
-            <TouchableOpacity
-              style={{flexDirection: 'row' ,justifyContent:'center',alignItems:'center'}}
-              onPress={onPressEdit}>
-              <FontAwesome name="edit" size={20} color="#1c1bad"></FontAwesome>
-              <Text
-                style={{
-                  fontSize: 15,
-                  color: '#1c1bad',
-                  marginHorizontal: 5,
-                }}>
-                Edit
-              </Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.description}>
-            <View
-              style={{flexDirection: 'row', alignItems: 'center', margin: 2}}>
-              <Ionicons name={'mail'} size={20} color={'#000'}></Ionicons>
-              <Text style={styles.mainText}>{personalData.email}</Text>
-            </View>
-            <View
-              style={{flexDirection: 'row', alignItems: 'center', margin: 2}}>
-              <FontAwesome
-                name={'phone'}
-                size={20}
-                color={'#000'}></FontAwesome>
-              <Text style={styles.mainText}>{personalData.phoneNumber}</Text>
-            </View>
-            <View
-              style={{flexDirection: 'row', alignItems: 'center', margin: 2}}>
-              <FontAwesome
-                name={'calendar'}
-                size={20}
-                color={'#000'}></FontAwesome>
-              <Text style={styles.mainText}>27-6-2022</Text>
-            </View>
-            <View
-              style={{flexDirection: 'row', alignItems: 'center', margin: 2}}>
-              <Ionicons
-                name={'information-circle-outline'}
-                size={20}
-                color={'#000'}></Ionicons>
-              <Pressable>
-                <Text style={{marginLeft: 10, color: '#000'}}>
-                  More info...
+          </TouchableOpacity>
+        </View>
+        <View style={styles.body}>
+          <View style={styles.bodyContent}>
+            <Text style={styles.name}>{personalData.name}</Text>
+            <View style={{ flexDirection: 'row', margin: 5 }}>
+              <Text style={styles.subtitle}>BASIC DATA</Text>
+              <TouchableOpacity
+                style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}
+                onPress={onPressEdit}>
+                <FontAwesome name="edit" size={20} color="#1c1bad"></FontAwesome>
+                <Text
+                  style={{
+                    fontSize: 15,
+                    color: '#1c1bad',
+                    marginHorizontal: 5,
+                  }}>
+                  Edit
                 </Text>
-              </Pressable>
+              </TouchableOpacity>
             </View>
-            {/* <Text style={styles.mainText}>Blood Type: A+</Text>
+            <View style={styles.description}>
+              <View
+                style={{ flexDirection: 'row', alignItems: 'center', margin: 2 }}>
+                <Ionicons name={'mail'} size={20} color={'#000'}></Ionicons>
+                <Text style={styles.mainText}>{personalData.email}</Text>
+              </View>
+              <View
+                style={{ flexDirection: 'row', alignItems: 'center', margin: 2 }}>
+                <FontAwesome
+                  name={'phone'}
+                  size={20}
+                  color={'#000'}></FontAwesome>
+                <Text style={styles.mainText}>{personalData.phoneNumber}</Text>
+              </View>
+              <View
+                style={{ flexDirection: 'row', alignItems: 'center', margin: 2 }}>
+                <FontAwesome
+                  name={'calendar'}
+                  size={20}
+                  color={'#000'}></FontAwesome>
+                <Text style={styles.mainText}>27-6-2022</Text>
+              </View>
+              <View
+                style={{ flexDirection: 'row', alignItems: 'center', margin: 2 }}>
+                <Ionicons
+                  name={'information-circle-outline'}
+                  size={20}
+                  color={'#000'}></Ionicons>
+                <Pressable>
+                  <Text style={{ marginLeft: 10, color: '#000' }}>
+                    More info...
+                  </Text>
+                </Pressable>
+              </View>
+              {/* <Text style={styles.mainText}>Blood Type: A+</Text>
             <Text style={styles.mainText}>Diabetic: No</Text>
             <Text style={styles.mainText}>Diabetic: No</Text>
             <Text style={styles.mainText}>Blood Pressure Problems: No</Text> */}
+            </View>
+            <View style={styles.lineStyle} />
+            <Text style={styles.subtitle}>OLD RESERVATIONS</Text>
+            {oldAppointments.map(item => {
+              return (
+                <TouchableOpacity
+                  style={styles.appointmentsCard}
+                  key={item.appointmentID}
+                  onPress={() => onPressReport(item.appointmentID)}>
+                  <Text style={styles.infoText}>
+                    Hospital Name: {item.hospitalName}
+                  </Text>
+                  <Text style={styles.infoText}>Doctor Name: {item.drName} </Text>
+                  <Text style={styles.infoText}>
+                    Specialization: {item.specialization}
+                  </Text>
+                  <Text style={styles.infoText}>Date: {item.date} </Text>
+                </TouchableOpacity>
+              );
+            })}
           </View>
-          <View style={styles.lineStyle} />
-          <Text style={styles.subtitle}>OLD RESERVATIONS</Text>
-          {oldAppointments.map(item => {
-            return (
-              <TouchableOpacity
-                style={styles.appointmentsCard}
-                key={item.appointmentID}
-                onPress={() => onPressReport(item.appointmentID)}>
-                <Text style={styles.infoText}>
-                  Hospital Name: {item.hospitalName}
-                </Text>
-                <Text style={styles.infoText}>Doctor Name: {item.drName} </Text>
-                <Text style={styles.infoText}>
-                  Specialization: {item.specialization}
-                </Text>
-                <Text style={styles.infoText}>Date: {item.date} </Text>
-              </TouchableOpacity>
-            );
-          })}
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
   );
 }
 
@@ -367,4 +378,9 @@ const styles = StyleSheet.create({
     },
     elevation: 10,
   },
+  loadingIcon: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center'
+  }
 });

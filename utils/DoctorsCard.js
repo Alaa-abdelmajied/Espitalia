@@ -20,7 +20,6 @@ const DoctorsCard = ({ card, navigation, hospitalName, hospitalAddress }) => {
   };
 
   return (
-    console.log(card.rating),
     <TouchableOpacity
       style={styles.card}
       onPress={() =>

@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -6,15 +6,20 @@ import {
   FlatList,
   TouchableOpacity,
   Alert,
+  ActivityIndicator
 } from 'react-native';
-import {SearchBar} from 'react-native-elements';
+import { SearchBar } from 'react-native-elements';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import axios from 'axios';
-import {Server_URL} from '@env';
+import { Server_URL } from '@env';
+import { useIsFocused } from '@react-navigation/native';
 
-export default function Speciality({navigation, route}) {
+
+export default function Speciality({ navigation, route }) {
   const [specialization, setSpecialization] = useState([]);
   const [allSpecializations, setAllSpecializations] = useState([]);
+  const [loadData, setLoadData] = useState(true);
+  const isFocused = useIsFocused();
   const {
     hospitalID,
     hospitalName,
@@ -25,36 +30,41 @@ export default function Speciality({navigation, route}) {
 
   if (!isAllSpecializations) {
     useEffect(() => {
-      const getSpecializations = async () => {
-        await axios
-          .get(`${Server_URL}:3000/patient/pressOnHospital/${hospitalID}`)
-          .then(response => {
-            setSpecialization(response.data);
-          })
-          .catch(function (error) {
-            const err = error.response.data;
-            if (err == 'No specialzations found') {
-              //alert worng email or password
-              // Alert.alert(err);
+      setLoadData(true);
+      if (isFocused) {
+        const getSpecializations = async () => {
+          await axios
+            .get(`${Server_URL}:3000/patient/pressOnHospital/${hospitalID}`)
+            .then(response => {
+              setSpecialization(response.data);
+              setLoadData(false);
+            })
+            .catch(function (error) {
               console.log(error.message);
-            }
-          });
-      };
-      getSpecializations();
+              setLoadData(false);
+            });
+        };
+        getSpecializations();
+      }
     }, []);
   } else {
     useEffect(() => {
-      const getAllSpecializations = async () => {
-        await axios
-          .get(`${Server_URL}:3000/patient/allSpecializations`)
-          .then(response => {
-            setAllSpecializations(response.data);
-          })
-          .catch(function (error) {
-            console.log(error.message);
-          });
-      };
-      getAllSpecializations();
+      setLoadData(true);
+      if (isFocused) {
+        const getAllSpecializations = async () => {
+          await axios
+            .get(`${Server_URL}:3000/patient/allSpecializations`)
+            .then(response => {
+              setAllSpecializations(response.data);
+              setLoadData(false);
+            })
+            .catch(function (error) {
+              console.log(error.message);
+              setLoadData(false);
+            });
+        };
+        getAllSpecializations();
+      }
     }, []);
   }
 
@@ -110,10 +120,10 @@ export default function Speciality({navigation, route}) {
       <SearchBar
         lightTheme={true}
         placeholder="search for specialization"
-        containerStyle={{backgroundColor: '#f0f0f0'}}
+        containerStyle={{ backgroundColor: '#f0f0f0' }}
         onChangeText={value => updateSearch(value)}
         value={search}
-        inputContainerStyle={{borderRadius: 50, backgroundColor: '#fff'}}
+        inputContainerStyle={{ borderRadius: 50, backgroundColor: '#fff' }}
       />
       <FlatList
         keyExtractor={(item, index) => index.toString()}
@@ -124,7 +134,7 @@ export default function Speciality({navigation, route}) {
               : allSpecializations
             : specializationSearch
         }
-        renderItem={({item}) => {
+        renderItem={({ item }) => {
           return (
             <TouchableOpacity
               style={styles.specializationCard}
@@ -134,19 +144,19 @@ export default function Speciality({navigation, route}) {
                   ? () => onPressSpecInHosp(item)
                   : () => onPressSpec(item.name)
               }>
-              <View style={{justifyContent: 'center', alignItems: 'center'}}>
+              <View style={{ justifyContent: 'center', alignItems: 'center' }}>
                 <FontAwesome
                   name={'stethoscope'}
                   size={40}
                   color="#1c1bad"
-                  style={{margin: 10}}></FontAwesome>
+                  style={{ margin: 10 }}></FontAwesome>
               </View>
               {!isAllSpecializations ? (
-                <View style={{flex: 2, justifyContent: 'center'}}>
+                <View style={{ flex: 2, justifyContent: 'center' }}>
                   <Text style={styles.speciality}>{item}</Text>
                 </View>
               ) : (
-                <View style={{flex: 2, justifyContent: 'center'}}>
+                <View style={{ flex: 2, justifyContent: 'center' }}>
                   <Text style={styles.speciality}>{item.name}</Text>
                 </View>
               )}
@@ -154,15 +164,18 @@ export default function Speciality({navigation, route}) {
           );
         }}
         ListEmptyComponent={
-          <Text
-            style={{
-              fontSize: 20,
-              alignSelf: 'center',
-              color: '#000',
-              margin: '10%',
-            }}>
-            No specializations found :(
-          </Text>
+          loadData ? <View>
+            <ActivityIndicator size="large" color="#0451cc" />
+          </View> :
+            <Text
+              style={{
+                fontSize: 20,
+                alignSelf: 'center',
+                color: '#000',
+                margin: '10%',
+              }}>
+              No specializations found :(
+            </Text>
         }
       />
     </View>
