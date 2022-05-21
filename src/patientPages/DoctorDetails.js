@@ -1,4 +1,4 @@
-import React, {useRef, useState, useEffect} from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -14,12 +14,13 @@ import {
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import {Rating} from 'react-native-ratings';
+import { Rating } from 'react-native-ratings';
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {Server_URL, Token_Secret} from '@env';
+import { Server_URL, Token_Secret } from '@env';
+import { useIsFocused } from '@react-navigation/native';
 
-export default function ProfileScreen({route}) {
+export default function ProfileScreen({ route }) {
   const {
     drID,
     drName,
@@ -32,27 +33,32 @@ export default function ProfileScreen({route}) {
   } = route.params;
 
   const [data, setData] = useState([]);
-
   const [comments, setComments] = useState([]);
   const [schedule, setSchedule] = useState([]);
+  const isFocused = useIsFocused();
 
   useEffect(() => {
-    const getDoctorDetails = async () => {
-      await axios
-        .get(`${Server_URL}:3000/patient/doctor/${drID}`)
-        .then(response => {
-          setComments(response.data.reviewDetails);
-          setSchedule(response.data.scheduleDetails);
-          if (fromSearch) {
+    if (isFocused) {
+      const getDoctorDetails = async () => {
+        await axios
+          .get(`${Server_URL}:3000/patient/doctor/${drID}`)
+          .then(response => {
             setData(response.data.doctorData);
-          }
-        })
-        .catch(function (error) {
-          console.log(error.message);
-        });
-    };
-    getDoctorDetails();
-  }, []);
+            setComments(response.data.reviewDetails);
+            setSchedule(response.data.scheduleDetails);
+          })
+          .catch(function (error) {
+            console.log(error.message);
+          });
+      };
+      console.log("done");
+      getDoctorDetails();
+    } else {
+      setData([]);
+      setComments([]);
+      setSchedule([]);
+    }
+  }, [isFocused]);
 
   const bookAppointment = async (date, from, to) => {
     console.log('pressed');
@@ -82,196 +88,198 @@ export default function ProfileScreen({route}) {
         });
     } catch (err) {
       Alert.alert('Error', err.code, [
-        {text: 'Exit', onPress: () => BackHandler.exitApp()},
+        { text: 'Exit', onPress: () => BackHandler.exitApp() },
       ]);
     }
   };
 
   const scrollX = useRef(new Animated.Value(0)).current;
-  let {width: windowWidth, height: windowHeight} = useWindowDimensions();
+  let { width: windowWidth, height: windowHeight } = useWindowDimensions();
   windowHeight = windowHeight - 300;
 
   return (
-    <ScrollView>
-      <View style={styles.container}>
-        <View style={styles.headerContainer}>
-          <View style={styles.header}></View>
-          <Image
-            style={styles.avatar}
-            source={{uri: 'https://bootdey.com/img/Content/avatar/avatar6.png'}}
-          />
-          {/* <View style={styles.body}> */}
-          {/* <View style={styles.bodyContent}> */}
-          {!fromSearch ? (
-            <View style={styles.body}>
-              <Text style={styles.dr_name}>{drName}</Text>
-              <Text style={styles.description}>{specialization}</Text>
-              <View style={{flexDirection: 'row'}}>
-                <FontAwesome
-                  name={'hospital-o'}
-                  size={25}
-                  color="#1c1bad"
-                  style={{margin: 5}}></FontAwesome>
-                <Text style={styles.description}>{hospitalName}</Text>
+    // (data.length == 0) ? null :
+      <ScrollView>
+        <View style={styles.container}>
+          <View style={styles.headerContainer}>
+            <View style={styles.header}></View>
+            <Image
+              style={styles.avatar}
+              source={{ uri: 'https://bootdey.com/img/Content/avatar/avatar6.png' }}
+            />
+            {/* <View style={styles.body}> */}
+            {/* <View style={styles.bodyContent}> */}
+            {!fromSearch ? (
+              <View style={styles.body}>
+                <Text style={styles.dr_name}>{drName}</Text>
+                <Text style={styles.description}>{specialization}</Text>
+                <View style={{ flexDirection: 'row' }}>
+                  <FontAwesome
+                    name={'hospital-o'}
+                    size={25}
+                    color="#1c1bad"
+                    style={{ margin: 5 }}></FontAwesome>
+                  <Text style={styles.description}>{hospitalName}</Text>
+                </View>
+                <View style={{ flexDirection: 'row' }}>
+                  <Ionicons
+                    name={'location-sharp'}
+                    size={25}
+                    color="#1c1bad"
+                    style={{ margin: 5 }}></Ionicons>
+                  <Text style={styles.description}>{hospitalAddress}</Text>
+                </View>
+                <View style={styles.customRatingBar}>
+                  <Rating
+                    type="custom"
+                    ratingBackgroundColor="#bfbfbf"
+                    tintColor="#f0f0f0"
+                    ratingCount={5}
+                    imageSize={30}
+                    startingValue={averageRating}
+                    fractions={1}
+                    readonly={true}></Rating>
+                  <Text style={styles.text}>{averageRating}/5</Text>
+                </View>
               </View>
-              <View style={{flexDirection: 'row'}}>
-                <Ionicons
-                  name={'location-sharp'}
-                  size={25}
-                  color="#1c1bad"
-                  style={{margin: 5}}></Ionicons>
-                <Text style={styles.description}>{hospitalAddress}</Text>
+            ) : (
+              <View style={styles.body}>
+                <Text style={styles.dr_name}>{data.drName}</Text>
+                <Text style={styles.description}>{data.specialization}</Text>
+                <View style={{ flexDirection: 'row' }}>
+                  <FontAwesome
+                    name={'hospital-o'}
+                    size={25}
+                    color="#1c1bad"
+                    style={{ margin: 5 }}></FontAwesome>
+                  <Text style={styles.description}>{data.hospitalName}</Text>
+                </View>
+                <View style={{ flexDirection: 'row' }}>
+                  <Ionicons
+                    name={'location-sharp'}
+                    size={25}
+                    color="#1c1bad"
+                    style={{ margin: 5 }}></Ionicons>
+                  <Text style={styles.description}>{data.hospitalAddress}</Text>
+                </View>
+                <View style={styles.customRatingBar}>
+                  <Rating
+                    type="custom"
+                    ratingBackgroundColor="#bfbfbf"
+                    tintColor="#f0f0f0"
+                    ratingCount={5}
+                    imageSize={30}
+                    startingValue={data.averageRating}
+                    fractions={1}
+                    readonly={true}></Rating>
+                  <Text style={styles.text}>{data.averageRating}/5</Text>
+                </View>
               </View>
-              <View style={styles.customRatingBar}>
-                <Rating
-                  type="custom"
-                  ratingBackgroundColor="#bfbfbf"
-                  tintColor="#f0f0f0"
-                  ratingCount={5}
-                  imageSize={30}
-                  startingValue={averageRating}
-                  fractions={1}
-                  readonly={true}></Rating>
-                <Text style={styles.text}>{averageRating}/5</Text>
-              </View>
-            </View>
-          ) : (
-            <View style={styles.body}>
-              <Text style={styles.dr_name}>{data.drName}</Text>
-              <Text style={styles.description}>{data.specialization}</Text>
-              <View style={{flexDirection: 'row'}}>
-                <FontAwesome
-                  name={'hospital-o'}
-                  size={25}
-                  color="#1c1bad"
-                  style={{margin: 5}}></FontAwesome>
-                <Text style={styles.description}>{data.hospitalName}</Text>
-              </View>
-              <View style={{flexDirection: 'row'}}>
-                <Ionicons
-                  name={'location-sharp'}
-                  size={25}
-                  color="#1c1bad"
-                  style={{margin: 5}}></Ionicons>
-                <Text style={styles.description}>{data.hospitalAddress}</Text>
-              </View>
-              <View style={styles.customRatingBar}>
-                <Rating
-                  type="custom"
-                  ratingBackgroundColor="#bfbfbf"
-                  tintColor="#f0f0f0"
-                  ratingCount={5}
-                  imageSize={30}
-                  startingValue={data.averageRating}
-                  fractions={1}
-                  readonly={true}></Rating>
-                <Text style={styles.text}>{data.averageRating}/5</Text>
-              </View>
-            </View>
-          )}
-
-          {/* </View> */}
-        </View>
-        <View style={styles.appointmentsContainer}>
-          <ScrollView
-            horizontal={true}
-            style={styles.scrollViewStyle}
-            pagingEnabled
-            showsHorizontalScrollIndicator={false}
-            onScroll={Animated.event(
-              [{nativeEvent: {contentOffset: {x: scrollX}}}],
-              {useNativeDriver: false},
             )}
-            scrollEventThrottle={16}>
-            {schedule.map((card, cardIndex) => {
-              return (
-                <Animated.View style={{width: windowWidth}} key={cardIndex}>
-                  <View style={styles.scheduleCard}>
-                    <View style={styles.dateHeader}>
-                      <Text style={{color: '#fff', fontSize: 20}}>
-                        {card.displayDate}
-                      </Text>
-                    </View>
-                    <View style={{margin: 30, alignItems: 'center'}}>
-                      <Text style={{color: '#000', fontSize: 20}}>
-                        From: {card.from}
-                      </Text>
-                      <Text style={{color: '#000', fontSize: 20}}>
-                        To: {card.to}
-                      </Text>
-                    </View>
-                    <Pressable
-                      style={styles.bookButton}
-                      onPress={() =>
-                        bookAppointment(card.date, card.from, card.to)
-                      }>
-                      <Text style={{color: '#fff'}}>Book</Text>
-                    </Pressable>
-                  </View>
-                </Animated.View>
-              );
-            })}
-          </ScrollView>
-          <View style={styles.indicatorContainer}>
-            {schedule.map((card, cardIndex) => {
-              const width = scrollX.interpolate({
-                inputRange: [
-                  windowWidth * (cardIndex - 1),
-                  windowWidth * cardIndex,
-                  windowWidth * (cardIndex + 1),
-                ],
-                outputRange: [8, 16, 8],
-                extrapolate: 'clamp',
-              });
 
+
+            {/* </View> */}
+          </View>
+          <View style={styles.appointmentsContainer}>
+            <ScrollView
+              horizontal={true}
+              style={styles.scrollViewStyle}
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}
+              onScroll={Animated.event(
+                [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+                { useNativeDriver: false },
+              )}
+              scrollEventThrottle={16}>
+              {schedule.map((card, cardIndex) => {
+                return (
+                  <Animated.View style={{ width: windowWidth }} key={cardIndex}>
+                    <View style={styles.scheduleCard}>
+                      <View style={styles.dateHeader}>
+                        <Text style={{ color: '#fff', fontSize: 20 }}>
+                          {card.displayDate}
+                        </Text>
+                      </View>
+                      <View style={{ margin: 30, alignItems: 'center' }}>
+                        <Text style={{ color: '#000', fontSize: 20 }}>
+                          From: {card.from}
+                        </Text>
+                        <Text style={{ color: '#000', fontSize: 20 }}>
+                          To: {card.to}
+                        </Text>
+                      </View>
+                      <Pressable
+                        style={styles.bookButton}
+                        onPress={() =>
+                          bookAppointment(card.date, card.from, card.to)
+                        }>
+                        <Text style={{ color: '#fff' }}>Book</Text>
+                      </Pressable>
+                    </View>
+                  </Animated.View>
+                );
+              })}
+            </ScrollView>
+            <View style={styles.indicatorContainer}>
+              {schedule.map((card, cardIndex) => {
+                const width = scrollX.interpolate({
+                  inputRange: [
+                    windowWidth * (cardIndex - 1),
+                    windowWidth * cardIndex,
+                    windowWidth * (cardIndex + 1),
+                  ],
+                  outputRange: [8, 16, 8],
+                  extrapolate: 'clamp',
+                });
+
+                return (
+                  <Animated.View
+                    style={[
+                      styles.normalDots,
+                      { width },
+                      { backgroundColor: '#1c1bad' },
+                    ]}
+                    key={cardIndex}
+                  />
+                );
+              })}
+            </View>
+          </View>
+          <View style={styles.reviewsArea}>
+            <Text style={styles.title}>Ratings and Reviews</Text>
+            {comments.map((reviewCard, cardIndex) => {
               return (
-                <Animated.View
-                  style={[
-                    styles.normalDots,
-                    {width},
-                    {backgroundColor: '#1c1bad'},
-                  ]}
-                  key={cardIndex}
-                />
+                <View key={cardIndex} style={styles.commentsCard}>
+                  <View style={{ height: 150, width: '97%', alignSelf: 'center' }}>
+                    <Text style={styles.text}>{reviewCard.name}</Text>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        marginTop: 10,
+                      }}>
+                      <Rating
+                        type="custom"
+                        ratingBackgroundColor="#bfbfbf"
+                        tintColor="#fff"
+                        ratingCount={5}
+                        imageSize={25}
+                        startingValue={reviewCard.rate}
+                        fractions={1}
+                        readonly={true}
+                        style={{
+                          marginRight: 10,
+                        }}></Rating>
+                      <Text style={styles.text}>{reviewCard.date}</Text>
+                    </View>
+                    <Text style={styles.text}>{reviewCard.review}</Text>
+                  </View>
+                </View>
               );
             })}
           </View>
         </View>
-        <View style={styles.reviewsArea}>
-          <Text style={styles.title}>Ratings and Reviews</Text>
-          {comments.map((reviewCard, cardIndex) => {
-            return (
-              <View key={cardIndex} style={styles.commentsCard}>
-                <View style={{height: 150, width: '97%', alignSelf: 'center'}}>
-                  <Text style={styles.text}>{reviewCard.name}</Text>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      marginTop: 10,
-                    }}>
-                    <Rating
-                      type="custom"
-                      ratingBackgroundColor="#bfbfbf"
-                      tintColor="#fff"
-                      ratingCount={5}
-                      imageSize={25}
-                      startingValue={reviewCard.rate}
-                      fractions={1}
-                      readonly={true}
-                      style={{
-                        marginRight: 10,
-                      }}></Rating>
-                    <Text style={styles.text}>{reviewCard.date}</Text>
-                  </View>
-                  <Text style={styles.text}>{reviewCard.review}</Text>
-                </View>
-              </View>
-            );
-          })}
-        </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
   );
 }
 
@@ -380,7 +388,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 35,
     shadowColor: '#000000',
-    shadowOffset: {width: -2, height: 2},
+    shadowOffset: { width: -2, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 3,
     elevation: 2,
@@ -415,7 +423,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     borderRadius: 10,
     shadowColor: '#000000',
-    shadowOffset: {width: -2, height: 2},
+    shadowOffset: { width: -2, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 3,
     elevation: 2,

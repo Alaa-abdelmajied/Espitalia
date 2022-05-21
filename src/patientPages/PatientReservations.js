@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -11,11 +11,13 @@ import {
 } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import axios from 'axios';
-import {Server_URL, Token_Secret} from '@env';
+import { Server_URL, Token_Secret } from '@env';
+import { useIsFocused } from '@react-navigation/native';
 
-export default function Reservation({}) {
+export default function Reservation({ }) {
   const [upcomingAppointments, setUpcomingAppointments] = useState([]);
   const [loadData, setLoadData] = useState(true);
+  const isFocused = useIsFocused();
 
   const getUpcomingAppointments = async () => {
     const token = JSON.parse(
@@ -29,14 +31,18 @@ export default function Reservation({}) {
       })
       .catch(function (error) {
         console.log(error.message);
+        setLoadData(false);
       });
   };
 
   useEffect(() => {
-    if (loadData) {
+    setLoadData(true);
+    if (isFocused) {
       getUpcomingAppointments();
+    } else {
+      setUpcomingAppointments([]);
     }
-  }, [loadData]);
+  }, [isFocused]);
 
   const cancelAppointment = appointmentID => {
     // setRefreshFlatList(!refreshFlatlist);
@@ -49,7 +55,7 @@ export default function Reservation({}) {
           // upcomingAppointments.splice(upcomingAppointments,upcomingAppointments.indexOf(appointmentID));
           // upcomingAppointments.splice();
           Alert.alert('Appointment cancelled successfully');
-          setLoadData(true);
+          getUpcomingAppointments();
         })
         .catch(function (error) {
           const err = error.response.data;
@@ -60,7 +66,7 @@ export default function Reservation({}) {
         });
     } catch (err) {
       Alert.alert('Error', err.code, [
-        {text: 'Exit', onPress: () => BackHandler.exitApp()},
+        { text: 'Exit', onPress: () => BackHandler.exitApp() },
       ]);
     }
   };
@@ -78,7 +84,7 @@ export default function Reservation({}) {
         data={upcomingAppointments}
         keyExtractor={(item, index) => index.toString()}
         // return item.appointmentID;
-        renderItem={({item}) => (
+        renderItem={({ item }) => (
           <View style={styles.appointmentsCard}>
             <View style={styles.infoView}>
               <Text style={styles.infoText}>
@@ -102,15 +108,16 @@ export default function Reservation({}) {
           </View>
         )}
         ListEmptyComponent={
-          <Text
-            style={{
-              fontSize: 20,
-              alignSelf: 'center',
-              color: '#000',
-              margin: '10%',
-            }}>
-            No upcoming reservations :)
-          </Text>
+          loadData ? null :
+            <Text
+              style={{
+                fontSize: 20,
+                alignSelf: 'center',
+                color: '#000',
+                margin: '10%',
+              }}>
+              No upcoming reservations :)
+            </Text>
         }
       />
     </View>

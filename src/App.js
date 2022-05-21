@@ -170,10 +170,10 @@ function PatientNavBar() {
           return <Ionicons name={iconName} size={size} color={color} />;
         },
         header: () => null,
-        tabBarActiveTintColor: '#0d259e',
+        tabBarActiveTintColor: '#1c1bad',
         tabBarInactiveTintColor: '#000',
       })}
-      activeColor="#0d259e"
+      activeColor="#1c1bad"
       inactiveColor="#000"
       barStyle={{backgroundColor: '#fff'}}>
       <Tab.Screen name="Home" component={PatientStackNav} />
