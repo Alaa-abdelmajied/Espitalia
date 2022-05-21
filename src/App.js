@@ -1,9 +1,9 @@
 import React from 'react';
-import {NavigationContainer} from '@react-navigation/native';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {createMaterialBottomTabNavigator} from '@react-navigation/material-bottom-tabs';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
@@ -73,6 +73,20 @@ function PatientStackNav() {
     </Stack.Navigator>
   );
 }
+function SearchStackNav() {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}>
+      <Stack.Screen name="GeneralSearch" component={Search} />
+      <Stack.Screen name="SpecializationScreen" component={Specializaion} />
+      <Stack.Screen name="DoctorsScreen" component={DoctorList} />
+      <Stack.Screen name="DoctorDetails" component={DoctorDetails} />
+      <Stack.Screen name="HospitalList" component={HospitalList} />
+    </Stack.Navigator>
+  );
+}
 
 function PatientProfileStackNav() {
   return (
@@ -122,22 +136,22 @@ function HosptialAdminStackView() {
       <Stack.Screen
         name="Reciptionist"
         component={HospitalAdminReceptionistPage}
-        options={{title: 'Receptionists'}}
+        options={{ title: 'Receptionists' }}
       />
       <Stack.Screen
         name="AddnewDoctor"
         component={AddDoctorPage}
-        options={{title: 'Add Doctor'}}
+        options={{ title: 'Add Doctor' }}
       />
       <Stack.Screen
         name="AddnewReceptionist"
         component={AddReceptionistPage}
-        options={{title: 'Add Receptionist'}}
+        options={{ title: 'Add Receptionist' }}
       />
       <Stack.Screen
         name="MyProfileHospitalPage"
         component={MyProfileHospitalPage}
-        options={{title: 'Edit Data'}}
+        options={{ title: 'Edit Data' }}
       />
     </Stack.Navigator>
   );
@@ -146,8 +160,8 @@ function HosptialAdminStackView() {
 function PatientNavBar() {
   return (
     <Tab.Navigator
-      screenOptions={({route}) => ({
-        tabBarIcon: ({focused, color, size}) => {
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused, color, size }) => {
           let iconName;
 
           if (route.name === 'Home') {
@@ -175,16 +189,16 @@ function PatientNavBar() {
       })}
       activeColor="#1c1bad"
       inactiveColor="#000"
-      barStyle={{backgroundColor: '#fff'}}>
+      barStyle={{ backgroundColor: '#fff' }}>
       <Tab.Screen name="Home" component={PatientStackNav} />
       <Tab.Screen name="Profile" component={PatientProfileStackNav} />
       <Tab.Screen
         name="Notifications"
         component={PatientNotificationsTabNav}
-        options={{tabBarBadge: 10}}
+        options={{ tabBarBadge: 10 }}
       />
       <Tab.Screen name="Reservations" component={PatientReservations} />
-      <Tab.Screen name="Search" component={Search} />
+      <Tab.Screen name="Search" component={SearchStackNav} />
       {/* <Tab.Screen
         name="BloodDonation"
         component={BloodDonation}
@@ -196,8 +210,8 @@ function PatientNavBar() {
 function DoctorNavBar() {
   return (
     <Tab.Navigator
-      screenOptions={({route}) => ({
-        tabBarIcon: ({focused, color, size}) => {
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused, color, size }) => {
           let iconName;
 
           if (route.name === 'Home') {
@@ -225,8 +239,8 @@ function DoctorNavBar() {
 function ReceptNavBar() {
   return (
     <Tab.Navigator
-      screenOptions={({route}) => ({
-        tabBarIcon: ({focused, size, color}) => {
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused, size, color }) => {
           let iconName;
 
           if (route.name === 'Home') {
@@ -260,23 +274,23 @@ function ReceptNavBar() {
         activeBackgroundColor: '#fff',
         inactiveBackgroundColor: '#999',
         showLabel: true,
-        labelStyle: {fontSize: 14},
+        labelStyle: { fontSize: 14 },
         showIcon: true,
       }}
       activeColor="#f0edf6"
       inactiveColor="#ffffff"
-      barStyle={{backgroundColor: '#003da5'}}>
+      barStyle={{ backgroundColor: '#003da5' }}>
       <Tab.Screen
         name="Home"
         component={ReceptStackView}
-        //options={{ tabBarBadge: 3 }}
+      //options={{ tabBarBadge: 3 }}
       />
       <Tab.Screen name="Profile" component={ReceptProfile} />
       <Tab.Screen name="Blood Requests" component={ReceptBloodReq} />
       <Tab.Screen
         name="Notifications"
         component={ReceptNotification}
-        options={{tabBarBadge: 3}}
+        options={{ tabBarBadge: 3 }}
       />
     </Tab.Navigator>
   );
@@ -285,8 +299,8 @@ function ReceptNavBar() {
 function PatientNotificationsTabNav() {
   return (
     <TopTabs.Navigator
-      screenOptions={({route}) => ({
-        tabBarIcon: ({focused, size, color}) => {
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused, size, color }) => {
           let iconName;
           if (route.name === 'Notification') {
             iconName = 'notifications';
@@ -306,7 +320,7 @@ function PatientNotificationsTabNav() {
         activeBackgroundColor: '#fff',
         inactiveBackgroundColor: '#999',
         showLabel: true,
-        labelStyle: {textTransform: 'none', fontSize: 15},
+        labelStyle: { textTransform: 'none', fontSize: 15 },
         showIcon: true,
       })}>
       <TopTabs.Screen name="Notification" component={PatientNotification} />
