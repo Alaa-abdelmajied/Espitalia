@@ -14,14 +14,14 @@ export default function Doctors({navigation, route}) {
     isAllDoctors,
     speciality,
     fromHomepage,
-    fromSearch,
+    // fromSearch,
   } = route.params;
 
   const [doctors, setDoctors] = useState([]);
 
   useEffect(() => {
     console.log(Server_URL);
-    if (fromHomepage || fromSearch) {
+    if (fromHomepage) {
       const getSpecDoctors = async () => {
         await axios
           .get(`${Server_URL}:3000/patient/searchSpecialization/${speciality}`)

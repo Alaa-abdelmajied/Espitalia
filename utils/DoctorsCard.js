@@ -6,8 +6,14 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {Rating} from 'react-native-ratings';
 
 const DoctorsCard = ({card, navigation, hospitalName, hospitalAddress}) => {
-
-  const onPress = (id, name, specialization, averageRating) => {
+  const onPress = (
+    id,
+    name,
+    specialization,
+    hospitalName,
+    hospitalAddress,
+    averageRating,
+  ) => {
     navigation.navigate('DoctorDetails', {
       drID: id,
       drName: name,
@@ -15,7 +21,7 @@ const DoctorsCard = ({card, navigation, hospitalName, hospitalAddress}) => {
       hospitalName: hospitalName,
       hospitalAddress: hospitalAddress,
       averageRating: averageRating,
-      fromSearch: false,
+      // fromSearch: false,
     });
   };
 
@@ -29,7 +35,7 @@ const DoctorsCard = ({card, navigation, hospitalName, hospitalAddress}) => {
           card.specialization,
           card.hospitalName,
           card.hospitalAddress,
-          card.averageRating,
+          card.rating,
         )
       }>
       <View style={styles.card_header}>
@@ -86,7 +92,6 @@ const DoctorsCard = ({card, navigation, hospitalName, hospitalAddress}) => {
 };
 
 const styles = StyleSheet.create({
-  
   card: {
     width: '95%',
     borderRadius: 15,

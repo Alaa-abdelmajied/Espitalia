@@ -27,6 +27,7 @@ export default function ProfileScreen({route}) {
     hospitalName,
     hospitalAddress,
     averageRating,
+    // fromHomepage,
     fromSearch,
   } = route.params;
 
@@ -40,9 +41,11 @@ export default function ProfileScreen({route}) {
       await axios
         .get(`${Server_URL}:3000/patient/doctor/${drID}`)
         .then(response => {
-          setData(response.data.doctorData);
           setComments(response.data.reviewDetails);
           setSchedule(response.data.scheduleDetails);
+          if (fromSearch) {
+            setData(response.data.doctorData);
+          }
         })
         .catch(function (error) {
           console.log(error.message);
@@ -119,6 +122,18 @@ export default function ProfileScreen({route}) {
                   style={{margin: 5}}></Ionicons>
                 <Text style={styles.description}>{hospitalAddress}</Text>
               </View>
+              <View style={styles.customRatingBar}>
+                <Rating
+                  type="custom"
+                  ratingBackgroundColor="#bfbfbf"
+                  tintColor="#f0f0f0"
+                  ratingCount={5}
+                  imageSize={30}
+                  startingValue={averageRating}
+                  fractions={1}
+                  readonly={true}></Rating>
+                <Text style={styles.text}>{averageRating}/5</Text>
+              </View>
             </View>
           ) : (
             <View style={styles.body}>
@@ -140,21 +155,21 @@ export default function ProfileScreen({route}) {
                   style={{margin: 5}}></Ionicons>
                 <Text style={styles.description}>{data.hospitalAddress}</Text>
               </View>
+              <View style={styles.customRatingBar}>
+                <Rating
+                  type="custom"
+                  ratingBackgroundColor="#bfbfbf"
+                  tintColor="#f0f0f0"
+                  ratingCount={5}
+                  imageSize={30}
+                  startingValue={data.averageRating}
+                  fractions={1}
+                  readonly={true}></Rating>
+                <Text style={styles.text}>{data.averageRating}/5</Text>
+              </View>
             </View>
           )}
 
-          <View style={styles.customRatingBar}>
-            <Rating
-              type="custom"
-              ratingBackgroundColor="#bfbfbf"
-              tintColor="#f0f0f0"
-              ratingCount={5}
-              imageSize={30}
-              startingValue={averageRating}
-              fractions={1}
-              readonly={true}></Rating>
-            <Text style={styles.text}>{averageRating}/5</Text>
-          </View>
           {/* </View> */}
         </View>
         <View style={styles.appointmentsContainer}>

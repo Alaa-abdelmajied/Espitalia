@@ -11,14 +11,19 @@ import {
 } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import {Picker} from '@react-native-picker/picker';
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {Server_URL, Token_Secret} from '@env';
 
 export default function EditProfile({navigation, route}) {
-  const {name, email, age, phoneNumber} = route.params;
+  const {name, phoneNumber, birthdate} = route.params;
   const [newName, setNewName] = useState('');
   const [newPhoneNumber, setNewPhoneNumber] = useState('');
+  const [diabetic, setDiabetic] = useState('no');
+  const [bloodPressure, setBloodPressure] = useState('no');
+  const [allergic, setAllergic] = useState('no');
+  const [bloodType, setBloodType] = useState('a+');
 
   const editProfile = async () => {
     console.log('pressed');
@@ -76,10 +81,6 @@ export default function EditProfile({navigation, route}) {
             placeholder={name}
             onChangeText={text => setNewName(text)}></TextInput>
         </View>
-        {/* <View style={styles.bodyContent}>
-          <Text style={styles.mainText}>Email:</Text>
-          <TextInput style={styles.input} placeholder={email}></TextInput>
-        </View> */}
         <View style={styles.bodyContent}>
           <View
             style={{
@@ -92,7 +93,7 @@ export default function EditProfile({navigation, route}) {
               color={'#000'}></FontAwesome>
             <Text style={styles.mainText}>Birthdate</Text>
           </View>
-          <TextInput style={styles.input} placeholder={age}></TextInput>
+          <TextInput style={styles.input} placeholder={birthdate}></TextInput>
         </View>
         <View style={styles.bodyContent}>
           <View
@@ -108,6 +109,64 @@ export default function EditProfile({navigation, route}) {
             placeholder={phoneNumber}
             onChangeText={text => setNewPhoneNumber(text)}></TextInput>
         </View>
+        <View style={styles.questionContainer}>
+          <Text style={styles.PickerText}>What is your blood type?</Text>
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={bloodType}
+              onValueChange={(itemValue, itemIndex) => setBloodType(itemValue)}>
+              <Picker.Item label="A+" value="a+" />
+              <Picker.Item label="A-" value="a-" />
+              <Picker.Item label="B+" value="b+" />
+              <Picker.Item label="B-" value="b-" />
+              <Picker.Item label="O+" value="o+" />
+              <Picker.Item label="O-" value="o-" />
+              <Picker.Item label="AB+" value="ab+" />
+              <Picker.Item label="AB-" value="ab-" />
+              <Picker.Item label="I don't know" value="idk" />
+            </Picker>
+          </View>
+        </View>
+        <View style={styles.questionContainer}>
+          <Text style={styles.PickerText}>Are you diabetic?</Text>
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={diabetic}
+              onValueChange={(itemValue, itemIndex) => setDiabetic(itemValue)}>
+              <Picker.Item label="Yes" value="yes" />
+              <Picker.Item label="No" value="no" />
+              <Picker.Item label="I don't know" value="idk" />
+            </Picker>
+          </View>
+        </View>
+        <View style={styles.questionContainer}>
+          <Text style={styles.PickerText}>
+            Do you have blood pressure problems?
+          </Text>
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={bloodPressure}
+              onValueChange={(itemValue, itemIndex) =>
+                setBloodPressure(itemValue)
+              }>
+              <Picker.Item label="Yes" value="yes" />
+              <Picker.Item label="No" value="no" />
+              <Picker.Item label="I don't know" value="idk" />
+            </Picker>
+          </View>
+        </View>
+        <View style={styles.questionContainer}>
+          <Text style={styles.PickerText}>Are you allergic to anything?</Text>
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={allergic}
+              onValueChange={(itemValue, itemIndex) => setAllergic(itemValue)}>
+              <Picker.Item label="Yes" value="yes" />
+              <Picker.Item label="No" value="no" />
+              <Picker.Item label="I don't know" value="idk" />
+            </Picker>
+          </View>
+        </View>
         <View
           style={{
             flexDirection: 'row',
@@ -119,7 +178,7 @@ export default function EditProfile({navigation, route}) {
             onPress={() => {
               navigation.navigate('ChangePassword', {
                 profileChangePassword: true,
-              })
+              });
               // , setShowModal(false);
             }}>
             <Text
@@ -219,5 +278,31 @@ const styles = StyleSheet.create({
     marginTop: 15,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+
+  questionContainer: {
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    margin: 5,
+  },
+
+  PickerText: {
+    color: '#000',
+    fontSize: 15,
+  },
+
+  pickerContainer: {
+    justifyContent: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    margin: 5,
+    height: 50,
+    width: 200,
+    shadowColor: '#000000',
+    shadowOffset: {width: -2, height: 2},
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 2,
   },
 });
