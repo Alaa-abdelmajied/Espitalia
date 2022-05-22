@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { View, FlatList, Pressable, Text, ActivityIndicator } from 'react-native';
 import DoctorsCard from '../../utils/DoctorsCard';
-import {SearchBar} from 'react-native-elements';
+import { SearchBar } from 'react-native-elements';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
-import {Server_URL} from '@env';
-import {useIsFocused} from '@react-navigation/native';
+import { Server_URL } from '@env';
+import { useIsFocused } from '@react-navigation/native';
 
-export default function Doctors({navigation, route}) {
+export default function Doctors({ navigation, route }) {
   const {
     hospitalID,
     specialization,
@@ -86,21 +87,29 @@ export default function Doctors({navigation, route}) {
   };
 
   return (
-    <View style={{flex: 1, justifyContent: 'center', flexDirection: 'column'}}>
-      <SearchBar
-        lightTheme={true}
-        placeholder="search"
-        onChangeText={updateSearch}
-        value={search}
-        containerStyle={{backgroundColor: '#f0f0f0'}}
-        inputContainerStyle={{borderRadius: 50, backgroundColor: '#fff'}}
-      />
+    <View style={{ flex: 1, justifyContent: 'center', flexDirection: 'column' }}>
+      <View style={{ flexDirection: 'row' }}>
+        <Pressable style={{ flex: 1, alignSelf: 'center', marginLeft: 5 }} onPress={() => navigation.goBack()}>
+          <Ionicons
+            name={'arrow-back'}
+            size={30}
+            color="#1c1bad"></Ionicons>
+        </Pressable>
+        <SearchBar
+          lightTheme={true}
+          placeholder="search"
+          onChangeText={updateSearch}
+          value={search}
+          containerStyle={{ flex: 12, backgroundColor: '#f0f0f0' }}
+          inputContainerStyle={{ borderRadius: 50, backgroundColor: '#fff' }}
+        />
+      </View>
       <FlatList
         data={doctors}
         keyExtractor={item => {
           return item._id;
         }}
-        renderItem={({item}) => {
+        renderItem={({ item }) => {
           return (
             <DoctorsCard
               card={item}
@@ -109,15 +118,15 @@ export default function Doctors({navigation, route}) {
                 fromHomepage || fromSearch
                   ? item.hospitalName
                   : isAllDoctors
-                  ? item.doctorHospitalName
-                  : hospitalName
+                    ? item.doctorHospitalName
+                    : hospitalName
               }
               hospitalAddress={
                 fromHomepage || fromSearch
                   ? item.hospitalAddress
                   : isAllDoctors
-                  ? item.doctorHospitalAddress
-                  : hospitalAddress
+                    ? item.doctorHospitalAddress
+                    : hospitalAddress
               }
             />
           );

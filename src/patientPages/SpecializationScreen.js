@@ -6,9 +6,11 @@ import {
   FlatList,
   TouchableOpacity,
   Alert,
-  ActivityIndicator
+  ActivityIndicator,
+  Pressable
 } from 'react-native';
 import { SearchBar } from 'react-native-elements';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import axios from 'axios';
 import { Server_URL } from '@env';
@@ -17,8 +19,9 @@ import { useIsFocused } from '@react-navigation/native';
 
 export default function Speciality({ navigation, route }) {
   const [specialization, setSpecialization] = useState([]);
-  const [allSpecializations, setAllSpecializations] = useState([]);
+  // const [allSpecializations, setAllSpecializations] = useState([]);
   const [loadData, setLoadData] = useState(true);
+  const [search, setSearch] = useState('');
   const isFocused = useIsFocused();
   const {
     hospitalID,
@@ -28,60 +31,96 @@ export default function Speciality({ navigation, route }) {
     // fromHomepage,
   } = route.params;
 
-  if (!isAllSpecializations) {
-    useEffect(() => {
-      setLoadData(true);
-      if (isFocused) {
-        const getSpecializations = async () => {
-          await axios
-            .get(`${Server_URL}:3000/patient/pressOnHospital/${hospitalID}`)
-            .then(response => {
-              setSpecialization(response.data);
-              setLoadData(false);
-            })
-            .catch(function (error) {
-              console.log(error.message);
-              setLoadData(false);
-            });
-        };
-        getSpecializations();
-      }
-    }, []);
-  } else {
-    useEffect(() => {
-      setLoadData(true);
-      if (isFocused) {
-        const getAllSpecializations = async () => {
-          await axios
-            .get(`${Server_URL}:3000/patient/allSpecializations`)
-            .then(response => {
-              setAllSpecializations(response.data);
-              setLoadData(false);
-            })
-            .catch(function (error) {
-              console.log(error.message);
-              setLoadData(false);
-            });
-        };
-        getAllSpecializations();
-      }
-    }, []);
+  const getSpecializations = async () => {
+    if (!isAllSpecializations) {
+      await axios
+        .get(`${Server_URL}:3000/patient/pressOnHospital/${hospitalID}`)
+        .then(response => {
+          console.log(response.data);
+          setSpecialization(response.data);
+          setLoadData(false);
+        })
+        .catch(function (error) {
+          console.log(error.message);
+          setLoadData(false);
+        });
+    } else {
+      await axios
+        .get(`${Server_URL}:3000/patient/allSpecializations`)
+        .then(response => {
+          console.log(response.data);
+          setSpecialization(response.data);
+          setLoadData(false);
+        })
+        .catch(function (error) {
+          console.log(error.message);
+          setLoadData(false);
+        });
+    }
   }
 
-  const [searchResult, setSearchResult] = useState(false);
-  const [search, setSearch] = useState('');
-  const [specializationSearch, setSpecializationSearch] = useState([]);
+  useEffect(() => {
+    setLoadData(true);
+    if (isFocused) {
+      getSpecializations();
+    }
+  }, [])
+
+  // if (!isAllSpecializations) {
+  //   useEffect(() => {
+  //     setLoadData(true);
+  //     if (isFocused) {
+  //       const getSpecializations = async () => {
+  //         await axios
+  //           .get(`${Server_URL}:3000/patient/pressOnHospital/${hospitalID}`)
+  //           .then(response => {
+  //             console.log(response.data);
+  //             setSpecialization(response.data);
+  //             setLoadData(false);
+  //           })
+  //           .catch(function (error) {
+  //             console.log(error.message);
+  //             setLoadData(false);
+  //           });
+  //       };
+  //       getSpecializations();
+  //     }
+  //   }, []);
+  // } else {
+  //   useEffect(() => {
+  //     setLoadData(true);
+  //     if (isFocused) {
+  //       const getAllSpecializations = async () => {
+  //         await axios
+  //           .get(`${Server_URL}:3000/patient/allSpecializations`)
+  //           .then(response => {
+  //             console.log(response.data);
+  //             setSpecialization(response.data);
+  //             setLoadData(false);
+  //           })
+  //           .catch(function (error) {
+  //             console.log(error.message);
+  //             setLoadData(false);
+  //           });
+  //       };
+  //       getAllSpecializations();
+  //     }
+  //   }, []);
+  // }
+
+  // const [searchResult, setSearchResult] = useState(false);
+  // const [specializationSearch, setSpecializationSearch] = useState([]);
 
   const specSearch = search => {
     axios
       .get(`${Server_URL}:3000/patient/searchAllSpecializations/${search}`)
       .then(response => {
-        setSpecializationSearch(response.data);
+        setSpecialization(response.data.specializations);
       })
       .catch(function (error) {
         const err = error.response.data;
         if (err == 'No specializations found') {
-          setSpecializationSearch([]);
+          setSpecialization([]);
         }
       });
   };
@@ -91,7 +130,7 @@ export default function Speciality({ navigation, route }) {
     if (search.length > 0) {
       specSearch(search);
     } else {
-      setSpecializationSearch([]);
+      getSpecializations();
     }
   };
 
@@ -117,23 +156,25 @@ export default function Speciality({ navigation, route }) {
 
   return (
     <View style={styles.container}>
-      <SearchBar
-        lightTheme={true}
-        placeholder="search for specialization"
-        containerStyle={{ backgroundColor: '#f0f0f0' }}
-        onChangeText={value => updateSearch(value)}
-        value={search}
-        inputContainerStyle={{ borderRadius: 50, backgroundColor: '#fff' }}
-      />
+      <View style={{ flexDirection: 'row' }}>
+        <Pressable style={{flex: 1, alignSelf: 'center', marginLeft: 5 }} onPress={()=>navigation.goBack()}>
+          <Ionicons
+            name={'arrow-back'}
+            size={30}
+            color="#1c1bad"></Ionicons>
+        </Pressable>
+        <SearchBar
+          lightTheme={true}
+          placeholder="search for specialization"
+          containerStyle={{ flex: 12, backgroundColor: '#f0f0f0' }}
+          onChangeText={value => updateSearch(value)}
+          value={search}
+          inputContainerStyle={{ borderRadius: 50, backgroundColor: '#fff' }}
+        />
+      </View>
       <FlatList
         keyExtractor={(item, index) => index.toString()}
-        data={
-          !searchResult
-            ? !isAllSpecializations
-              ? specialization
-              : allSpecializations
-            : specializationSearch
-        }
+        data={specialization}
         renderItem={({ item }) => {
           return (
             <TouchableOpacity

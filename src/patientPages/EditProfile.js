@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -11,13 +11,13 @@ import {
 } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {Picker} from '@react-native-picker/picker';
+import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {Server_URL, Token_Secret} from '@env';
+import { Server_URL, Token_Secret } from '@env';
 
-export default function EditProfile({navigation, route}) {
-  const {name, phoneNumber, birthdate} = route.params;
+export default function EditProfile({ navigation, route }) {
+  const { name, phoneNumber, birthdate } = route.params;
   const [newName, setNewName] = useState('');
   const [newPhoneNumber, setNewPhoneNumber] = useState('');
   const [diabetic, setDiabetic] = useState('no');
@@ -49,7 +49,7 @@ export default function EditProfile({navigation, route}) {
         });
     } catch (err) {
       Alert.alert('Error', err.code, [
-        {text: 'Exit', onPress: () => BackHandler.exitApp()},
+        { text: 'Exit', onPress: () => BackHandler.exitApp() },
       ]);
     }
   };
@@ -57,10 +57,20 @@ export default function EditProfile({navigation, route}) {
   return (
     <ScrollView>
       <View style={styles.header}>
-        <Image
-          style={styles.image}
-          source={require('../../images/app_logo-removebg-preview.png')}></Image>
-        <Text style={styles.headerText}>espitalia</Text>
+        <Pressable style={{ flex: 1, alignSelf: 'center', marginLeft: 5 }} onPress={() => navigation.goBack()}>
+          <Ionicons
+            name={'arrow-back'}
+            size={30}
+            color="#fff"></Ionicons>
+        </Pressable>
+        <View style={{ flex: 12, flexDirection: 'row', justifyContent: "center" }}>
+          <Image
+            style={styles.image}
+            source={require('../../images/app_logo-removebg-preview.png')}></Image>
+
+          <Text style={styles.headerText}>espitalia</Text>
+        </View>
+        <View style={{ flex: 1.5 }}></View>
       </View>
       <View style={styles.body}>
         <Text style={styles.title}>Edit your info</Text>
@@ -235,7 +245,7 @@ const styles = StyleSheet.create({
     margin: 10,
     backgroundColor: '#fff',
     shadowColor: '#000000',
-    shadowOffset: {width: -1, height: 1},
+    shadowOffset: { width: -1, height: 1 },
     shadowOpacity: 0.2,
     shadowRadius: 1,
     elevation: 2,
@@ -300,7 +310,7 @@ const styles = StyleSheet.create({
     height: 50,
     width: 200,
     shadowColor: '#000000',
-    shadowOffset: {width: -2, height: 2},
+    shadowOffset: { width: -2, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 3,
     elevation: 2,

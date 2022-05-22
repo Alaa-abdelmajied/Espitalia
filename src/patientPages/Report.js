@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -13,16 +13,17 @@ import {
 } from 'react-native';
 
 import FlashMessage from 'react-native-flash-message';
-import {showMessage, hideMessage} from 'react-native-flash-message';
-import {Rating} from 'react-native-ratings';
+import { showMessage, hideMessage } from 'react-native-flash-message';
+import { Rating } from 'react-native-ratings';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {Server_URL, Token_Secret} from '@env';
-import {useIsFocused} from '@react-navigation/native';
+import { Server_URL, Token_Secret } from '@env';
+import { useIsFocused } from '@react-navigation/native';
 
-export default function Report({route}) {
-  const {appointmentID, reviewed} = route.params;
+export default function Report({ navigation, route }) {
+  const { appointmentID, reviewed } = route.params;
 
   const [report, setReport] = useState({});
   const [loadData, setLoadData] = useState(true);
@@ -106,7 +107,7 @@ export default function Report({route}) {
             size={20}
             color={'#1c1bad'}
             onPress={() => setShowModal(false)}
-            style={{alignSelf: 'flex-start', margin: 5}}></FontAwesome>
+            style={{ alignSelf: 'flex-start', margin: 5 }}></FontAwesome>
           <View
             style={{
               flexDirection: 'row',
@@ -137,16 +138,25 @@ export default function Report({route}) {
             name={'save'}
             size={25}
             color={'#1c1bad'}
-            style={{alignSelf: 'center', margin: 5}}
+            style={{ alignSelf: 'center', margin: 5 }}
             onPress={onPressSave}></FontAwesome>
         </View>
       </Modal>
       <View style={styles.header}>
-        <Image
-          style={styles.Image}
-          source={require('../../images/app_logo-removebg-preview.png')}></Image>
+        <Pressable style={{ flex: 1, alignSelf: 'center', marginLeft: 5 }} onPress={() => navigation.goBack()}>
+          <Ionicons
+            name={'arrow-back'}
+            size={30}
+            color="#fff"></Ionicons>
+        </Pressable>
+        <View style={{ flex: 12, justifyContent: "center" }}>
+          <Image
+            style={styles.Image}
+            source={require('../../images/app_logo-removebg-preview.png')}></Image>
+        </View>
+        <View style={{ flex: 1}}></View>
       </View>
-      <View style={{alignItems: 'center'}}>
+      <View style={{ alignItems: 'center' }}>
         <Text style={styles.infoText}>
           Hospital Name: {report.hospitalName}
         </Text>
@@ -261,7 +271,8 @@ const styles = StyleSheet.create({
   header: {
     height: '8%',
     backgroundColor: '#0d159e',
-    justifyContent: 'center',
+    // justifyContent: 'center',
+    flexDirection: 'row'
   },
   Image: {
     width: 50,
