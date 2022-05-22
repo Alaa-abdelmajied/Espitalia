@@ -22,7 +22,7 @@ import {Server_URL, Token_Secret} from '@env';
 import {useIsFocused} from '@react-navigation/native';
 
 export default function Report({route}) {
-  const {appointmentID, reviewed} = route.params;
+  const {appointmentID} = route.params;
 
   const [report, setReport] = useState({});
   const [loadData, setLoadData] = useState(true);
@@ -45,7 +45,7 @@ export default function Report({route}) {
       };
       getReport();
     }
-  }, []);
+  }, [report.reviewed]);
 
   const [rate, setRate] = useState('');
   const [review, setReview] = useState('');
@@ -83,7 +83,7 @@ export default function Report({route}) {
   };
 
   const onPressRateAndReview = () => {
-    if (reviewed) {
+    if (report.reviewed) {
       showMessage({
         message: 'This appointment has already been reviewed',
         type: 'warning',
