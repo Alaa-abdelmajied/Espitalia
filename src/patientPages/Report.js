@@ -22,6 +22,7 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import { Server_URL, Token_Secret } from '@env';
 import { useIsFocused } from '@react-navigation/native';
 
+
 export default function Report({ navigation, route }) {
   const { appointmentID, reviewed } = route.params;
 
@@ -46,7 +47,7 @@ export default function Report({ navigation, route }) {
       };
       getReport();
     }
-  }, []);
+  }, [report.reviewed]);
 
   const [rate, setRate] = useState('');
   const [review, setReview] = useState('');
@@ -84,7 +85,7 @@ export default function Report({ navigation, route }) {
   };
 
   const onPressRateAndReview = () => {
-    if (reviewed) {
+    if (report.reviewed) {
       showMessage({
         message: 'This appointment has already been reviewed',
         type: 'warning',

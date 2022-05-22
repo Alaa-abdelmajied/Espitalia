@@ -93,10 +93,9 @@ export default function Profile({navigation}) {
   const toggleExpanded = () => {
     setCollapsed(!collapsed);
   };
-  const onPressReport = (id, reviewed) => {
+  const onPressReport = (id) => {
     navigation.navigate('Report', {
       appointmentID: id,
-      reviewed: reviewed,
     });
   };
 
@@ -273,7 +272,7 @@ export default function Profile({navigation}) {
                 style={styles.appointmentsCard}
                 key={item.appointmentID}
                 onPress={() =>
-                  onPressReport(item.appointmentID, item.reviewed)
+                  onPressReport(item.appointmentID)
                 }>
                 <Text style={styles.infoText}>
                   Hospital Name: {item.hospitalName}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 
 import {
   Button,
@@ -16,40 +16,40 @@ import {
   Pressable,
   Dimensions,
   TouchableOpacity,
-  BackHandler
+  BackHandler,
 } from 'react-native';
-import Svg, { Path } from 'react-native-svg';
+import Svg, {Path} from 'react-native-svg';
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { Server_URL, Token_Secret, Credintials_Secret } from '@env';
+import {Server_URL, Token_Secret, Credintials_Secret} from '@env';
 
-
-export default function HomeScreen({ navigation }) {
-
+export default function HomeScreen({navigation}) {
   const [showButton, setShowButton] = useState(false);
 
   useEffect(() => {
     const autoLogin = async () => {
       try {
-        const { email, password, type } = JSON.parse(
+        const {email, password, type} = JSON.parse(
           await EncryptedStorage.getItem(Credintials_Secret),
         );
         console.log(email, password, type);
         switch (type) {
-          case "patient":
+          case 'patient':
             patientLogin(email, password);
             break;
-          case "doctor":
+          case 'doctor':
             console.log("It's a doctor");
             break;
-          case "receptionist":
+          case 'receptionist':
             console.log("It's a receptionist");
             break;
-          case "hospital":
+          case 'hospital':
             console.log("It's a hosptial");
             break;
           default:
-            console.log("Undefined");
+            patientLogin(email, password);
+            break;
+            // console.log('Undefined');
         }
       } catch (err) {
         setShowButton(true);
@@ -62,27 +62,27 @@ export default function HomeScreen({ navigation }) {
     axios
       .post(`${Server_URL}:3000/patient/login`, {
         email: email,
-        password: password
+        password: password,
       })
       .then(async function (response) {
-        const { verified, token } = response.data;
+        const {verified, token} = response.data;
         try {
           await EncryptedStorage.setItem(
             Token_Secret,
-            JSON.stringify({ token: token }),
+            JSON.stringify({token: token}),
           );
         } catch (err) {
           Alert.alert('Error', err.code, [
-            { text: 'Exit', onPress: () => BackHandler.exitApp() },
+            {text: 'Exit', onPress: () => BackHandler.exitApp()},
           ]);
         }
         if (verified) {
           navigation.reset({
             index: 0,
-            routes: [{ name: 'Patient' }],
+            routes: [{name: 'Patient'}],
           });
         } else {
-          navigation.navigate('OTP', { isForgotten: false });
+          navigation.navigate('OTP', {isForgotten: false});
         }
       })
       .catch(function (error) {
@@ -91,39 +91,49 @@ export default function HomeScreen({ navigation }) {
           setShowButton(true);
         }
       });
-  }
+  };
 
   return (
-
     <View style={styles.body}>
-      <Image style={styles.logo} source={require('../images/logo_withoutBG.png')}></Image>
-      <Text style={{ fontSize: 40, fontWeight: 'bold', color: '#1c1bad' }}>eSpitalia</Text>
-      {showButton ?
+      <Image
+        style={styles.logo}
+        source={require('../images/logo_withoutBG.png')}></Image>
+      <Text style={{fontSize: 40, fontWeight: 'bold', color: '#1c1bad'}}>
+        eSpitalia
+      </Text>
+      {showButton ? (
         <View style={styles.main}>
-          <Pressable style={styles.userButton} onPress={() => navigation.navigate({
-            name: 'Login',
-            params: {
-              staff: false,
-            },
-          })}>
-            <Text style={[styles.buttonText, { color: '#000' }]}> USER </Text>
+          <Pressable
+            style={styles.userButton}
+            onPress={() =>
+              navigation.navigate({
+                name: 'Login',
+                params: {
+                  staff: false,
+                },
+              })
+            }>
+            <Text style={[styles.buttonText, {color: '#000'}]}> USER </Text>
           </Pressable>
-          <Pressable style={styles.staffButton} onPress={() => navigation.navigate({
-            name: 'Login',
-            params: {
-              staff: true,
-            },
-          })}>
-            <Text style={[styles.buttonText, { color: '#fff' }]}> STAFF </Text>
+          <Pressable
+            style={styles.staffButton}
+            onPress={() =>
+              navigation.navigate({
+                name: 'Login',
+                params: {
+                  staff: true,
+                },
+              })
+            }>
+            <Text style={[styles.buttonText, {color: '#fff'}]}> STAFF </Text>
           </Pressable>
-        </View> : null}
+        </View>
+      ) : null}
     </View>
-  )
+  );
 }
 
-
 const styles = StyleSheet.create({
-
   body: {
     flex: 1,
     flexDirection: 'column',
@@ -132,8 +142,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     // backgroundColor:'#f0f0f0',
   },
-
-
 
   SignUpButton: {
     width: 100,
@@ -149,13 +157,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     textAlign: 'center',
     borderColor: '#fff',
-    color: '#fff'
+    color: '#fff',
   },
 
   buttonText: {
     textAlign: 'center',
     fontSize: 15,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
 
   logo: {
@@ -184,7 +192,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     borderWidth: 1,
     borderColor: '#000',
-    alignItems: 'center'
+    alignItems: 'center',
   },
 
   staffButton: {
@@ -199,18 +207,16 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#fff',
     alignItems: 'center',
-    borderColor: '#1c1bad'
+    borderColor: '#1c1bad',
   },
   customRatingBar: {
     justifyContent: 'center',
     flexDirection: 'row',
     marginTop: 10,
-
   },
   starImg: {
     width: 25,
     height: 25,
     resizeMode: 'cover',
-  }
-
+  },
 });

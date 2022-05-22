@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { View, FlatList, Pressable, Text, ActivityIndicator } from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {View, FlatList, Pressable, Text, ActivityIndicator} from 'react-native';
 import DoctorsCard from '../../utils/DoctorsCard';
 import { SearchBar } from 'react-native-elements';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -77,13 +77,31 @@ export default function Doctors({ navigation, route }) {
         };
         getDoctors();
       }
-      console.log("done");
+      console.log('done');
     }
   }, []);
 
   const [search, setSearch] = useState('');
+  const searchDoctor = search => {
+    axios
+      .get(`${Server_URL}:3000/patient/searchDoctors/${search}`)
+      .then(response => {
+        setAllHospitals(response.data);
+      })
+      .catch(function (error) {
+        const err = error.response.data;
+        if (err == 'No specializations found') {
+          setAllHospitals([]);
+        }
+      });
+  };
   const updateSearch = search => {
     setSearch(search);
+    if (search.length > 0) {
+      searchDoctor(search);
+    } else {
+      setDoctors();
+    }
   };
 
   return (
@@ -132,9 +150,11 @@ export default function Doctors({ navigation, route }) {
           );
         }}
         ListEmptyComponent={
-          loadData ? <View>
-            <ActivityIndicator size="large" color="#0451cc" />
-          </View> :
+          loadData ? (
+            <View>
+              <ActivityIndicator size="large" color="#0451cc" />
+            </View>
+          ) : (
             <Text
               style={{
                 fontSize: 20,
@@ -144,6 +164,7 @@ export default function Doctors({ navigation, route }) {
               }}>
               No doctors found :(
             </Text>
+          )
         }
       />
     </View>
