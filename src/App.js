@@ -1,5 +1,5 @@
-import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import React, { useLayoutEffect } from 'react';
+import { getFocusedRouteNameFromRoute, NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -57,26 +57,45 @@ const Tab = createBottomTabNavigator();
 // const Tab = createMaterialBottomTabNavigator();
 const TopTabs = createMaterialTopTabNavigator();
 
-function PatientStackNav() {
+function PatientStackNav({ navigation, route }) {
+  const tabHiddenRoutes = ["SpecializationScreen", "DoctorsScreen", "DoctorDetails", "HospitalList"];
+  useLayoutEffect(() => {
+    if (tabHiddenRoutes.includes(getFocusedRouteNameFromRoute(route))) {
+      navigation.setOptions({ tabBarStyle: { display: 'none' } });
+    } else {
+      navigation.setOptions({ tabBarStyle: { display: 'flex' } });
+    }
+  }, [navigation, route])
   return (
     <Stack.Navigator
+      initialRouteName="PatientHomePage"
       screenOptions={{
         headerShown: false,
-      }}>
+      }}
+    >
       <Stack.Screen name="PatientHomePage" component={PatientHome} />
       <Stack.Screen name="SpecializationScreen" component={Specializaion} />
       <Stack.Screen name="DoctorsScreen" component={DoctorList} />
       <Stack.Screen name="DoctorDetails" component={DoctorDetails} />
       {/* <Stack.Screen name="DoctorList" component={DoctorList} /> */}
       <Stack.Screen name="HospitalList" component={HospitalList} />
-      <Stack.Screen name="GeneralSearch" component={Search} />
+      {/* <Stack.Screen name="GeneralSearch" component={Search} /> */}
 
     </Stack.Navigator>
   );
 }
-function SearchStackNav() {
+function PatientSearchStackNav({ navigation, route }) {
+  const tabHiddenRoutes = ["SpecializationScreen", "DoctorsScreen", "DoctorDetails", "HospitalList"];
+  useLayoutEffect(() => {
+    if (tabHiddenRoutes.includes(getFocusedRouteNameFromRoute(route))) {
+      navigation.setOptions({ tabBarStyle: { display: 'none' } });
+    } else {
+      navigation.setOptions({ tabBarStyle: { display: 'flex' } });
+    }
+  }, [navigation, route])
   return (
     <Stack.Navigator
+      initialRouteName="GeneralSearch"
       screenOptions={{
         headerShown: false,
       }}>
@@ -89,16 +108,76 @@ function SearchStackNav() {
   );
 }
 
-function PatientProfileStackNav() {
+function PatientProfileStackNav({ navigation, route }) {
+  const tabHiddenRoutes = ["EditProfile", "Report"];
+  useLayoutEffect(() => {
+    if (tabHiddenRoutes.includes(getFocusedRouteNameFromRoute(route))) {
+      navigation.setOptions({ tabBarStyle: { display: 'none' } });
+    } else {
+      navigation.setOptions({ tabBarStyle: { display: 'flex' } });
+    }
+  }, [navigation, route])
   return (
     <Stack.Navigator
+      initialRouteName="PatientProfile"
       screenOptions={{
         headerShown: false,
-      }}>
+      }}
+    >
       <Stack.Screen name="PatientProfile" component={PatientProfile} />
       <Stack.Screen name="EditProfile" component={EditProfile} />
       <Stack.Screen name="Report" component={Report} />
     </Stack.Navigator>
+  );
+}
+
+function PatientNavBar() {
+  return (
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused, color, size }) => {
+          let iconName;
+
+          if (route.name === 'Home') {
+            iconName = focused ? 'home' : 'home-outline';
+            size = focused ? 25 : 23;
+          } else if (route.name === 'Profile') {
+            iconName = focused ? 'person-circle' : 'person-circle-outline';
+            size = focused ? 25 : 23;
+          } else if (route.name == 'Notifications') {
+            iconName = focused ? 'notifications' : 'notifications-outline';
+            size = focused ? 25 : 23;
+          } else if (route.name == 'Reservations') {
+            iconName = focused ? 'list' : 'list-outline';
+            size = focused ? 25 : 23;
+          } else if (route.name == 'Search') {
+            iconName = focused ? 'search' : 'search-outline';
+            size = focused ? 25 : 23;
+          }
+
+          return <Ionicons name={iconName} size={size} color={color} />;
+        },
+        header: () => null,
+        tabBarActiveTintColor: '#1c1bad',
+        tabBarInactiveTintColor: '#000',
+      })}
+      activeColor="#1c1bad"
+      inactiveColor="#000"
+      barStyle={{ backgroundColor: '#fff' }}>
+      <Tab.Screen name="Home" component={PatientStackNav} />
+      <Tab.Screen name="Profile" component={PatientProfileStackNav} />
+      <Tab.Screen
+        name="Notifications"
+        component={PatientNotificationsTabNav}
+        options={{ tabBarBadge: 10 }}
+      />
+      <Tab.Screen name="Reservations" component={PatientReservations} />
+      <Tab.Screen name="Search" options={{ unmountOnBlur: true }} component={PatientSearchStackNav} />
+      {/* <Tab.Screen
+        name="BloodDonation"
+        component={BloodDonation}
+      /> */}
+    </Tab.Navigator>
   );
 }
 
@@ -157,56 +236,6 @@ function HosptialAdminStackView() {
         options={{ title: 'Edit Data' }}
       />
     </Stack.Navigator>
-  );
-}
-
-function PatientNavBar() {
-  return (
-    <Tab.Navigator
-      screenOptions={({ route }) => ({
-        tabBarIcon: ({ focused, color, size }) => {
-          let iconName;
-
-          if (route.name === 'Home') {
-            iconName = focused ? 'home' : 'home-outline';
-            size = focused ? 25 : 23;
-          } else if (route.name === 'Profile') {
-            iconName = focused ? 'person-circle' : 'person-circle-outline';
-            size = focused ? 25 : 23;
-          } else if (route.name == 'Notifications') {
-            iconName = focused ? 'notifications' : 'notifications-outline';
-            size = focused ? 25 : 23;
-          } else if (route.name == 'Reservations') {
-            iconName = focused ? 'list' : 'list-outline';
-            size = focused ? 25 : 23;
-          } else if (route.name == 'Search') {
-            iconName = focused ? 'search' : 'search-outline';
-            size = focused ? 25 : 23;
-          }
-
-          return <Ionicons name={iconName} size={size} color={color} />;
-        },
-        header: () => null,
-        tabBarActiveTintColor: '#1c1bad',
-        tabBarInactiveTintColor: '#000',
-      })}
-      activeColor="#1c1bad"
-      inactiveColor="#000"
-      barStyle={{ backgroundColor: '#fff' }}>
-      <Tab.Screen name="Home" component={PatientStackNav} />
-      <Tab.Screen name="Profile" component={PatientProfileStackNav} />
-      <Tab.Screen
-        name="Notifications"
-        component={PatientNotificationsTabNav}
-        options={{ tabBarBadge: 10 }}
-      />
-      <Tab.Screen name="Reservations" component={PatientReservations} />
-      <Tab.Screen name="Search" component={SearchStackNav} />
-      {/* <Tab.Screen
-        name="BloodDonation"
-        component={BloodDonation}
-      /> */}
-    </Tab.Navigator>
   );
 }
 

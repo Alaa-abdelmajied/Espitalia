@@ -1,4 +1,4 @@
-import React, {useRef, useState, useEffect} from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -16,14 +16,14 @@ import {
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import FlashMessage from 'react-native-flash-message';
-import {showMessage, hideMessage} from 'react-native-flash-message';
-import {Rating} from 'react-native-ratings';
+import { showMessage, hideMessage } from 'react-native-flash-message';
+import { Rating } from 'react-native-ratings';
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {Server_URL, Token_Secret} from '@env';
-import {useIsFocused} from '@react-navigation/native';
+import { Server_URL, Token_Secret } from '@env';
+import { useIsFocused } from '@react-navigation/native';
 
-export default function ProfileScreen({route}) {
+export default function ProfileScreen({ navigation, route }) {
   const {
     drID,
     drName,
@@ -100,13 +100,13 @@ export default function ProfileScreen({route}) {
         });
     } catch (err) {
       Alert.alert('Error', err.code, [
-        {text: 'Exit', onPress: () => BackHandler.exitApp()},
+        { text: 'Exit', onPress: () => BackHandler.exitApp() },
       ]);
     }
   };
 
   const scrollX = useRef(new Animated.Value(0)).current;
-  let {width: windowWidth, height: windowHeight} = useWindowDimensions();
+  let { width: windowWidth, height: windowHeight } = useWindowDimensions();
   windowHeight = windowHeight - 300;
 
   return loadData ? (
@@ -117,10 +117,19 @@ export default function ProfileScreen({route}) {
     <ScrollView>
       <View style={styles.container}>
         <View style={styles.headerContainer}>
-          <View style={styles.header}></View>
+          <View style={styles.header}>
+            <Pressable
+              style={{ alignSelf: 'flex-start', margin: 5 }}
+              onPress={() => navigation.goBack()}>
+              <Ionicons
+                name={'arrow-back'}
+                size={30}
+                color="#fff"></Ionicons>
+            </Pressable>
+          </View>
           <Image
             style={styles.avatar}
-            source={{uri: 'https://bootdey.com/img/Content/avatar/avatar6.png'}}
+            source={{ uri: 'https://bootdey.com/img/Content/avatar/avatar6.png' }}
           />
           {/* <View style={styles.body}> */}
           {/* <View style={styles.bodyContent}> */}
@@ -128,20 +137,20 @@ export default function ProfileScreen({route}) {
             <View style={styles.body}>
               <Text style={styles.dr_name}>{drName}</Text>
               <Text style={styles.description}>{specialization}</Text>
-              <View style={{flexDirection: 'row'}}>
+              <View style={{ flexDirection: 'row' }}>
                 <FontAwesome
                   name={'hospital-o'}
                   size={25}
                   color="#1c1bad"
-                  style={{margin: 5}}></FontAwesome>
+                  style={{ margin: 5 }}></FontAwesome>
                 <Text style={styles.description}>{hospitalName}</Text>
               </View>
-              <View style={{flexDirection: 'row'}}>
+              <View style={{ flexDirection: 'row' }}>
                 <Ionicons
                   name={'location-sharp'}
                   size={25}
                   color="#1c1bad"
-                  style={{margin: 5}}></Ionicons>
+                  style={{ margin: 5 }}></Ionicons>
                 <Text style={styles.description}>{hospitalAddress}</Text>
               </View>
               <View style={styles.customRatingBar}>
@@ -161,20 +170,20 @@ export default function ProfileScreen({route}) {
             <View style={styles.body}>
               <Text style={styles.dr_name}>{data.drName}</Text>
               <Text style={styles.description}>{data.specialization}</Text>
-              <View style={{flexDirection: 'row'}}>
+              <View style={{ flexDirection: 'row' }}>
                 <FontAwesome
                   name={'hospital-o'}
                   size={25}
                   color="#1c1bad"
-                  style={{margin: 5}}></FontAwesome>
+                  style={{ margin: 5 }}></FontAwesome>
                 <Text style={styles.description}>{data.hospitalName}</Text>
               </View>
-              <View style={{flexDirection: 'row'}}>
+              <View style={{ flexDirection: 'row' }}>
                 <Ionicons
                   name={'location-sharp'}
                   size={25}
                   color="#1c1bad"
-                  style={{margin: 5}}></Ionicons>
+                  style={{ margin: 5 }}></Ionicons>
                 <Text style={styles.description}>{data.hospitalAddress}</Text>
               </View>
               <View style={styles.customRatingBar}>
@@ -200,24 +209,24 @@ export default function ProfileScreen({route}) {
           pagingEnabled
           showsHorizontalScrollIndicator={false}
           onScroll={Animated.event(
-            [{nativeEvent: {contentOffset: {x: scrollX}}}],
-            {useNativeDriver: false},
+            [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+            { useNativeDriver: false },
           )}
           scrollEventThrottle={16}>
           {schedule.map((card, cardIndex) => {
             return (
-              <Animated.View style={{width: windowWidth}} key={cardIndex}>
+              <Animated.View style={{ width: windowWidth }} key={cardIndex}>
                 <View style={styles.scheduleCard}>
                   <View style={styles.dateHeader}>
-                    <Text style={{color: '#fff', fontSize: 20}}>
+                    <Text style={{ color: '#fff', fontSize: 20 }}>
                       {card.displayDate}
                     </Text>
                   </View>
-                  <View style={{margin: 30, alignItems: 'center'}}>
-                    <Text style={{color: '#000', fontSize: 20}}>
+                  <View style={{ margin: 30, alignItems: 'center' }}>
+                    <Text style={{ color: '#000', fontSize: 20 }}>
                       From: {card.from}
                     </Text>
-                    <Text style={{color: '#000', fontSize: 20}}>
+                    <Text style={{ color: '#000', fontSize: 20 }}>
                       To: {card.to}
                     </Text>
                   </View>
@@ -226,7 +235,7 @@ export default function ProfileScreen({route}) {
                     onPress={() =>
                       bookAppointment(card.date, card.from, card.to)
                     }>
-                    <Text style={{color: '#fff'}}>Book</Text>
+                    <Text style={{ color: '#fff' }}>Book</Text>
                   </Pressable>
                 </View>
               </Animated.View>
@@ -249,8 +258,8 @@ export default function ProfileScreen({route}) {
               <Animated.View
                 style={[
                   styles.normalDots,
-                  {width},
-                  {backgroundColor: '#1c1bad'},
+                  { width },
+                  { backgroundColor: '#1c1bad' },
                 ]}
                 key={cardIndex}
               />
@@ -263,7 +272,7 @@ export default function ProfileScreen({route}) {
         {comments.map((reviewCard, cardIndex) => {
           return (
             <View key={cardIndex} style={styles.commentsCard}>
-              <View style={{height: 150, width: '97%', alignSelf: 'center'}}>
+              <View style={{ height: 150, width: '97%', alignSelf: 'center' }}>
                 <Text style={styles.text}>{reviewCard.name}</Text>
                 <View
                   style={{
@@ -401,7 +410,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 35,
     shadowColor: '#000000',
-    shadowOffset: {width: -2, height: 2},
+    shadowOffset: { width: -2, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 3,
     elevation: 2,
@@ -436,7 +445,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     borderRadius: 10,
     shadowColor: '#000000',
-    shadowOffset: {width: -2, height: 2},
+    shadowOffset: { width: -2, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 3,
     elevation: 2,

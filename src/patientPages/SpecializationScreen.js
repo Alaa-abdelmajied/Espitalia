@@ -6,9 +6,11 @@ import {
   FlatList,
   TouchableOpacity,
   Alert,
-  ActivityIndicator
+  ActivityIndicator,
+  Pressable
 } from 'react-native';
 import { SearchBar } from 'react-native-elements';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import axios from 'axios';
 import { Server_URL } from '@env';
@@ -154,14 +156,22 @@ export default function Speciality({ navigation, route }) {
 
   return (
     <View style={styles.container}>
-      <SearchBar
-        lightTheme={true}
-        placeholder="search for specialization"
-        containerStyle={{ backgroundColor: '#f0f0f0' }}
-        onChangeText={value => updateSearch(value)}
-        value={search}
-        inputContainerStyle={{ borderRadius: 50, backgroundColor: '#fff' }}
-      />
+      <View style={{ flexDirection: 'row' }}>
+        <Pressable style={{flex: 1, alignSelf: 'center', marginLeft: 5 }} onPress={()=>navigation.goBack()}>
+          <Ionicons
+            name={'arrow-back'}
+            size={30}
+            color="#1c1bad"></Ionicons>
+        </Pressable>
+        <SearchBar
+          lightTheme={true}
+          placeholder="search for specialization"
+          containerStyle={{ flex: 12, backgroundColor: '#f0f0f0' }}
+          onChangeText={value => updateSearch(value)}
+          value={search}
+          inputContainerStyle={{ borderRadius: 50, backgroundColor: '#fff' }}
+        />
+      </View>
       <FlatList
         keyExtractor={(item, index) => index.toString()}
         data={specialization}
