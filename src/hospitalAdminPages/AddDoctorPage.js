@@ -23,7 +23,7 @@ dbachmann0@ning.com
 n8RPhN
 */
 
-const Day = ['Saterday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+const Day = ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
 const AddDoctorPage = ({ navigation, route }) => {
     // const [specializationsObj, setSpecializationsObj] = useState([]);

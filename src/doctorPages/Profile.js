@@ -17,8 +17,8 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import {Server_URL, Token_Secret, Credintials_Secret} from '@env';
 
 export default function UserProfileView() {
-  const [personalData, setPersonalData] = useState('');
-
+  const [personalData, setPersonalData] = useState({});
+  const [workingDays, setWorkingDays] = useState([]);
   useEffect(() => {
     const getPersonalData = async () => {
       try {
@@ -34,6 +34,7 @@ export default function UserProfileView() {
           })
           .then(response => {
             setPersonalData(response.data);
+            setWorkingDays(response.data.workingDays);
             console.log(response.data);
           })
           .catch(function (error) {
@@ -53,15 +54,17 @@ export default function UserProfileView() {
   windowHeight = windowHeight - 300;
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <View style={styles.header}>
         <View style={styles.headerContent}>
+          <Text>Logout</Text>
           <Image
             style={styles.avatar}
             source={{uri: 'https://bootdey.com/img/Content/avatar/avatar6.png'}}
           />
 
-          <Pressable onPress={() => console.log(personalData.schedule[0].from)}>
+          <Pressable
+            onPress={() => console.log(personalData.workingDays[0].from)}>
             <Text>press me</Text>
           </Pressable>
 
@@ -90,11 +93,9 @@ export default function UserProfileView() {
       <View style={styles.body}>
         <View style={styles.card}>
           <Text style={styles.cardTittle}>Profile Information</Text>
-          <Text style={styles.cardInfo}>- Karim Ahmed Saleh</Text>
           <Text style={styles.cardInfo}>- Phone numebr: .................</Text>
-          <Text style={styles.cardInfo}>- From: Alexandria , Egypt</Text>
           <Text style={styles.cardInfo}>- Email: {personalData.email}</Text>
-          {/* <View style={styles.appointmentsContainer}>
+          <View style={styles.appointmentsContainer}>
             <ScrollView
               horizontal={true}
               style={styles.scrollViewStyle}
@@ -105,7 +106,7 @@ export default function UserProfileView() {
                 {useNativeDriver: false},
               )}
               scrollEventThrottle={16}>
-              {personalData.schedule.map((card, cardIndex) => {
+              {workingDays.map((card, cardIndex) => {
                 return (
                   <Animated.View style={{width: windowWidth}} key={cardIndex}>
                     <View style={styles.scheduleCard}>
@@ -128,7 +129,7 @@ export default function UserProfileView() {
               })}
             </ScrollView>
             <View style={styles.indicatorContainer}>
-              {personalData.schedule.map((card, cardIndex) => {
+              {workingDays.map((card, cardIndex) => {
                 const width = scrollX.interpolate({
                   inputRange: [
                     windowWidth * (cardIndex - 1),
@@ -151,19 +152,19 @@ export default function UserProfileView() {
                 );
               })}
             </View>
-          </View> */}
-          {/* {personalData.schedule.map((item, index) => {
+          </View>
+          {/* {workingDays.map((item, index) => {
             return (
               <TouchableOpacity style={styles.appointmentsCard} key={index}>
+                <Text style={styles.info}>Day: {item.day}</Text>
                 <Text style={styles.info}>From: {item.from}</Text>
                 <Text style={styles.info}>To: {item.to} </Text>
-                <Text style={styles.info}>Date: {item.day}</Text>
               </TouchableOpacity>
             );
           })} */}
         </View>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -194,7 +195,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   body: {
-    backgroundColor: '#ffffff',
+    backgroundColor: '#f0f0f0',
     height: 500,
   },
   item: {
@@ -223,7 +224,7 @@ const styles = StyleSheet.create({
   },
 
   card: {
-    backgroundColor: '#f2f2f5',
+    backgroundColor: '#f0f0f0',
     // borderRadius: 10,
     padding: 10,
     flexGrow: 1,
@@ -259,34 +260,47 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
 
-  appointmentsCard: {
-    // flex: 1,
-    alignItems: 'center',
+  appointmentsContainer: {
+    height: 280,
     flexDirection: 'column',
-    justifyContent: 'center',
-    // alignItems: 'flex-start',
-    // marginBottom: 10,
-    width: '95%',
-    height: 230,
-    borderRadius: 15,
-    backgroundColor: '#fff',
-    alignSelf: 'center',
-    // marginLeft: 10,
-    margin: 4,
-    shadowColor: '#000',
-    shadowOpacity: 1,
-    shadowOffset: {
-      width: 3,
-      height: 3,
-    },
-    elevation: 2,
-    overflow: 'hidden',
-    // margin: '2%'
+    // backgroundColor: '#ff0',
   },
 
   indicatorContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+
+  normalDots: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginHorizontal: 4,
+  },
+
+  scheduleCard: {
+    flex: 1,
+    margin: 8,
+    width: 200,
+    height: 250,
+    overflow: 'hidden',
+    alignSelf: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 35,
+    shadowColor: '#000000',
+    shadowOffset: {width: -2, height: 2},
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+
+  dateHeader: {
+    backgroundColor: '#1c1bad',
+    height: '25%',
+    width: 200,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

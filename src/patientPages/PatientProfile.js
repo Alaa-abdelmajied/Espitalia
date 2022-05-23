@@ -56,7 +56,10 @@ export default function Profile({navigation}) {
       ).token;
       await axios
         .get(`${Server_URL}:3000/patient/oldAppointment/${token}`)
-        .then(response => setOldAppointments(response.data))
+        .then(response => {
+          setOldAppointments(response.data);
+          console.log(response.data);
+        })
         .catch(function (error) {
           console.log(error.message);
         });
@@ -93,9 +96,10 @@ export default function Profile({navigation}) {
   const toggleExpanded = () => {
     setCollapsed(!collapsed);
   };
-  const onPressReport = (id) => {
+  const onPressReport = (id, reviewed) => {
     navigation.navigate('Report', {
       appointmentID: id,
+      reviewed: reviewed,
     });
   };
 
@@ -152,27 +156,7 @@ export default function Profile({navigation}) {
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefreshing} />
       }>
-      {/* <Modal visible={showModal} animationType="fade" transparent={true}>
-      <View style={styles.logoutModal}>
-        <FontAwesome
-          name={'close'}
-          size={20}
-          color={'#fff'}
-          onPress={() => setShowModal(false)}></FontAwesome>
-        <Pressable onPress={onPressLogout}>
-          <Text style={{ fontSize: 15, color: '#fff' }}>Logout</Text>
-        </Pressable>
-        <Pressable
-          onPress={() => {
-            navigation.navigate('ChangePassword', {
-              profileChangePassword: true,
-            }),
-              setShowModal(false);
-          }}>
-          <Text style={{ fontSize: 15, color: '#fff' }}>Change Password</Text>
-        </Pressable>
-      </View>
-    </Modal> */}
+
       <View style={styles.header}></View>
       <Image
         style={styles.avatar}
@@ -272,7 +256,7 @@ export default function Profile({navigation}) {
                 style={styles.appointmentsCard}
                 key={item.appointmentID}
                 onPress={() =>
-                  onPressReport(item.appointmentID)
+                  onPressReport(item.appointmentID, item.reviewed)
                 }>
                 <Text style={styles.infoText}>
                   Hospital Name: {item.hospitalName}
