@@ -165,9 +165,9 @@ export default function Profile({navigation}) {
       <View
         style={{position: 'absolute', alignSelf: 'flex-end', marginTop: 15}}>
         <TouchableOpacity style={{margin: 5}} onPress={onPressLogout}>
-          <Pressable onPress={onPressLogout}>
+          {/* <Pressable onPress={onPressLogout}> */}
             <Text style={{fontSize: 15, color: '#fff'}}>Logout</Text>
-          </Pressable>
+          {/* </Pressable> */}
         </TouchableOpacity>
       </View>
       <View style={styles.body}>

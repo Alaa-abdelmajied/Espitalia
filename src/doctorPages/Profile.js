@@ -11,6 +11,8 @@ import {
   useWindowDimensions,
 } from 'react-native';
 
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import {Rating} from 'react-native-ratings';
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
@@ -56,8 +58,12 @@ export default function UserProfileView() {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
+        <TouchableOpacity style={{margin: 5, alignSelf: 'flex-end'}}>
+          {/* <Pressable onPress={onPressLogout}> */}
+          <Text style={{fontSize: 15, color: '#fff'}}>Logout</Text>
+          {/* </Pressable> */}
+        </TouchableOpacity>
         <View style={styles.headerContent}>
-          <Text>Logout</Text>
           <Image
             style={styles.avatar}
             source={{uri: 'https://bootdey.com/img/Content/avatar/avatar6.png'}}
@@ -90,70 +96,76 @@ export default function UserProfileView() {
           </View>
         </View>
       </View>
-      <View style={styles.body}>
-        <View style={styles.card}>
-          <Text style={styles.cardTittle}>Profile Information</Text>
-          <Text style={styles.cardInfo}>- Phone numebr: .................</Text>
-          <Text style={styles.cardInfo}>- Email: {personalData.email}</Text>
-          <View style={styles.appointmentsContainer}>
-            <ScrollView
-              horizontal={true}
-              style={styles.scrollViewStyle}
-              pagingEnabled
-              showsHorizontalScrollIndicator={false}
-              onScroll={Animated.event(
-                [{nativeEvent: {contentOffset: {x: scrollX}}}],
-                {useNativeDriver: false},
-              )}
-              scrollEventThrottle={16}>
-              {workingDays.map((card, cardIndex) => {
-                return (
-                  <Animated.View style={{width: windowWidth}} key={cardIndex}>
-                    <View style={styles.scheduleCard}>
-                      <View style={styles.dateHeader}>
-                        <Text style={{color: '#fff', fontSize: 20}}>
-                          {card.day}
-                        </Text>
-                      </View>
-                      <View style={{margin: 30, alignItems: 'center'}}>
-                        <Text style={{color: '#000', fontSize: 20}}>
-                          From: {card.from}
-                        </Text>
-                        <Text style={{color: '#000', fontSize: 20}}>
-                          To: {card.to}
-                        </Text>
-                      </View>
+      <View style={styles.card}>
+        <Text style={styles.title}>Personal Information</Text>
+        <View style={{flexDirection: 'row', alignItems: 'center', margin: 2,justifyContent:'center'}}>
+          <Ionicons name={'mail'} size={20} color={'#000'}></Ionicons>
+          <Text style={styles.mainText}>{personalData.email}</Text>
+        </View>
+        <View style={{flexDirection: 'row', alignItems: 'center', margin: 2,justifyContent:'center'}}>
+          <FontAwesome name={'phone'} size={20} color={'#000'}></FontAwesome>
+          <Text style={styles.mainText}>0111345454</Text>
+        </View>
+        <View style={styles.appointmentsContainer}>
+          <Text style={styles.title}>Working Days</Text>
+          <ScrollView
+            horizontal={true}
+            style={styles.scrollViewStyle}
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            onScroll={Animated.event(
+              [{nativeEvent: {contentOffset: {x: scrollX}}}],
+              {useNativeDriver: false},
+            )}
+            scrollEventThrottle={16}>
+            {workingDays.map((card, cardIndex) => {
+              return (
+                <Animated.View style={{width: windowWidth}} key={cardIndex}>
+                  <View style={styles.scheduleCard}>
+                    <View style={styles.dateHeader}>
+                      <Text style={{color: '#fff', fontSize: 20}}>
+                        {card.day}
+                      </Text>
                     </View>
-                  </Animated.View>
-                );
-              })}
-            </ScrollView>
-            <View style={styles.indicatorContainer}>
-              {workingDays.map((card, cardIndex) => {
-                const width = scrollX.interpolate({
-                  inputRange: [
-                    windowWidth * (cardIndex - 1),
-                    windowWidth * cardIndex,
-                    windowWidth * (cardIndex + 1),
-                  ],
-                  outputRange: [8, 16, 8],
-                  extrapolate: 'clamp',
-                });
+                    <View style={{margin: 30, alignItems: 'center'}}>
+                      <Text style={{color: '#000', fontSize: 20}}>
+                        From: {card.from}
+                      </Text>
+                      <Text style={{color: '#000', fontSize: 20}}>
+                        To: {card.to}
+                      </Text>
+                    </View>
+                  </View>
+                </Animated.View>
+              );
+            })}
+          </ScrollView>
+          <View style={styles.indicatorContainer}>
+            {workingDays.map((card, cardIndex) => {
+              const width = scrollX.interpolate({
+                inputRange: [
+                  windowWidth * (cardIndex - 1),
+                  windowWidth * cardIndex,
+                  windowWidth * (cardIndex + 1),
+                ],
+                outputRange: [8, 16, 8],
+                extrapolate: 'clamp',
+              });
 
-                return (
-                  <Animated.View
-                    style={[
-                      styles.normalDots,
-                      {width},
-                      {backgroundColor: '#1c1bad'},
-                    ]}
-                    key={cardIndex}
-                  />
-                );
-              })}
-            </View>
+              return (
+                <Animated.View
+                  style={[
+                    styles.normalDots,
+                    {width},
+                    {backgroundColor: '#1c1bad'},
+                  ]}
+                  key={cardIndex}
+                />
+              );
+            })}
           </View>
-          {/* {workingDays.map((item, index) => {
+        </View>
+        {/* {workingDays.map((item, index) => {
             return (
               <TouchableOpacity style={styles.appointmentsCard} key={index}>
                 <Text style={styles.info}>Day: {item.day}</Text>
@@ -162,7 +174,6 @@ export default function UserProfileView() {
               </TouchableOpacity>
             );
           })} */}
-        </View>
       </View>
     </ScrollView>
   );
@@ -201,6 +212,13 @@ const styles = StyleSheet.create({
   item: {
     flexDirection: 'row',
   },
+  title: {
+    alignSelf: 'center',
+    fontSize: 20,
+    color: '#000',
+    fontWeight: 'bold',
+    marginTop: 20,
+  },
   infoContent: {
     flex: 1,
     alignItems: 'flex-start',
@@ -223,13 +241,17 @@ const styles = StyleSheet.create({
     color: '#000000',
   },
 
+  mainText: {
+    margin: 3,
+    color: '#000',
+    fontSize: 18,
+    marginLeft: 10,
+  },
+
   card: {
     backgroundColor: '#f0f0f0',
-    // borderRadius: 10,
     padding: 10,
     flexGrow: 1,
-    // height: 400,
-    marginTop: 10,
   },
   cardTittle: {
     color: '#000000',
