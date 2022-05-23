@@ -11,6 +11,7 @@ import {
     Text,
     Pressable,
     Modal,
+    TextInput,
     TouchableOpacity,
     FlatList,
 } from 'react-native';
@@ -19,7 +20,6 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Icon from 'react-native-vector-icons/dist/FontAwesome';
 import Icon5 from 'react-native-vector-icons/dist/FontAwesome5';
-import { TextInput } from 'react-native-paper';
 
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
@@ -38,7 +38,7 @@ export default function ProfileScreen({ navigation, route }) {
 
 
 
-    //console.log(route.params.id);
+    console.log(Server_URL);
     const getDoctor = async () => {
     token = JSON.parse(await EncryptedStorage.getItem(Token_Secret)).token;
     //console.log("..",route.params.id);
@@ -73,7 +73,6 @@ export default function ProfileScreen({ navigation, route }) {
         // token = JSON.parse(await EncryptedStorage.getItem(Token_Secret)).token;
         const date = new Date(cardData.date);
         console.log(date);
-
     }
 
 
@@ -93,7 +92,7 @@ export default function ProfileScreen({ navigation, route }) {
                     <View style={styles.header}></View>
                     <Image
                         style={styles.avatar}
-                        source={require('../../images/dr.png')}
+                        source={require('../../images/DoctorIcon.jpg')}
                     />
                     <View style={styles.body}>
                         {/* <View style={styles.bodyContent}> */}
@@ -180,10 +179,8 @@ export default function ProfileScreen({ navigation, route }) {
                     <View style={[styles.centeredView]}>
                         <View style={[styles.modalView]}>
                             <View style={[styles.workingDay, { width: '100%', alignItems: 'center' }]}>
-                                <View style={styles.view}>
-                                    <TextInput style={styles.input} placeholder='Name' onChangeText={text => setName(text)} />
-                                    <TextInput style={styles.input} placeholder='Phone number' onChangeText={text => setPhoneNumber(text)} />
-                                </View>
+                                    <TextInput style={styles.inputData} placeholder='Name' onChangeText={text => setName(text)} />
+                                    <TextInput style={styles.inputData} placeholder='Phone number' onChangeText={text => setPhoneNumber(text)} />
                                 <View style={{ flexDirection: 'row' }}>
                                     <Pressable
                                         style={[styles.button, styles.buttonClose]}
@@ -223,9 +220,9 @@ const styles = StyleSheet.create({
     },
     view: {
         // flexDirection: 'row',
-        height: 180,
+        // height: 180,
         // width: 200,
-        padding: 5,
+        // padding: 5,
         alignItems: 'center',
         marginTop: 10,
         marginBottom: 10,
@@ -247,13 +244,15 @@ const styles = StyleSheet.create({
         // flex: 1,
         width: 130,
         height: 130,
-        borderRadius: 63,
+        borderRadius: 100,
         // borderWidth: 1,
-        borderColor: '#fff',
+        backgroundColor: '#fff',
+        borderColor: '#000',
         marginBottom: 10,
         alignSelf: 'center',
         position: 'absolute',
         marginTop: 80,
+        // marginBottom: 80,
     },
 
     body: {
@@ -282,6 +281,7 @@ const styles = StyleSheet.create({
     },
 
     dr_name: {
+        marginTop: 20,
         fontSize: 28,
         color: '#000',
         fontWeight: 'bold',
@@ -440,10 +440,11 @@ const styles = StyleSheet.create({
     },
     input: {
         flex: 1,
+        // width: '100%',
         // padding: 5,
         margin: 10,
         borderBottomColor: '#1c1bad',
-        // borderBottomWidth: 1,
+        borderBottomWidth: 1,
         color: 'black',
         fontSize: 15,
     },
@@ -451,5 +452,13 @@ const styles = StyleSheet.create({
         // flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-evenly',
+    },
+    inputData: {
+        // borderWidth: 1,
+        borderBottomWidth: 1,
+        borderColor: '#1c1bad',
+        margin: 5,
+        width: 200,
+        padding: 10,
     },
 });

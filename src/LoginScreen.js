@@ -4,7 +4,7 @@ import Svg, { Path } from 'react-native-svg';
 //import RadioGroup from 'react-native-radio-buttons-group';
 import { CommonActions, StackActions } from '@react-navigation/native';
 import { NavigationActions } from 'react-navigation';
-
+// require("dotenv").config();
 
 import RadioGroup from 'react-native-radio-button-group';
 /*
@@ -172,7 +172,7 @@ export default function Login({ navigation, route }) {
         })
         .catch(function (error) {
           setIsVisible(true);
-          console.log(errorMeesage);
+          console.log('axios faild',errorMeesage, Server_URL);
           console.log('ERROR:', error);
         });
     }

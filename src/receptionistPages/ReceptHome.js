@@ -33,6 +33,7 @@ export default function ContactsView({ navigation, route }) {
     token = JSON.parse(await EncryptedStorage.getItem(Token_Secret)).token;
     // console.log("..",route.params);
     // console.log(token);
+    console.log('Homepage:', Server_URL);
     console.log('fetching data...');
     axios
       .get(`${Server_URL}:3000/receptionist/GetSpecializations`, {

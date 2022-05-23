@@ -18,7 +18,8 @@ import { Server_URL, Token_Secret, Credintials_Secret } from '@env';
 
 
 export default function ContactsView({ navigation, route }) {
-    //console.log(route.params.name);
+    // console.log(route.params.name);
+    console.log(Server_URL);
     const [doctors, setDoctors] = useState([]);
     const [dataChanged, setDataChanged] = useState(true);
     var token;
