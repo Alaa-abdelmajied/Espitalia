@@ -119,7 +119,10 @@ export default function Login({ navigation, route }) {
       //   console.log('select hospital');
       //   setIsVisible(true);
       // }
+      console.log('Login page',Server_URL);
       const url = `${Server_URL}:3000/${selectedStaff.id}/login`;
+      console.log('Server URL:',Server_URL);
+      console.log(email, password, url);
       axios
         .post(url, {
           email: email,
@@ -152,14 +155,14 @@ export default function Login({ navigation, route }) {
               StackActions.replace('HosptialAdminHomePage', { screen: 'Home', params: response.data })
             );
           }
-          else if(selectedStaff.id == 'receptionist'){
+          else if (selectedStaff.id == 'receptionist') {
             navigation.dispatch(StackActions.popToTop());
             navigation.dispatch(
               StackActions.replace('ReceptHomePage', { screen: 'Home', params: response.data })
             );
             // console.log(selectedStaff.id);
           }
-          else if(selectedStaff.id == 'doctor'){
+          else if (selectedStaff.id == 'doctor') {
             navigation.dispatch(StackActions.popToTop());
             navigation.dispatch(
               StackActions.replace('HosptialAdminHomePage', { screen: 'Home', params: response.data })

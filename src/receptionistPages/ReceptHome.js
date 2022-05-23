@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -7,38 +7,52 @@ import {
   Image,
   Alert,
   ScrollView,
+  RefreshControl,
   TextInput,
   FlatList,
-TouchableOpacity
+  TouchableOpacity
 } from 'react-native';
 
-const data = [
-  { id: 1, icon: "https://bootdey.com/img/Content/avatar/avatar1.png", description: "Dr Ahmed mohamed" },
-  { id: 2, icon: "https://bootdey.com/img/Content/avatar/avatar2.png", description: "Dr Ahmed Yousry" },
-  { id: 3, icon: "https://bootdey.com/img/Content/avatar/avatar3.png", description: "Dr Amira Amr" },
-  { id: 4, icon: "https://bootdey.com/img/Content/avatar/avatar4.png", description: "Dr Mariam Mohamed" },
-  { id: 5, icon: "https://bootdey.com/img/Content/avatar/avatar5.png", description: "Dr Layla Amir" },
-  { id: 6, icon: "https://bootdey.com/img/Content/avatar/avatar6.png", description: "Dr karima mohamed" },
-  { id: 7, icon: "https://bootdey.com/img/Content/avatar/avatar1.png", description: "Dr Amira Ali" },
-  { id: 8, icon: "https://bootdey.com/img/Content/avatar/avatar2.png", description: "Dr Karma Slem" },
-  { id: 9, icon: "https://bootdey.com/img/Content/avatar/avatar3.png", description: "Dr Nadia Khairy" },
-  { id: 10, icon: "https://bootdey.com/img/Content/avatar/avatar4.png", description: "Dr Marwa Mohamed" },
-  { id: 11, icon: "https://bootdey.com/img/Content/avatar/avatar5.png", description: "Dr Malak Amr" },
-  { id: 12, icon: "https://bootdey.com/img/Content/avatar/avatar6.png", description: "Dr karima Ali" },
-  { id: 13, icon: "https://bootdey.com/img/Content/avatar/avatar1.png", description: "Dr myriam selim" },
-  { id: 14, icon: "https://bootdey.com/img/Content/avatar/avatar6.png", description: "Dr Layla mohamed" },
-  { id: 15, icon: "https://bootdey.com/img/Content/avatar/avatar1.png", description: "Dr Mohamed Ali" },
-  { id: 16, icon: "https://bootdey.com/img/Content/avatar/avatar2.png", description: "Dr Nayera Yousry" },
-  { id: 17, icon: "https://bootdey.com/img/Content/avatar/avatar3.png", description: "Dr Yasmine Amr" },
-  { id: 18, icon: "https://bootdey.com/img/Content/avatar/avatar4.png", description: "Dr Logine Mohamed" },
-  { id: 19, icon: "https://bootdey.com/img/Content/avatar/avatar5.png", description: "Dr Marcelle Amir" },
-  { id: 20, icon: "https://bootdey.com/img/Content/avatar/avatar6.png", description: "Dr Mayar mohamed" },
-  { id: 21, icon: "https://bootdey.com/img/Content/avatar/avatar1.png", description: "Dr Anir Mohamed" },
-];
+import axios from 'axios';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import { Server_URL, Token_Secret, Credintials_Secret } from '@env';
 
-export default function ContactsView({ navigation }) {
+export default function ContactsView({ navigation, route }) {
+  // const data = ["Dermatology (Skin)", "Dentistry (Teeth)", "Psychiatry (Mental-Emotional or Behavioral Disorders)", "Pediatrics and NewBorn (Child)", "Neurology (Brain & Nerves)"];
+  const [specializations, setSpecializations] = useState([]);
+  // const [dataChanged, setDataChanged] = useState(true);
 
-  const [nameAddress,setNameAddress] = useState('')
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    getSpecializations().then(setRefreshing(false));
+  },[]);
+
+  var token;
+  const getSpecializations = async () => {
+    token = JSON.parse(await EncryptedStorage.getItem(Token_Secret)).token;
+    // console.log("..",route.params);
+    // console.log(token);
+    console.log('fetching data...');
+    axios
+      .get(`${Server_URL}:3000/receptionist/GetSpecializations`, {
+        headers: {
+          'x-auth-token': token
+        }
+      })
+      .then(function (response) {
+        setSpecializations(response.data);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  }
+  
+  useEffect(() => {
+    getSpecializations();
+  }, []);
+  const [nameAddress, setNameAddress] = useState('')
+
   return (
     <View style={styles.container}>
       <View style={styles.formContent}>
@@ -53,19 +67,23 @@ export default function ContactsView({ navigation }) {
 
       <FlatList
         style={styles.notificationList}
-        data={data}
+        data={specializations}
         keyExtractor={(item) => {
-          return item.id;
+          return item.toString();
         }}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+          />
+        }
         renderItem={({ item }) => {
           return (
-            <TouchableOpacity onPress={() => navigation.navigate('doctorPage')}>
-            <View style={styles.notificationBox}>
-              <Image style={styles.image}
-                source={{ uri: item.icon }} />
+            <TouchableOpacity onPress={() => navigation.navigate('DoctorsListPage', { name: item })}>
+              <View style={styles.notificationBox}>
 
-              <Text style={styles.name}>{item.description}</Text>
-            </View>
+                <Text style={styles.name}>{item}</Text>
+              </View>
             </TouchableOpacity>
           )
         }} />
@@ -111,16 +129,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   notificationList: {
+    height: '100%',
     marginTop: 0,
     padding: 0,
   },
   notificationBox: {
+    margin: 10,
+    height: 80,
     paddingTop: 10,
     paddingBottom: 10,
     marginTop: 5,
     backgroundColor: '#FFFFFF',
     flexDirection: 'row',
     borderRadius: 10,
+    elevation: 4,
   },
   image: {
     width: 45,

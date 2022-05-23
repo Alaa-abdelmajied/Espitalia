@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import {
   Button,
@@ -19,9 +19,12 @@ import {
 } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
+import { Server_URL } from '@env';
 
 export default function HomeScreen({ navigation }) {
-
+  useEffect(() => {
+    console.log('Welcome Screen',Server_URL);
+  })
 
   return (
 
