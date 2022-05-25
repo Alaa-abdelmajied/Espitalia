@@ -26,7 +26,7 @@ export default function ContactsView({ navigation, route }) {
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     getSpecializations().then(setRefreshing(false));
-  },[]);
+  }, []);
 
   var token;
   const getSpecializations = async () => {
@@ -48,7 +48,7 @@ export default function ContactsView({ navigation, route }) {
         console.log(error);
       });
   }
-  
+
   useEffect(() => {
     getSpecializations();
   }, []);

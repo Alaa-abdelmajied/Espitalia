@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
     StyleSheet,
     Text,
@@ -9,7 +9,8 @@ import {
     ScrollView,
     TextInput,
     FlatList,
-    TouchableOpacity
+    TouchableOpacity,
+    RefreshControl,
 } from 'react-native';
 
 import axios from 'axios';
@@ -19,13 +20,18 @@ import { Server_URL, Token_Secret, Credintials_Secret } from '@env';
 
 export default function ContactsView({ navigation, route }) {
     // console.log(route.params.name);
+    const [refreshing, setRefreshing] = useState(false);
+    const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    getDoctorsWithSpecificSpecialization().then(setRefreshing(false));
+  }, []);
     console.log(Server_URL);
     const [doctors, setDoctors] = useState([]);
     const [dataChanged, setDataChanged] = useState(true);
     var token;
     const getDoctorsWithSpecificSpecialization = async () => {
         token = JSON.parse(await EncryptedStorage.getItem(Token_Secret)).token;
-        console.log("..",route.params.name);
+        console.log("..", route.params.name);
         // console.log(token);
         // console.log('hi');
 
@@ -37,7 +43,7 @@ export default function ContactsView({ navigation, route }) {
             }
         })
             .then(function (response) {
-                console.log(response.data);
+                // console.log(response.data);
                 setDoctors(response.data);
             })
             .catch(function (error) {
@@ -71,6 +77,12 @@ export default function ContactsView({ navigation, route }) {
                 keyExtractor={(item) => {
                     return item._id.toString();
                 }}
+                refreshControl={
+                    <RefreshControl
+                      refreshing={refreshing}
+                      onRefresh={onRefresh}
+                    />
+                  }
                 renderItem={({ item }) => {
                     return (
                         <TouchableOpacity onPress={() => navigation.navigate('DoctorPage', { id: item._id })}>

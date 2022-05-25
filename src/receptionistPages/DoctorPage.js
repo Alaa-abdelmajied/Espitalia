@@ -1,4 +1,4 @@
-import React, { useRef,useEffect } from 'react';
+import React, { useRef, useEffect, useCallback } from 'react';
 import { useState } from 'react';
 
 import {
@@ -14,6 +14,7 @@ import {
     TextInput,
     TouchableOpacity,
     FlatList,
+    RefreshControl,
 } from 'react-native';
 
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -30,45 +31,50 @@ export default function ProfileScreen({ navigation, route }) {
     const [modalVisible, setModalVisible] = useState(false);
     const [name, setName] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
-    const[doctor,setDoctor] = useState({});
-    const [appointments,setAppointments] = useState([]);
+    const [doctor, setDoctor] = useState({});
+    const [appointments, setAppointments] = useState([]);
     const [dataChanged, setDataChanged] = useState(true);
     var token;
     const [cardData, setCardData] = useState({});
 
-
-
-    console.log(Server_URL);
+    // console.log(dataChanged);
+    const [refreshing, setRefreshing] = useState(false);
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        getDoctor().then(setRefreshing(false));
+    }, []);
     const getDoctor = async () => {
-    token = JSON.parse(await EncryptedStorage.getItem(Token_Secret)).token;
-    //console.log("..",route.params.id);
-    // console.log(token);
-    // console.log('hi');
+        console.log(Server_URL);
+        token = JSON.parse(await EncryptedStorage.getItem(Token_Secret)).token;
+        //console.log("..",route.params.id);
+        // console.log(token);
+        // console.log('hi');
 
-    axios({
-        method: 'get',
-        url: `${Server_URL}:3000/receptionist/getDoctor/${route.params.id}`,
-        headers: {
-            'x-auth-token': token
-        }
-    })
-        .then(function (response) {
-           // console.log(response.data);
-            setDoctor(response.data);
-            setAppointments(response.data.schedule);
-
+        axios({
+            method: 'get',
+            url: `${Server_URL}:3000/receptionist/getDoctor/${route.params.id}`,
+            headers: {
+                'x-auth-token': token
+            }
         })
-        .catch(function (error) {
-            console.log(error);
-        });
-}
+            .then(function (response) {
+                // console.log(response.data);
+                setDoctor(response.data);
+                setAppointments(response.data.schedule);
+
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+    }
     useEffect(() => {
         if (dataChanged) {
+            console.log(dataChanged);
             getDoctor();
             setDataChanged(false);
         }
     });
-    
+
     const DoBooking = async () => {
         // token = JSON.parse(await EncryptedStorage.getItem(Token_Secret)).token;
         const date = new Date(cardData.date);
@@ -86,13 +92,20 @@ export default function ProfileScreen({ navigation, route }) {
     windowHeight = windowHeight - 300;
 
     return (
-        <ScrollView>
+        <ScrollView
+            refreshControl={
+                <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
+                />
+            }
+        >
             <View style={styles.container}>
                 <View style={styles.headerContainer}>
                     <View style={styles.header}></View>
                     <Image
                         style={styles.avatar}
-                        source={require('../../images/DoctorIcon.jpg')}
+                        source={require('../../images/DoctorIcon_black.png')}
                     />
                     <View style={styles.body}>
                         {/* <View style={styles.bodyContent}> */}
@@ -118,7 +131,7 @@ export default function ProfileScreen({ navigation, route }) {
                                         <View style={styles.dateHeader}>
                                             <Text style={{ color: '#fff', fontSize: 20 }}>
                                                 {
-                                                card.date.split('T')[0]
+                                                    card.date.split('T')[0]
                                                 }
                                             </Text>
                                         </View>
@@ -130,10 +143,10 @@ export default function ProfileScreen({ navigation, route }) {
                                                 To: {card.to}
                                             </Text>
                                         </View>
-                                        <Pressable style={styles.bookButton} onPress={() => { 
-                                            setModalVisible(!modalVisible) 
+                                        <Pressable style={styles.bookButton} onPress={() => {
+                                            setModalVisible(!modalVisible)
                                             setCardData(card);
-                                            }}>
+                                        }}>
                                             <Text style={{ color: '#fff' }}>Book</Text>
                                         </Pressable>
                                     </View>
@@ -179,8 +192,8 @@ export default function ProfileScreen({ navigation, route }) {
                     <View style={[styles.centeredView]}>
                         <View style={[styles.modalView]}>
                             <View style={[styles.workingDay, { width: '100%', alignItems: 'center' }]}>
-                                    <TextInput style={styles.inputData} placeholder='Name' onChangeText={text => setName(text)} />
-                                    <TextInput style={styles.inputData} placeholder='Phone number' onChangeText={text => setPhoneNumber(text)} />
+                                <TextInput style={styles.inputData} placeholder='Name' onChangeText={text => setName(text)} />
+                                <TextInput style={styles.inputData} placeholder='Phone number' onChangeText={text => setPhoneNumber(text)} />
                                 <View style={{ flexDirection: 'row' }}>
                                     <Pressable
                                         style={[styles.button, styles.buttonClose]}
