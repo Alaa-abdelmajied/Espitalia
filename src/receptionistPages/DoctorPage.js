@@ -29,8 +29,10 @@ import { Server_URL, Token_Secret, Credintials_Secret } from '@env';
 
 export default function ProfileScreen({ navigation, route }) {
     const [modalVisible, setModalVisible] = useState(false);
+    // Modal data
     const [name, setName] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
+    //--- 
     const [doctor, setDoctor] = useState({});
     const [appointments, setAppointments] = useState([]);
     const [dataChanged, setDataChanged] = useState(true);
@@ -76,9 +78,31 @@ export default function ProfileScreen({ navigation, route }) {
     });
 
     const DoBooking = async () => {
-        // token = JSON.parse(await EncryptedStorage.getItem(Token_Secret)).token;
-        const date = new Date(cardData.date);
-        console.log(date);
+        console.log(Server_URL);
+
+        const token = JSON.parse(await EncryptedStorage.getItem(Token_Secret)).token;
+        axios({
+            method: 'post',
+            url: `${Server_URL}:3000/receptionist/book`,
+            data: {
+                patientPhoneNumber: phoneNumber,
+                patientName: name,
+                drId: doctor._id,
+                date: cardData.date,
+                from: cardData.from,
+                to: cardData.to
+            },
+            headers: {
+                'x-auth-token': token
+            }
+        })
+            .then(function (response) {
+                console.log('done');
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+
     }
 
 
@@ -126,7 +150,7 @@ export default function ProfileScreen({ navigation, route }) {
                         scrollEventThrottle={15}>
                         {appointments.map((card, cardIndex) => {
                             return (
-                                <Animated.View style={{ width: windowWidth }} key={cardIndex.toString()}>
+                                <Animated.View style={{ width: windowWidth, }} key={cardIndex.toString()}>
                                     <View style={styles.scheduleCard}>
                                         <View style={styles.dateHeader}>
                                             <Text style={{ color: '#fff', fontSize: 20 }}>
@@ -143,12 +167,18 @@ export default function ProfileScreen({ navigation, route }) {
                                                 To: {card.to}
                                             </Text>
                                         </View>
-                                        <Pressable style={styles.bookButton} onPress={() => {
-                                            setModalVisible(!modalVisible)
-                                            setCardData(card);
-                                        }}>
-                                            <Text style={{ color: '#fff' }}>Book</Text>
-                                        </Pressable>
+                                        <View style={{flexDirection: 'row', margin: 5, justifyContent: 'space-between'}}>
+
+                                            <Pressable style={styles.bookButton} onPress={() => {
+                                                setModalVisible(!modalVisible)
+                                                setCardData(card);
+                                            }}>
+                                                <Text style={{ color: '#fff' }}>Book</Text>
+                                            </Pressable>
+                                            <Pressable style={styles.bookButton} onPress={() => {navigation.navigate('AppointmentsList', {doctorID: doctor._id, scheduleID: card._id})}}>
+                                                <Text style={{ color: '#fff' }}>Appointments</Text>
+                                            </Pressable>
+                                        </View>
                                     </View>
                                 </Animated.View>
                             );
@@ -170,10 +200,10 @@ export default function ProfileScreen({ navigation, route }) {
                                 <Animated.View
                                     style={[
                                         styles.normalDots,
-                                        { width },
+                                        { width: 2 },
                                         { backgroundColor: card.color },
                                     ]}
-                                    key={cardIndex}
+                                    key={cardIndex.toString()}
                                 />
                             );
                         })}
@@ -474,4 +504,7 @@ const styles = StyleSheet.create({
         width: 200,
         padding: 10,
     },
+    ScrollView: {
+        height: 300
+    }
 });
