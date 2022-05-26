@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import Accordion from 'react-native-collapsible/Accordion';
 import {
   ScrollView,
@@ -10,123 +10,45 @@ import {
   Modal,
   TextInput,
   Image,
-  Pressable,
+  Alert,
+  FlatList,
+  BackHandler
 } from 'react-native';
-
-import * as Animatable from 'react-native-animatable';
+import PatientAccordion from '../../utils/PatientsAccordion';
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {Server_URL, Token_Secret, Credintials_Secret} from '@env';
 
-const DUMMY_TEXT =
-  'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.';
-
-const CONTENT = [
-  {
-    title: 'Alaa Abdelmajied',
-    content: DUMMY_TEXT,
-  },
-  {
-    title: 'Maram Ghazal',
-    content: DUMMY_TEXT,
-  },
-  {
-    title: 'Omar Shalaby',
-    content: DUMMY_TEXT,
-  },
-];
-
 export default function DoctorHome({navigation}) {
-  //FIXME: way of returning data
 
   const [currentAppointments, setCurrentAppointment] = useState([]);
-  const [patients, setPatients] = useState([]);
-
-  const getCurrentAppointments = async () => {
-    try {
-      const token = JSON.parse(
-        await EncryptedStorage.getItem(Token_Secret),
-      ).token;
-      await axios
-        .get(`${Server_URL}:3000/doctor/currentDayAppointments`, {
-          headers: {
-            'x-auth-token': token,
-          },
-        })
-        .then(response => {
-          setCurrentAppointment(response.data);
-          setPatients(response.data[0].currentShiftPatients);
-          console.log(response.data);
-        })
-        .catch(function (error) {
-          console.log(error.message);
-        });
-    } catch (err) {
-      Alert.alert('Error', err.code, [
-        {text: 'Exit', onPress: () => BackHandler.exitApp()},
-      ]);
-    }
-  };
 
   useEffect(() => {
+    const getCurrentAppointments = async () => {
+      try {
+        const token = JSON.parse(
+          await EncryptedStorage.getItem(Token_Secret),
+        ).token;
+        await axios
+          .get(`${Server_URL}:3000/doctor/currentDayAppointments`, {
+            headers: {
+              'x-auth-token': token,
+            },
+          })
+          .then(response => {
+            setCurrentAppointment(response.data);
+          })
+          .catch(function (error) {
+            console.log(error.message);
+          });
+      } catch (err) {
+        Alert.alert('Error', err.code, [
+          {text: 'Exit', onPress: () => BackHandler.exitApp()},
+        ]);
+      }
+    };
     getCurrentAppointments();
   }, []);
-
-  const [activeSections, setActiveSections] = useState([]);
-  const [showModal, setShowModal] = useState(false);
-
-  const setSections = sections => {
-    setActiveSections(sections.includes(undefined) ? [] : sections);
-  };
-
-  const renderHeader = (section, _, isActive) => {
-    return (
-      <Animatable.View
-        duration={400}
-        style={[styles.header, isActive ? styles.active : styles.inactive]}
-        transition="backgroundColor"
-        flexDirection="row">
-        <Text style={{color: '#000', fontSize: 18}}>Patient: </Text>
-        <Text style={styles.headerText}>{section.patientName}</Text>
-      </Animatable.View>
-    );
-  };
-
-  const onPressHistory = () => {
-    navigation.navigate('History');
-  };
-
-  const renderContent = (section, _, isActive) => {
-    return (
-      <Animatable.View
-        duration={400}
-        style={[styles.content, isActive ? styles.active : styles.inactive]}
-        transition="backgroundColor">
-        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-          <Pressable style={{backgroundColor: '#1c1bad', padding: 5}}>
-            <Text style={{color: '#fff'}}>Entered</Text>
-          </Pressable>
-          <Pressable
-            style={{backgroundColor: '#1c1bad', padding: 5}}
-            onPress={onPressHistory}>
-            <Text style={{color: '#fff'}}>Show History</Text>
-          </Pressable>
-          <Pressable
-            style={{backgroundColor: '#1c1bad', padding: 5}}
-            onPress={() => setShowModal(true)}>
-            <Text style={{color: '#fff'}}>Add Report</Text>
-          </Pressable>
-          <Pressable style={{backgroundColor: '#1c1bad', padding: 5}}>
-            <Text style={{color: '#fff'}}>End Appointment</Text>
-          </Pressable>
-        </View>
-      </Animatable.View>
-    );
-  };
-
-  const onPressSave = () => {
-    setShowModal(false);
-  };
 
   return (
     <View style={styles.container}>
@@ -135,51 +57,16 @@ export default function DoctorHome({navigation}) {
           style={styles.Image}
           source={require('../../images/app_logo-removebg-preview.png')}></Image>
       </View>
-      <ScrollView>
-        <Modal
-          visible={showModal}
-          transparent
-          onRequestClose={() => setShowModal(false)}>
-          <View style={styles.centeredView}>
-            <View style={styles.modal}>
-              <View style={styles.modalTitle}>
-                <Text style={{color: '#fff', fontSize: 25}}>Enter</Text>
-              </View>
-              <View style={styles.modalBody}>
-                <TextInput
-                  style={styles.inputFeilds}
-                  placeholder="Report"></TextInput>
-                <TextInput
-                  style={styles.inputFeilds}
-                  placeholder="Prescription"></TextInput>
-              </View>
-              <View style={styles.modalButton}>
-                <Button title="Save" onPress={onPressSave}></Button>
-              </View>
-            </View>
+      <Text style={styles.title}>Today's appointments</Text>
+      <FlatList
+        data={currentAppointments}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={item => (
+          <View>
+            <PatientAccordion item={item.item} navigation={navigation}/>
           </View>
-        </Modal>
-        {/* <Text style={styles.pageHeader}>Home</Text> */}
-        <Pressable onPress={() => console.log(patients)}>
-          <Text>press me</Text>
-        </Pressable>
-        <Text style={styles.title}>Today's appointments</Text>
-        <Text style={styles.title}>
-          From: {currentAppointments[0].shift.from} {'\n'} To:
-          {currentAppointments[0].shift.to}
-        </Text>
-        <Accordion
-          activeSections={activeSections}
-          sections={patients}
-          touchableComponent={TouchableOpacity}
-          expandMultiple={false}
-          renderHeader={renderHeader}
-          renderContent={renderContent}
-          duration={400}
-          onChange={setSections}
-          renderAsFlatList={false}
-        />
-      </ScrollView>
+        )}
+      />
     </View>
   );
 }
