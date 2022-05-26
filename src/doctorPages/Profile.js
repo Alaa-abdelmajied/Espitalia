@@ -29,7 +29,7 @@ export default function UserProfileView() {
         ).token;
         console.log(token);
         await axios
-          .get(`${Server_URL}:3000/doctor/doctor`, {
+          .get(`${Server_URL}:3000/doctor/doctorProfile`, {
             headers: {
               'x-auth-token': token,
             },
