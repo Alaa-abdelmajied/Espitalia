@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 
 import {
   Button,
@@ -18,18 +18,20 @@ import {
   TouchableOpacity,
   BackHandler,
 } from 'react-native';
-import Svg, {Path} from 'react-native-svg';
+import Svg, { Path } from 'react-native-svg';
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {Server_URL, Token_Secret, Credintials_Secret} from '@env';
+import { StackActions } from '@react-navigation/native';
 
-export default function HomeScreen({navigation}) {
+import { Server_URL, Token_Secret, Credintials_Secret } from '@env';
+
+export default function HomeScreen({ navigation }) {
   const [showButton, setShowButton] = useState(false);
 
   useEffect(() => {
     const autoLogin = async () => {
       try {
-        const {email, password, type} = JSON.parse(
+        const { email, password, type } = JSON.parse(
           await EncryptedStorage.getItem(Credintials_Secret),
         );
         console.log(email, password, type);
@@ -38,6 +40,7 @@ export default function HomeScreen({navigation}) {
             patientLogin(email, password);
             break;
           case 'doctor':
+            login(email, password, type);
             console.log("It's a doctor");
             break;
           case 'receptionist':
@@ -49,7 +52,7 @@ export default function HomeScreen({navigation}) {
           default:
             patientLogin(email, password);
             break;
-            // console.log('Undefined');
+          // console.log('Undefined');
         }
       } catch (err) {
         setShowButton(true);
@@ -58,6 +61,54 @@ export default function HomeScreen({navigation}) {
     autoLogin();
   }, []);
 
+  const login = async (email, password, type) => {
+    const url = `${Server_URL}:3000/${type}/login`;
+    axios
+      .post(url, {
+        email: email,
+        password: password,
+      })
+      .then(async function (response) {
+        console.log(email, password, url);
+        const token = response.headers['x-auth-token'];
+        try {
+          await EncryptedStorage.setItem(
+            Token_Secret,
+            JSON.stringify({ token: token }),
+          );
+        } catch (err) {
+          Alert.alert('Error', err.code, [
+            { text: 'Exit', onPress: () => BackHandler.exitApp() },
+          ]);
+        }
+        if (type == 'hospital') {
+          navigation.dispatch(StackActions.popToTop());
+          navigation.dispatch(
+            StackActions.replace('HosptialAdminHomePage', {
+              screen: 'Home',
+              params: response.data,
+            }),
+          );
+        } else if (type == 'receptionist') {
+          navigation.dispatch(StackActions.popToTop());
+          navigation.dispatch(
+            StackActions.replace('ReceptHomePage', {
+              screen: 'Home',
+              params: response.data,
+            }),
+          );
+        } else if (type == 'doctor') {
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'DoctorHomePage' }],
+          });
+        }
+      })
+      .catch(function (error) {
+        console.log('ERROR:', error);
+      });
+  }
+
   const patientLogin = async (email, password) => {
     axios
       .post(`${Server_URL}:3000/patient/login`, {
@@ -65,24 +116,24 @@ export default function HomeScreen({navigation}) {
         password: password,
       })
       .then(async function (response) {
-        const {verified, token} = response.data;
+        const { verified, token } = response.data;
         try {
           await EncryptedStorage.setItem(
             Token_Secret,
-            JSON.stringify({token: token}),
+            JSON.stringify({ token: token }),
           );
         } catch (err) {
           Alert.alert('Error', err.code, [
-            {text: 'Exit', onPress: () => BackHandler.exitApp()},
+            { text: 'Exit', onPress: () => BackHandler.exitApp() },
           ]);
         }
         if (verified) {
           navigation.reset({
             index: 0,
-            routes: [{name: 'Patient'}],
+            routes: [{ name: 'Patient' }],
           });
         } else {
-          navigation.navigate('OTP', {isForgotten: false});
+          navigation.navigate('OTP', { isForgotten: false });
         }
       })
       .catch(function (error) {
@@ -98,7 +149,7 @@ export default function HomeScreen({navigation}) {
       <Image
         style={styles.logo}
         source={require('../images/logo_withoutBG.png')}></Image>
-      <Text style={{fontSize: 40, fontWeight: 'bold', color: '#1c1bad'}}>
+      <Text style={{ fontSize: 40, fontWeight: 'bold', color: '#1c1bad' }}>
         eSpitalia
       </Text>
       {showButton ? (
@@ -113,7 +164,7 @@ export default function HomeScreen({navigation}) {
                 },
               })
             }>
-            <Text style={[styles.buttonText, {color: '#000'}]}> USER </Text>
+            <Text style={[styles.buttonText, { color: '#000' }]}> USER </Text>
           </Pressable>
           <Pressable
             style={styles.staffButton}
@@ -125,7 +176,7 @@ export default function HomeScreen({navigation}) {
                 },
               })
             }>
-            <Text style={[styles.buttonText, {color: '#fff'}]}> STAFF </Text>
+            <Text style={[styles.buttonText, { color: '#fff' }]}> STAFF </Text>
           </Pressable>
         </View>
       ) : null}
