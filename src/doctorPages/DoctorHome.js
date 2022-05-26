@@ -37,10 +37,11 @@ const CONTENT = [
 ];
 
 export default function DoctorHome({navigation}) {
-  //FIXME: way of returning data
 
+  //FIXME: way of returning data
   const [currentAppointments, setCurrentAppointment] = useState([]);
   const [patients, setPatients] = useState([]);
+  // var patients=[];
 
   const getCurrentAppointments = async () => {
     try {
@@ -55,8 +56,11 @@ export default function DoctorHome({navigation}) {
         })
         .then(response => {
           setCurrentAppointment(response.data);
-          setPatients(response.data[0].currentShiftPatients);
-          console.log(response.data);
+          // for (var i = 0; i < response.data.length; i++) {
+          //   // patients.push(response.data[i].patients);
+          //   setPatients(response.data[i].patients);
+          // }
+          // console.log(patients);
         })
         .catch(function (error) {
           console.log(error.message);
@@ -80,16 +84,28 @@ export default function DoctorHome({navigation}) {
   };
 
   const renderHeader = (section, _, isActive) => {
-    return (
-      <Animatable.View
-        duration={400}
-        style={[styles.header, isActive ? styles.active : styles.inactive]}
-        transition="backgroundColor"
-        flexDirection="row">
-        <Text style={{color: '#000', fontSize: 18}}>Patient: </Text>
-        <Text style={styles.headerText}>{section.patientName}</Text>
-      </Animatable.View>
-    );
+    {
+      return (
+        <Animatable.View
+          duration={400}
+          style={[styles.header, isActive ? styles.active : styles.inactive]}
+          transition="backgroundColor"
+          flexDirection="column">
+          <Text style={styles.title}>
+            From: {section.from} - To:{section.to}
+          </Text>
+          {section.patients.map(item => {
+            return (
+              <View style={{flexDirection: 'row'}}>
+                <Pressable onPress={() => console.log(section)}></Pressable>
+                <Text style={{color: '#000', fontSize: 18}}>Patient: </Text>
+                <Text style={styles.headerText}>{item.patientName}</Text>
+              </View>
+            );
+          })}
+        </Animatable.View>
+      );
+    }
   };
 
   const onPressHistory = () => {
@@ -159,18 +175,10 @@ export default function DoctorHome({navigation}) {
             </View>
           </View>
         </Modal>
-        {/* <Text style={styles.pageHeader}>Home</Text> */}
-        <Pressable onPress={() => console.log(patients)}>
-          <Text>press me</Text>
-        </Pressable>
         <Text style={styles.title}>Today's appointments</Text>
-        <Text style={styles.title}>
-          From: {currentAppointments[0].shift.from} {'\n'} To:
-          {currentAppointments[0].shift.to}
-        </Text>
         <Accordion
           activeSections={activeSections}
-          sections={patients}
+          sections={currentAppointments}
           touchableComponent={TouchableOpacity}
           expandMultiple={false}
           renderHeader={renderHeader}
