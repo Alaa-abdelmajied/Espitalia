@@ -9,6 +9,8 @@ import {
   ScrollView,
   Animated,
   useWindowDimensions,
+  BackHandler,
+  Alert
 } from 'react-native';
 
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -18,9 +20,10 @@ import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {Server_URL, Token_Secret, Credintials_Secret} from '@env';
 
-export default function UserProfileView() {
+export default function UserProfileView({navigation}) {
   const [personalData, setPersonalData] = useState({});
   const [workingDays, setWorkingDays] = useState([]);
+
   useEffect(() => {
     const getPersonalData = async () => {
       try {
@@ -51,6 +54,21 @@ export default function UserProfileView() {
     getPersonalData();
   }, []);
 
+  const onPressLogout = async () => {
+    try {
+      await EncryptedStorage.removeItem(Token_Secret);
+      await EncryptedStorage.removeItem(Credintials_Secret);
+      navigation.reset({
+        index: 0,
+        routes: [{name: 'WelcomePage'}],
+      });
+    } catch (err) {
+      Alert.alert('Error', err.message, [
+        {text: 'Exit', onPress: () => BackHandler.exitApp()},
+      ]);
+    }
+  };
+
   const scrollX = useRef(new Animated.Value(0)).current;
   let {width: windowWidth, height: windowHeight} = useWindowDimensions();
   windowHeight = windowHeight - 300;
@@ -59,9 +77,9 @@ export default function UserProfileView() {
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity style={{margin: 5, alignSelf: 'flex-end'}}>
-          {/* <Pressable onPress={onPressLogout}> */}
+          <Pressable onPress={onPressLogout}>
           <Text style={{fontSize: 15, color: '#fff'}}>Logout</Text>
-          {/* </Pressable> */}
+          </Pressable>
         </TouchableOpacity>
         <View style={styles.headerContent}>
           <Image

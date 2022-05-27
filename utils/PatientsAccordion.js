@@ -78,7 +78,10 @@ const patientAccordion = ({ item, navigation }) => {
     };
 
     const onPressHistory = () => {
-        navigation.navigate('History');
+        navigation.navigate('History', {
+            patientId: data[0].patients[activeSections[0]].patientID,
+            patientName: data[0].patients[activeSections[0]].patientName
+        });
     };
 
     const renderContent = (section, _, isActive) => {
