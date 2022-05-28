@@ -200,11 +200,13 @@ export default function PatientHome({navigation}) {
                 )
               }>
               <View style={styles.card_header}>
-                <Image
-                  style={styles.doctorImg}
-                  source={{
-                    uri: 'https://bootdey.com/img/Content/avatar/avatar6.png',
-                  }}></Image>
+                <View style={styles.imageView}>
+                  <Image
+                    style={styles.doctorImg}
+                    source={{
+                      uri: 'https://bootdey.com/img/Content/avatar/avatar6.png',
+                    }}></Image>
+                </View>
                 <View style={styles.textView}>
                   <Text style={styles.name}>Dr. {card.name} </Text>
                   <Text style={styles.speciality}>{card.speciality}</Text>
@@ -384,11 +386,26 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 15,
     fontWeight: 'bold',
+    textAlign: 'center',
   },
 
   speciality: {
     color: '#fff',
     fontSize: 13,
+    textAlign: 'center',
+  },
+
+  textView: {
+    width: '98%',
+    marginRight: 10,
+    flex: 2,
+    alignSelf: 'center',
+  },
+
+  imageView: {
+    flex: 0.5,
+    alignSelf: 'center',
+    marginLeft: 10,
   },
 
   doctor_content: {
@@ -409,6 +426,7 @@ const styles = StyleSheet.create({
     color: '#000',
     fontSize: 15,
     margin: 5,
+    flex:1,
   },
 
   customRatingBar: {

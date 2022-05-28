@@ -14,8 +14,7 @@ import {
 
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import FlashMessage from 'react-native-flash-message';
-import {showMessage, hideMessage} from 'react-native-flash-message';
-
+import {showMessage} from 'react-native-flash-message';
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {Server_URL, Token_Secret} from '@env';
@@ -83,7 +82,11 @@ export default function ChangePassword({navigation, route}) {
         ]);
       }
     } else {
-      Alert.alert("Passwords don't match");
+      showMessage({
+        message: "Passwords don't match",
+        type: 'info',
+      });
+      // Alert.alert("Passwords don't match");
     }
   };
 
@@ -114,7 +117,10 @@ export default function ChangePassword({navigation, route}) {
         ]);
       }
     } else {
-      Alert.alert("Passwords don't match");
+      showMessage({
+        message: "Passwords don't match",
+        type: 'info',
+      });
     }
   };
 
@@ -204,7 +210,7 @@ export default function ChangePassword({navigation, route}) {
           </View>
         )}
       </View>
-      <FlashMessage position="bottom" icon="auto" />
+      <FlashMessage position="top" icon="auto" />
     </View>
   );
 }

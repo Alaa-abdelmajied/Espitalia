@@ -3,9 +3,12 @@ import Svg, {Path} from 'react-native-svg';
 
 import {StyleSheet, Text, View, TextInput, Pressable} from 'react-native';
 
+import FlashMessage from 'react-native-flash-message';
+import {showMessage} from 'react-native-flash-message';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import SelectDropdown from 'react-native-select-dropdown';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import {ScrollView} from 'react-native-gesture-handler';
 
 export default function SignUp({navigation}) {
   const today = new Date();
@@ -14,9 +17,10 @@ export default function SignUp({navigation}) {
   const [date, setDate] = useState(new Date());
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [selecteddate, setSelectedDate] = useState();
+  // const [selecteddate, setSelectedDate] = useState();
   const [selectedGender, setSelectedGender] = useState('');
 
   const OpenDateWindow = () => {
@@ -27,38 +31,43 @@ export default function SignUp({navigation}) {
     setShow(false);
     setDate(currentDate);
     let tmpDate = new Date(currentDate);
-
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-
-  // const [date, setDate] = useState(new Date())
-  const [open, setOpen] = useState(false);
-    
-    let fullDate = "📅 " + tmpDate.getDate() + "/" + (tmpDate.getMonth() + 1) + "/" + tmpDate.getFullYear();
-    setText(fullDate);    
-    setSelectedDate(tmpDate.getFullYear() + "-" + (tmpDate.getMonth() + 1) + "-" + tmpDate.getDate());
-  }
-
+    let fullDate =
+      '📅 ' +
+      tmpDate.getDate() +
+      '-' +
+      (tmpDate.getMonth() + 1) +
+      '-' +
+      tmpDate.getFullYear();
+    setText(fullDate);
+  };
 
   // const [date, setDate] = useState(new Date())
   // const [open, setOpen] = useState(false)
 
-  const gender = ["Female", "Male"]
-  const [selectedValue, setSelectedValue] = useState("no");
+  const gender = ['Female', 'Male'];
+  const [selectedValue, setSelectedValue] = useState('no');
 
   const onPressNextHandler = () => {
-    navigation.navigate('SignUpQuestions', {
-      email: email,
-      name: name,
-      password: password,
-      date: selecteddate,
-      selectedGender: selectedGender
-    });
-  }
-
+    if (password == confirmPassword) {
+      navigation.navigate('SignUpQuestions', {
+        email: email,
+        name: name,
+        phoneNumber: phoneNumber,
+        password: password,
+        date: date,
+        selectedGender: selectedGender,
+      });
+    } else {
+      console.log('dont match');
+      showMessage({
+        message: "Passwords don't match",
+        type: 'info',
+      });
+    }
+  };
 
   return (
-    <View style={styles.Body}>
+    <ScrollView contentContainerStyle={styles.Body}>
       <View style={styles.WaveHeader}>
         <Svg
         // height={200}
@@ -75,34 +84,46 @@ export default function SignUp({navigation}) {
         <View style={styles.RegisterCard}>
           <Text style={styles.TitleText}>Sign Up</Text>
           <View style={styles.InputsRegion}>
-
-            <TextInput style={styles.Input} placeholder="Enter your email" placeholderTextColor={'#a1a1a1'}
-              onChangeText={text => setEmail(text)}>
-            </TextInput>
-            <TextInput style={styles.Input} placeholder="Enter your name" placeholderTextColor={'#a1a1a1'}
-              onChangeText={text => setName(text)}>
-            </TextInput>
-            <TextInput secureTextEntry={true} style={styles.Input} placeholder="Enter your password"
-              placeholderTextColor={'#a1a1a1'} onChangeText={text => setPassword(text)}>
-            </TextInput>
-            <TextInput secureTextEntry={true} style={styles.Input} placeholder="Confirm your password"
-              placeholderTextColor={'#a1a1a1'} onChangeText={text => setConfirmPassword(text)}>
-            </TextInput>
-
+            <TextInput
+              style={styles.Input}
+              placeholder="Enter your email"
+              placeholderTextColor={'#a1a1a1'}
+              onChangeText={text => setEmail(text)}></TextInput>
+            <TextInput
+              style={styles.Input}
+              placeholder="Enter your name"
+              placeholderTextColor={'#a1a1a1'}
+              onChangeText={text => setName(text)}></TextInput>
+            <TextInput
+              style={styles.Input}
+              placeholder="Enter your phone number"
+              placeholderTextColor={'#a1a1a1'}
+              keyboardType={'number-pad'}
+              onChangeText={text => setPhoneNumber(text)}></TextInput>
+            <TextInput
+              secureTextEntry={true}
+              style={styles.Input}
+              placeholder="Enter your password"
+              placeholderTextColor={'#a1a1a1'}
+              onChangeText={text => setPassword(text)}></TextInput>
+            <TextInput
+              secureTextEntry={true}
+              style={styles.Input}
+              placeholder="Confirm your password"
+              placeholderTextColor={'#a1a1a1'}
+              onChangeText={text => setConfirmPassword(text)}></TextInput>
             <View style={styles.view}>
               <View style={{flex: 1, alignItems: 'flex-start'}}>
                 <Pressable onPress={OpenDateWindow} style={styles.dateInput}>
-                  <Text style={{textAlign: 'center', color: '#a1a1a1'}}>
+                  <Text style={{textAlign: 'center', color: '#000'}}>
                     {text}
                   </Text>
                   {show && (
                     <DateTimePicker
                       mode="date"
                       value={date}
-
-                      format='yyyy-MM-dd'
+                      format="yyyy-MM-dd"
                       maximumDate={new Date()}
-
                       onChange={handleDate}
                       isDatePickerVisible
                     />
@@ -118,12 +139,11 @@ export default function SignUp({navigation}) {
                   dropdownOverlayColor="transparent"
                   buttonStyle={styles.dateInput}
                   defaultButtonText="Gender"
-                  buttonTextStyle={{color: '#a1a1a1', fontSize: 16}}
+                  // buttonTextStyle={{color: '#a1a1a1', fontSize: 16}}
                   data={gender}
                   onSelect={(selectedItem, index) => {
-
                     setSelectedGender(selectedItem);
-                    console.log(selectedItem, index)
+                    console.log(selectedItem, index);
                   }}
                   buttonTextAfterSelection={(selectedItem, index) => {
                     return selectedItem;
@@ -135,14 +155,16 @@ export default function SignUp({navigation}) {
               </View>
             </View>
 
-
-            <Pressable style={styles.nextButton} onPress={() => onPressNextHandler()}>
-              <Text style={{ color: '#fff' }}>Next</Text>
+            <Pressable
+              style={styles.nextButton}
+              onPress={() => onPressNextHandler()}>
+              <Text style={{color: '#fff'}}>Next</Text>
             </Pressable>
           </View>
         </View>
       </View>
-    </View>
+      <FlashMessage position="top" icon="auto" />
+    </ScrollView>
   );
 }
 

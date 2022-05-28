@@ -12,6 +12,8 @@ import {
   RefreshControl,
 } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Collapsible from 'react-native-collapsible';
 import axios from 'axios';
@@ -26,6 +28,7 @@ export default function Profile({navigation}) {
   const [loadData, setLoadData] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const isFocused = useIsFocused();
+  const [gender, setGender] = useState('');
 
   const getPersonalData = async () => {
     try {
@@ -37,6 +40,7 @@ export default function Profile({navigation}) {
         .get(`${Server_URL}:3000/patient/getPatient/${token}`)
         .then(response => {
           setPersonalData(response.data);
+          setGender(response.data.gender);
           console.log(response.data.name);
         })
         .catch(function (error) {
@@ -143,6 +147,7 @@ export default function Profile({navigation}) {
       name: personalData.name,
       birthdate: personalData.birthdate,
       phoneNumber: personalData.phoneNumber,
+      gender: personalData.gender,
     });
   };
   // const [showModal, setShowModal] = useState(false);
@@ -156,18 +161,25 @@ export default function Profile({navigation}) {
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefreshing} />
       }>
-
       <View style={styles.header}></View>
-      <Image
-        style={styles.avatar}
-        source={{uri: 'https://bootdey.com/img/Content/avatar/avatar6.png'}}
-      />
+      {personalData.gender == 'female' ? (
+        <Image
+          style={styles.avatar}
+          source={require('../../images/female.jpg')}
+          // source={{uri: 'https://bootdey.com/img/Content/avatar/avatar6.png'}}
+        />
+      ) : (
+        <Image
+          style={styles.avatar}
+          source={require('../../images/male.jpg')}
+
+          // source={{uri: 'https://bootdey.com/img/Content/avatar/avatar6.png'}}
+        />
+      )}
       <View
         style={{position: 'absolute', alignSelf: 'flex-end', marginTop: 15}}>
         <TouchableOpacity style={{margin: 5}} onPress={onPressLogout}>
-          {/* <Pressable onPress={onPressLogout}> */}
-            <Text style={{fontSize: 15, color: '#fff'}}>Logout</Text>
-          {/* </Pressable> */}
+          <Text style={{fontSize: 15, color: '#fff'}}>Logout</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.body}>
@@ -221,7 +233,7 @@ export default function Profile({navigation}) {
                 name={'calendar'}
                 size={20}
                 color={'#000'}></FontAwesome>
-              <Text style={styles.mainText}>{personalData.age}</Text>
+              <Text style={styles.mainText}>{personalData.age} yo</Text>
             </View>
             <View style={{flexDirection: 'column'}}>
               <View
@@ -238,12 +250,63 @@ export default function Profile({navigation}) {
               </View>
               <Collapsible collapsed={collapsed} align="center">
                 <View style={{padding: 20}}>
-                  <Text style={styles.mainText}>Blood Type: A+</Text>
-                  <Text style={styles.mainText}>Diabetic: No</Text>
-                  <Text style={styles.mainText}>Diabetic: No</Text>
-                  <Text style={styles.mainText}>
-                    Blood Pressure Problems: No
-                  </Text>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      margin: 2,
+                    }}>
+                    {personalData.gender == 'female' ? (
+                      <FontAwesome5
+                        name={'female'}
+                        size={20}
+                        color={'#000'}></FontAwesome5>
+                    ) : (
+                      <FontAwesome5
+                        name={'male'}
+                        size={20}
+                        color={'#000'}></FontAwesome5>
+                    )}
+                    <Text style={styles.mainText}>{personalData.gender}</Text>
+                  </View>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      margin: 2,
+                    }}>
+                    <FontAwesome5
+                      name={'book-medical'}
+                      size={20}
+                      color={'#000'}></FontAwesome5>
+                    <Text style={styles.mainText}>Blood Type: A+</Text>
+                  </View>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      margin: 2,
+                    }}>
+                    <FontAwesome5
+                      name={'book-medical'}
+                      size={20}
+                      color={'#000'}></FontAwesome5>
+                    <Text style={styles.mainText}>
+                      Blood Pressure Problems: No
+                    </Text>
+                  </View>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      margin: 2,
+                    }}>
+                    <FontAwesome5
+                      name={'book-medical'}
+                      size={20}
+                      color={'#000'}></FontAwesome5>
+                    <Text style={styles.mainText}>Diabetic: No</Text>
+                  </View>
                 </View>
               </Collapsible>
             </View>

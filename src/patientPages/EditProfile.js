@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   StyleSheet,
   Text,
@@ -9,39 +9,71 @@ import {
   TextInput,
   Alert,
 } from 'react-native';
+import FlashMessage from 'react-native-flash-message';
+import {showMessage} from 'react-native-flash-message';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { Picker } from '@react-native-picker/picker';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import {Picker} from '@react-native-picker/picker';
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { Server_URL, Token_Secret } from '@env';
+import {Server_URL, Token_Secret} from '@env';
 
-export default function EditProfile({ navigation, route }) {
-  const { name, phoneNumber, birthdate } = route.params;
+export default function EditProfile({navigation, route}) {
+  const {name, phoneNumber, birthdate, gender} = route.params;
+
   const [newName, setNewName] = useState('');
   const [newPhoneNumber, setNewPhoneNumber] = useState('');
+  const [text, setText] = useState(birthdate);
+  const [show, setShow] = useState(false);
+  const [newDate, setNewData] = useState(new Date());
+  const [updateColor, setUpdateColor] = useState(false);
   const [diabetic, setDiabetic] = useState('no');
   const [bloodPressure, setBloodPressure] = useState('no');
   const [allergic, setAllergic] = useState('no');
+  const [allergy, setAllergy] = useState(false);
   const [bloodType, setBloodType] = useState('a+');
+
+  const OpenDateWindow = () => {
+    setShow(true);
+  };
+
+  const handleDate = (event, selectedDate) => {
+    const currentDate = selectedDate || new Date(1999, 11, 31);
+    setShow(false);
+    setNewData(currentDate);
+    let tmpDate = new Date(currentDate);
+    let fullDate =
+      tmpDate.getDate() +
+      '-' +
+      (tmpDate.getMonth() + 1) +
+      '-' +
+      tmpDate.getFullYear();
+    setText(fullDate);
+    setUpdateColor(true);
+  };
 
   const editProfile = async () => {
     console.log('pressed');
+    console.log(newName, newPhoneNumber, newDate);
     try {
       const token = JSON.parse(
         await EncryptedStorage.getItem(Token_Secret),
       ).token;
-
+      console.log(token);
       axios
         .put(`${Server_URL}:3000/patient/editProfile`, {
           token: token,
-          name: newName,
-          phoneNumber: newPhoneNumber,
+          newName: newName,
+          newPhoneNumber: newPhoneNumber,
+          newDate: newDate,
         })
         .then(async function (response) {
           console.log('done');
-
-          Alert.alert('Info Successfully Updated');
+          showMessage({
+            message: 'Info updated successfully',
+            type: 'success',
+          });
         })
         .catch(function (error) {
           const err = error.response.data;
@@ -49,7 +81,7 @@ export default function EditProfile({ navigation, route }) {
         });
     } catch (err) {
       Alert.alert('Error', err.code, [
-        { text: 'Exit', onPress: () => BackHandler.exitApp() },
+        {text: 'Exit', onPress: () => BackHandler.exitApp()},
       ]);
     }
   };
@@ -57,20 +89,20 @@ export default function EditProfile({ navigation, route }) {
   return (
     <ScrollView>
       <View style={styles.header}>
-        <Pressable style={{ flex: 1, alignSelf: 'center', marginLeft: 5 }} onPress={() => navigation.goBack()}>
-          <Ionicons
-            name={'arrow-back'}
-            size={30}
-            color="#fff"></Ionicons>
+        <Pressable
+          style={{flex: 1, alignSelf: 'center', marginLeft: 5}}
+          onPress={() => navigation.goBack()}>
+          <Ionicons name={'arrow-back'} size={30} color="#fff"></Ionicons>
         </Pressable>
-        <View style={{ flex: 12, flexDirection: 'row', justifyContent: "center" }}>
+        <View
+          style={{flex: 12, flexDirection: 'row', justifyContent: 'center'}}>
           <Image
             style={styles.image}
             source={require('../../images/app_logo-removebg-preview.png')}></Image>
 
           <Text style={styles.headerText}>espitalia</Text>
         </View>
-        <View style={{ flex: 1.5 }}></View>
+        <View style={{flex: 1.5}}></View>
       </View>
       <View style={styles.body}>
         <Text style={styles.title}>Edit your info</Text>
@@ -91,20 +123,7 @@ export default function EditProfile({ navigation, route }) {
             placeholder={name}
             onChangeText={text => setNewName(text)}></TextInput>
         </View>
-        <View style={styles.bodyContent}>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-            }}>
-            <FontAwesome
-              name={'calendar'}
-              size={20}
-              color={'#000'}></FontAwesome>
-            <Text style={styles.mainText}>Birthdate</Text>
-          </View>
-          <TextInput style={styles.input} placeholder={birthdate}></TextInput>
-        </View>
+
         <View style={styles.bodyContent}>
           <View
             style={{
@@ -118,6 +137,43 @@ export default function EditProfile({ navigation, route }) {
             style={styles.input}
             placeholder={phoneNumber}
             onChangeText={text => setNewPhoneNumber(text)}></TextInput>
+        </View>
+        <View style={styles.bodyContent}>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}>
+            <FontAwesome
+              name={'calendar'}
+              size={20}
+              color={'#000'}></FontAwesome>
+            <Text style={styles.mainText}>Birthdate</Text>
+          </View>
+          <View style={styles.pickerContainer}>
+            <Pressable onPress={OpenDateWindow} style={styles.dateInput}>
+              <Text
+                style={
+                  !updateColor
+                    ? {textAlign: 'center', color: '#a1a1a1'}
+                    : {textAlign: 'center', color: '#000'}
+                }>
+                {text}
+              </Text>
+              {show && (
+                <DateTimePicker
+                  mode="date"
+                  value={newDate}
+                  format="yyyy-MM-dd"
+                  maximumDate={new Date()}
+                  onChange={handleDate}
+                  isDatePickerVisible
+                  display="spinner"
+                />
+              )}
+            </Pressable>
+          </View>
+          {/* <TextInput style={styles.input} placeholder={birthdate}></TextInput> */}
         </View>
         <View style={styles.questionContainer}>
           <Text style={styles.PickerText}>What is your blood type?</Text>
@@ -176,6 +232,15 @@ export default function EditProfile({ navigation, route }) {
               <Picker.Item label="I don't know" value="idk" />
             </Picker>
           </View>
+          {allergic == 'yes' ? (
+            <View>
+              <TextInput
+                style={styles.Input}
+                placeholder="What are you allergic to?"
+                placeholderTextColor={'#a1a1a1'}
+                onChangeText={text => setAllergy(text)}></TextInput>
+            </View>
+          ) : null}
         </View>
         <View
           style={{
@@ -207,6 +272,7 @@ export default function EditProfile({ navigation, route }) {
           <Text style={styles.buttonText}>Save Changes</Text>
         </Pressable>
       </View>
+      <FlashMessage position="top" icon="auto" />
     </ScrollView>
   );
 }
@@ -245,7 +311,7 @@ const styles = StyleSheet.create({
     margin: 10,
     backgroundColor: '#fff',
     shadowColor: '#000000',
-    shadowOffset: { width: -1, height: 1 },
+    shadowOffset: {width: -1, height: 1},
     shadowOpacity: 0.2,
     shadowRadius: 1,
     elevation: 2,
@@ -297,6 +363,15 @@ const styles = StyleSheet.create({
     margin: 5,
   },
 
+  Input: {
+    height: 60,
+    width: 300,
+    borderRadius: 10,
+    borderWidth: 1,
+    textAlign: 'center',
+    margin: 10,
+  },
+
   PickerText: {
     color: '#000',
     fontSize: 15,
@@ -310,7 +385,7 @@ const styles = StyleSheet.create({
     height: 50,
     width: 200,
     shadowColor: '#000000',
-    shadowOffset: { width: -2, height: 2 },
+    shadowOffset: {width: -2, height: 2},
     shadowOpacity: 0.2,
     shadowRadius: 3,
     elevation: 2,
