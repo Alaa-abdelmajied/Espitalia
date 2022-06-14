@@ -11,33 +11,62 @@ import { Server_URL, Token_Secret, Credintials_Secret } from '@env';
 
 const Receptionistpage = ({ navigation, route }) => {
     const [recepitionists, setRecepitionists] = useState();
-    const onChange = (textValue) => setText(textValue);
-    useEffect(() => {
-        const getReceptionists = async () => {
-            const token = JSON.parse(await EncryptedStorage.getItem(Token_Secret)).token;
-            // console.log('token',token);
-            axios
-                .get(`${Server_URL}:3000/hospital/viewReceptionists`, {
-                    headers: {
-                        'x-auth-token': token
-                    }
-                })
-                .then(function (response) {
-                    // console.log(response.data);
-                    setRecepitionists(response.data);
-                })
-                .catch(function (error) {
-                    console.log(error);
-                })
-        }
+
+    const getReceptionists = async () => {
+        const token = JSON.parse(await EncryptedStorage.getItem(Token_Secret)).token;
+        // console.log('token',token);
+        axios
+            .get(`${Server_URL}:3000/hospital/viewReceptionists`, {
+                headers: {
+                    'x-auth-token': token
+                }
+            })
+            .then(function (response) {
+                // console.log(response.data);
+                setRecepitionists(response.data);
+            })
+            .catch(function (error) {
+                console.log(error);
+            })
+    }
+
+    useEffect(() => {  
         getReceptionists();
     }, []);
-    const [text, setText] = useState('');
+
+    const recepitionistSearch = async (search) => {
+        const token = JSON.parse(await EncryptedStorage.getItem(Token_Secret)).token;
+         //console.log(token);
+        axios
+            .get(`${Server_URL}:3000/hospital//searchReceptionist/${search}`, {
+                headers: {
+                    'x-auth-token': token
+                }
+            })
+            .then(response => {
+                setRecepitionists(response.data);
+            })
+            .catch(function (error) {
+                const err = error.response.data;
+                if (err == 'No Receptionists found') {
+                    setRecepitionists([]);
+                }
+            });
+    }
+
+    const updateSearch = search => {
+        console.log(search);
+        if (search.length > 0) {
+            recepitionistSearch(search);
+        } else {
+            getReceptionists();
+        }
+    };
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.container}>
                 <View>
-                    <TextInput placeholder='🔍Search' style={styles.input} onChangeText={onChange} />
+                    <TextInput placeholder='🔍Search' style={styles.input} onChangeText={value => updateSearch(value)} />
                 </View>
                 <FlatList
                     data={recepitionists}
