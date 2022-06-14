@@ -109,7 +109,7 @@ export default function PatientHome({navigation}) {
   };
 
   const seeAllHospitals = () => {
-    navigation.navigate('HospitalList');
+    navigation.navigate('HospitalList', {hospitalSeeMore: false});
   };
   const seeAllDoctors = () => {
     navigation.navigate('DoctorsScreen', {isAllDoctors: true});
@@ -426,7 +426,7 @@ const styles = StyleSheet.create({
     color: '#000',
     fontSize: 15,
     margin: 5,
-    flex:1,
+    flex: 1,
   },
 
   customRatingBar: {

@@ -9,6 +9,7 @@ import {
   Alert,
   BackHandler,
   ActivityIndicator,
+  TouchableOpacity,
 } from 'react-native';
 
 import FlashMessage from 'react-native-flash-message';
@@ -59,6 +60,9 @@ export default function Reservation({}) {
         .delete(`${Server_URL}:3000/patient/cancel/${appointmentID}`)
         .then(function (response) {
           console.log(appointmentID);
+          <View style={styles.loadingIcon}>
+            <ActivityIndicator size="large" color="#0451cc" />
+          </View>;
           showMessage({
             message: 'Appointment cancelled successfully',
             type: 'success',
@@ -83,7 +87,6 @@ export default function Reservation({}) {
     }
   };
 
-
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -102,18 +105,23 @@ export default function Reservation({}) {
               <Text style={styles.infoText}>Hospital: {item.hospitalName}</Text>
               <Text style={styles.infoText}>Doctor: {item.drName} </Text>
               <Text style={styles.infoText}>Date: {item.date} </Text>
-              <Text style={styles.infoText}>From: {item.from} </Text>
+              <Text style={styles.infoText}>
+                Time: {item.from} - {item.to}
+              </Text>
               <Text style={styles.infoText}>Reservation No: {item.resNum}</Text>
             </View>
             <View style={styles.view2}>
               <View style={styles.numberView}>
                 <Text style={styles.infoText}>Flow Number</Text>
               </View>
-              <Pressable
+              <TouchableOpacity
                 style={styles.button}
                 onPress={() => cancelAppointment(item.appointmentID)}>
+                {/* <View style={styles.loadingIcon}>
+                  <ActivityIndicator size="large" color="#0451cc" />
+                </View> */}
                 <Text style={styles.buttonText}>CANCEL</Text>
-              </Pressable>
+              </TouchableOpacity>
             </View>
           </View>
         )}
@@ -242,5 +250,11 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     width: 160,
     color: '#fff',
+  },
+
+  loadingIcon: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
   },
 });

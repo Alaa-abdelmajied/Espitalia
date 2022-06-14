@@ -20,13 +20,13 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import {Server_URL, Token_Secret} from '@env';
 
 export default function EditProfile({navigation, route}) {
-  const {name, phoneNumber, birthdate, gender} = route.params;
+  const {name, phoneNumber, birthdate, gender, date} = route.params;
 
-  const [newName, setNewName] = useState('');
-  const [newPhoneNumber, setNewPhoneNumber] = useState('');
+  const [newName, setNewName] = useState(name);
+  const [newPhoneNumber, setNewPhoneNumber] = useState(phoneNumber);
   const [text, setText] = useState(birthdate);
   const [show, setShow] = useState(false);
-  const [newDate, setNewData] = useState(new Date());
+  const [newDate, setNewData] = useState(new Date(date));
   const [updateColor, setUpdateColor] = useState(false);
   const [diabetic, setDiabetic] = useState('no');
   const [bloodPressure, setBloodPressure] = useState('no');
@@ -54,8 +54,10 @@ export default function EditProfile({navigation, route}) {
   };
 
   const editProfile = async () => {
-    console.log('pressed');
+    console.log(date);
     console.log(newName, newPhoneNumber, newDate);
+    console.log(birthdate, name, phoneNumber);
+    console.log('pressed');
     try {
       const token = JSON.parse(
         await EncryptedStorage.getItem(Token_Secret),

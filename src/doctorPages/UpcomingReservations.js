@@ -18,8 +18,6 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import {Server_URL, Token_Secret, Credintials_Secret} from '@env';
 // import NestedListView, { NestedRow } from 'react-native-nested-listview';
 
-
-
 export default function UpcomingReservations() {
   const [upcomingAppointments, setUpcomingAppointments] = useState([]);
 
@@ -78,8 +76,10 @@ export default function UpcomingReservations() {
         duration={400}
         style={[styles.content, isActive ? styles.active : styles.inactive]}
         transition="backgroundColor">
-        {section.patients.map(name => (
-          <Text style={{color: '#000', fontSize: 15}}>{name}</Text>
+        {section.patients.map((name, index) => (
+          <Text style={{color: '#000', fontSize: 15}} key={index}>
+            {name}
+          </Text>
         ))}
       </Animatable.View>
     );
