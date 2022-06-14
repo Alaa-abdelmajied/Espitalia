@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 
 import {
   Button,
@@ -18,20 +18,20 @@ import {
   TouchableOpacity,
   BackHandler,
 } from 'react-native';
-import Svg, { Path } from 'react-native-svg';
+import Svg, {Path} from 'react-native-svg';
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { StackActions } from '@react-navigation/native';
+import {StackActions} from '@react-navigation/native';
 
-import { Server_URL, Token_Secret, Credintials_Secret } from '@env';
+import {Server_URL, Token_Secret, Credintials_Secret} from '@env';
 
-export default function HomeScreen({ navigation }) {
+export default function HomeScreen({navigation}) {
   const [showButton, setShowButton] = useState(false);
 
   useEffect(() => {
     const autoLogin = async () => {
       try {
-        const { email, password, type } = JSON.parse(
+        const {email, password, type} = JSON.parse(
           await EncryptedStorage.getItem(Credintials_Secret),
         );
         console.log(email, password, type);
@@ -74,11 +74,11 @@ export default function HomeScreen({ navigation }) {
         try {
           await EncryptedStorage.setItem(
             Token_Secret,
-            JSON.stringify({ token: token }),
+            JSON.stringify({token: token}),
           );
         } catch (err) {
           Alert.alert('Error', err.code, [
-            { text: 'Exit', onPress: () => BackHandler.exitApp() },
+            {text: 'Exit', onPress: () => BackHandler.exitApp()},
           ]);
         }
         if (type == 'hospital') {
@@ -100,14 +100,14 @@ export default function HomeScreen({ navigation }) {
         } else if (type == 'doctor') {
           navigation.reset({
             index: 0,
-            routes: [{ name: 'DoctorHomePage' }],
+            routes: [{name: 'DoctorHomePage'}],
           });
         }
       })
       .catch(function (error) {
         console.log('ERROR:', error);
       });
-  }
+  };
 
   const patientLogin = async (email, password) => {
     axios
@@ -116,24 +116,24 @@ export default function HomeScreen({ navigation }) {
         password: password,
       })
       .then(async function (response) {
-        const { verified, token } = response.data;
+        const {verified, token} = response.data;
         try {
           await EncryptedStorage.setItem(
             Token_Secret,
-            JSON.stringify({ token: token }),
+            JSON.stringify({token: token}),
           );
         } catch (err) {
           Alert.alert('Error', err.code, [
-            { text: 'Exit', onPress: () => BackHandler.exitApp() },
+            {text: 'Exit', onPress: () => BackHandler.exitApp()},
           ]);
         }
         if (verified) {
           navigation.reset({
             index: 0,
-            routes: [{ name: 'Patient' }],
+            routes: [{name: 'Patient'}],
           });
         } else {
-          navigation.navigate('OTP', { isForgotten: false });
+          navigation.navigate('OTP', {isForgotten: false});
         }
       })
       .catch(function (error) {
@@ -149,12 +149,12 @@ export default function HomeScreen({ navigation }) {
       <Image
         style={styles.logo}
         source={require('../images/logo_withoutBG.png')}></Image>
-      <Text style={{ fontSize: 40, fontWeight: 'bold', color: '#1c1bad' }}>
+      <Text style={{fontSize: 40, fontWeight: 'bold', color: '#1c1bad'}}>
         eSpitalia
       </Text>
       {showButton ? (
         <View style={styles.main}>
-          <Pressable
+          <TouchableOpacity
             style={styles.userButton}
             onPress={() =>
               navigation.navigate({
@@ -164,9 +164,9 @@ export default function HomeScreen({ navigation }) {
                 },
               })
             }>
-            <Text style={[styles.buttonText, { color: '#000' }]}> USER </Text>
-          </Pressable>
-          <Pressable
+            <Text style={[styles.buttonText, {color: '#000'}]}> USER </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
             style={styles.staffButton}
             onPress={() =>
               navigation.navigate({
@@ -176,8 +176,8 @@ export default function HomeScreen({ navigation }) {
                 },
               })
             }>
-            <Text style={[styles.buttonText, { color: '#fff' }]}> STAFF </Text>
-          </Pressable>
+            <Text style={[styles.buttonText, {color: '#fff'}]}> STAFF </Text>
+          </TouchableOpacity>
         </View>
       ) : null}
     </View>

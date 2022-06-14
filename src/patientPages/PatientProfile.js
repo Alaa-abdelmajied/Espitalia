@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, Suspense} from 'react';
 import {
   StyleSheet,
   Text,
@@ -29,6 +29,8 @@ export default function Profile({navigation}) {
   const [refreshing, setRefreshing] = useState(false);
   const isFocused = useIsFocused();
   const [gender, setGender] = useState('');
+  const femaleAvatar = require('../../images/female.jpg');
+  const maleAvatar = require('../../images/male.jpg');
 
   const getPersonalData = async () => {
     try {
@@ -40,7 +42,6 @@ export default function Profile({navigation}) {
         .get(`${Server_URL}:3000/patient/getPatient/${token}`)
         .then(response => {
           setPersonalData(response.data);
-          setGender(response.data.gender);
           console.log(response.data.name);
         })
         .catch(function (error) {
@@ -148,9 +149,15 @@ export default function Profile({navigation}) {
       birthdate: personalData.birthdate,
       phoneNumber: personalData.phoneNumber,
       gender: personalData.gender,
+      date: personalData.dateOfBirth,
     });
+    console.log(
+      'patientbirthdate',
+      personalData.dateOfBirth,
+      'birthdate ',
+      personalData.birthdate,
+    );
   };
-  // const [showModal, setShowModal] = useState(false);
 
   return loadData ? (
     <View style={styles.loadingIcon}>
@@ -161,20 +168,17 @@ export default function Profile({navigation}) {
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefreshing} />
       }>
+      {/*FIXME: avatar depending on gender*/}
       <View style={styles.header}></View>
       {personalData.gender == 'female' ? (
         <Image
           style={styles.avatar}
-          source={require('../../images/female.jpg')}
-          // source={{uri: 'https://bootdey.com/img/Content/avatar/avatar6.png'}}
+          source={femaleAvatar}
+
+          // source={{uri: 'https://www.pedigreecatworld.co.uk/wp-content/uploads/2019/05/customers-icon-3.png'}}
         />
       ) : (
-        <Image
-          style={styles.avatar}
-          source={require('../../images/male.jpg')}
-
-          // source={{uri: 'https://bootdey.com/img/Content/avatar/avatar6.png'}}
-        />
+        <Image style={styles.avatar} source={maleAvatar} />
       )}
       <View
         style={{position: 'absolute', alignSelf: 'flex-end', marginTop: 15}}>

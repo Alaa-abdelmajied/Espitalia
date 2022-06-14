@@ -1,14 +1,21 @@
 import React, {useState} from 'react';
 import Svg, {Path} from 'react-native-svg';
 
-import {StyleSheet, Text, View, TextInput, Pressable} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  TextInput,
+  Pressable,
+  ScrollView,
+  TouchableOpacity,
+} from 'react-native';
 
 import FlashMessage from 'react-native-flash-message';
 import {showMessage} from 'react-native-flash-message';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import SelectDropdown from 'react-native-select-dropdown';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {ScrollView} from 'react-native-gesture-handler';
 
 export default function SignUp({navigation}) {
   const today = new Date();
@@ -20,8 +27,11 @@ export default function SignUp({navigation}) {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  // const [selecteddate, setSelectedDate] = useState();
   const [selectedGender, setSelectedGender] = useState('');
+  const [validEmail, setValidEmail] = useState(true);
+  const [minLength, setMinLength] = useState(true);
+  const [passwordsMatch, setPasswordsMatch] = useState(true);
+  const [emptyField, setEmptyField] = useState(false);
 
   const OpenDateWindow = () => {
     setShow(true);
@@ -41,14 +51,33 @@ export default function SignUp({navigation}) {
     setText(fullDate);
   };
 
-  // const [date, setDate] = useState(new Date())
-  // const [open, setOpen] = useState(false)
-
   const gender = ['Female', 'Male'];
   const [selectedValue, setSelectedValue] = useState('no');
 
   const onPressNextHandler = () => {
-    if (password == confirmPassword) {
+    var re =
+      /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    if (
+      email == '' ||
+      name == '' ||
+      phoneNumber == '' ||
+      password == '' ||
+      confirmPassword == '' ||
+      selectedGender == '' ||
+      date == ''
+    ) {
+      setEmptyField(true);
+    }
+    if (password != confirmPassword) {
+      console.log('dont match');
+      setPasswordsMatch(false);
+    }
+    if (password.length < 8) {
+      setMinLength(false);
+    }
+    if (!re.test(email)) {
+      setValidEmail(false);
+    } else {
       navigation.navigate('SignUpQuestions', {
         email: email,
         name: name,
@@ -57,22 +86,13 @@ export default function SignUp({navigation}) {
         date: date,
         selectedGender: selectedGender,
       });
-    } else {
-      console.log('dont match');
-      showMessage({
-        message: "Passwords don't match",
-        type: 'info',
-      });
     }
   };
 
   return (
     <ScrollView contentContainerStyle={styles.Body}>
       <View style={styles.WaveHeader}>
-        <Svg
-        // height={200}
-        // width={Dimensions.get('screen').width}
-        >
+        <Svg>
           <Path
             fill="#1c1bad"
             d="M0,192L60,170.7C120,149,240,107,360,112C480,117,600,171,720,197.3C840,224,960,224,1080,208C1200,192,1320,160,1380,144L1440,128L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z"
@@ -84,11 +104,23 @@ export default function SignUp({navigation}) {
         <View style={styles.RegisterCard}>
           <Text style={styles.TitleText}>Sign Up</Text>
           <View style={styles.InputsRegion}>
+            {emptyField ? (
+              <View style={{height: 30}}>
+                <Text style={styles.validationText}>
+                  All fields should be filled
+                </Text>
+              </View>
+            ) : null}
             <TextInput
               style={styles.Input}
               placeholder="Enter your email"
               placeholderTextColor={'#a1a1a1'}
               onChangeText={text => setEmail(text)}></TextInput>
+            {!validEmail ? (
+              <View style={{height: 30}}>
+                <Text style={styles.validationText}>Email is not valid</Text>
+              </View>
+            ) : null}
             <TextInput
               style={styles.Input}
               placeholder="Enter your name"
@@ -106,12 +138,24 @@ export default function SignUp({navigation}) {
               placeholder="Enter your password"
               placeholderTextColor={'#a1a1a1'}
               onChangeText={text => setPassword(text)}></TextInput>
+            {!minLength ? (
+              <View style={{height: 30}}>
+                <Text style={styles.validationText}>
+                  Passwords must be at least 8 characters in length
+                </Text>
+              </View>
+            ) : null}
             <TextInput
               secureTextEntry={true}
               style={styles.Input}
               placeholder="Confirm your password"
               placeholderTextColor={'#a1a1a1'}
               onChangeText={text => setConfirmPassword(text)}></TextInput>
+            {!passwordsMatch ? (
+              <View style={{height: 30}}>
+                <Text style={styles.validationText}>Passwords don't match</Text>
+              </View>
+            ) : null}
             <View style={styles.view}>
               <View style={{flex: 1, alignItems: 'flex-start'}}>
                 <Pressable onPress={OpenDateWindow} style={styles.dateInput}>
@@ -126,6 +170,7 @@ export default function SignUp({navigation}) {
                       maximumDate={new Date()}
                       onChange={handleDate}
                       isDatePickerVisible
+                      display="spinner"
                     />
                   )}
                 </Pressable>
@@ -139,7 +184,7 @@ export default function SignUp({navigation}) {
                   dropdownOverlayColor="transparent"
                   buttonStyle={styles.dateInput}
                   defaultButtonText="Gender"
-                  // buttonTextStyle={{color: '#a1a1a1', fontSize: 16}}
+                  buttonTextStyle={{fontSize: 15}}
                   data={gender}
                   onSelect={(selectedItem, index) => {
                     setSelectedGender(selectedItem);
@@ -155,11 +200,11 @@ export default function SignUp({navigation}) {
               </View>
             </View>
 
-            <Pressable
+            <TouchableOpacity
               style={styles.nextButton}
               onPress={() => onPressNextHandler()}>
               <Text style={{color: '#fff'}}>Next</Text>
-            </Pressable>
+            </TouchableOpacity>
           </View>
         </View>
       </View>
@@ -170,7 +215,7 @@ export default function SignUp({navigation}) {
 
 const styles = StyleSheet.create({
   Body: {
-    flex: 1,
+    // flex: 1,
     flexDirection: 'column',
     backgrundColor: '#ffffff',
     alignItems: 'center',
@@ -261,5 +306,10 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: '#1c1bad',
     alignItems: 'center',
+  },
+
+  validationText: {
+    fontSize: 15,
+    color: '#ff0000',
   },
 });

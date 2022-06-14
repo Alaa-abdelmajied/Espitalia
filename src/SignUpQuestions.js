@@ -1,6 +1,13 @@
 import React, {useState} from 'react';
 
-import {StyleSheet, Text, View, Pressable, TextInput} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Pressable,
+  TextInput,
+  TouchableOpacity,
+} from 'react-native';
 
 import {Picker} from '@react-native-picker/picker';
 import Svg, {Path} from 'react-native-svg';
@@ -10,10 +17,10 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import {Server_URL, Token_Secret, Credintials_Secret} from '@env';
 
 export default function Questions({navigation, route}) {
-  const [diabetic, setDiabetic] = useState('no');
-  const [bloodPressure, setBloodPressure] = useState('no');
-  const [allergic, setAllergic] = useState('no');
-  const [bloodType, setBloodType] = useState('a+');
+  const [diabetic, setDiabetic] = useState('unknown');
+  const [bloodPressure, setBloodPressure] = useState('unknown');
+  const [allergic, setAllergic] = useState('unknown');
+  const [bloodType, setBloodType] = useState('unknown');
   const [allergy, setAllergy] = useState(false);
   const {email, name, password, phoneNumber, date, selectedGender} =
     route.params;
@@ -87,7 +94,7 @@ export default function Questions({navigation, route}) {
                   <Picker.Item label="O-" value="o-" />
                   <Picker.Item label="AB+" value="ab+" />
                   <Picker.Item label="AB-" value="ab-" />
-                  <Picker.Item label="I don't know" value="idk" />
+                  <Picker.Item label="I don't know" value="unknown" />
                 </Picker>
               </View>
             </View>
@@ -101,7 +108,7 @@ export default function Questions({navigation, route}) {
                   }>
                   <Picker.Item label="Yes" value="yes" />
                   <Picker.Item label="No" value="no" />
-                  <Picker.Item label="I don't know" value="idk" />
+                  <Picker.Item label="I don't know" value="unknown" />
                 </Picker>
               </View>
             </View>
@@ -117,7 +124,7 @@ export default function Questions({navigation, route}) {
                   }>
                   <Picker.Item label="Yes" value="yes" />
                   <Picker.Item label="No" value="no" />
-                  <Picker.Item label="I don't know" value="idk" />
+                  <Picker.Item label="I don't know" value="unknown" />
                 </Picker>
               </View>
             </View>
@@ -133,7 +140,7 @@ export default function Questions({navigation, route}) {
                   }>
                   <Picker.Item label="Yes" value="yes" />
                   <Picker.Item label="No" value="no" />
-                  <Picker.Item label="I don't know" value="idk" />
+                  <Picker.Item label="I don't know" value="unknown" />
                 </Picker>
               </View>
               {allergic == 'yes' ? (
@@ -147,11 +154,11 @@ export default function Questions({navigation, route}) {
               ) : null}
             </View>
           </View>
-          <Pressable
+          <TouchableOpacity
             style={styles.RegisterButton}
             onPress={() => onPressHandler()}>
             <Text style={{color: '#fff'}}>Sign up</Text>
-          </Pressable>
+          </TouchableOpacity>
         </View>
       </View>
     </ScrollView>
