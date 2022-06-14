@@ -23,13 +23,20 @@ import Icon from 'react-native-vector-icons/dist/FontAwesome';
 import Icon5 from 'react-native-vector-icons/dist/FontAwesome5';
 import AntDesign from 'react-native-vector-icons/dist/AntDesign';
 
+import SelectDropdown from 'react-native-select-dropdown';
+
 
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { Server_URL, Token_Secret, Credintials_Secret } from '@env';
 import { useEffect } from 'react';
 
+const Day = ['Saterday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+const BloodTypes = ['A RhD positive (A+)','A RhD negative (A-)','B RhD positive (B+)','B RhD negative (B-)','O RhD positive (O+)','O RhD negative (O-)','AB RhD positive (AB+)','AB RhD negative (AB-)'];
+
 export default function EventsView() {
+  const [selectedBloodType, setSelectedBloodType] = useState('');
+
   const [bloodRequests, setBloodRequests] = useState([{}]);
   const [oldBloodRequests, setOldBloodRequests] = useState([{}]);
   const [showModal, setShowModal] = useState(false);
@@ -129,16 +136,89 @@ export default function EventsView() {
 
   }
 
+  const createBloodRequest = async () => {
+    token = JSON.parse(await EncryptedStorage.getItem(Token_Secret)).token;
+    console.log(selectedBloodType);
+    axios({
+      method: 'post',
+      url: `${Server_URL}:3000/receptionist/CreateBloodRequest`,
+      headers: {
+        'x-auth-token': token
+      },
+      data: {
+        bloodType: selectedBloodType
+      },
+    })
+      .then(function (response) {
+        console.log(response.data);
+        getBloodRequests();
+        getOldBloodRequests();
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  }
+
+  const toggleModal = () => {
+    setShowModal(!showModal);
+  }
+
 
   return (
     <ScrollView style={styles.container}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
     >
       <View style={{ alignItems: 'center', justifyContent: 'center', marginTop: 10, marginRight: 10 }}>
-        <TouchableOpacity style={styles.touchableOpacity}>
+        <TouchableOpacity style={styles.touchableOpacity} onPress={toggleModal} >
           <Icon style={styles.addButton} name='plus' />
           <Text style={{ fontSize: 18, color: '#fff', marginLeft: 10 }}>Make Blood Request</Text>
         </TouchableOpacity>
+        {/* 
+        TODO: add selector for blood type, button for save, button for cancel
+        */}
+        <Modal
+          visible={showModal}
+          transparent
+          onRequestClose={() => setShowModal(false)}>
+          <View style={styles.centeredView}>
+            <View style={styles.modal}>
+              <View style={styles.modalTitle}>
+                <Text style={{ fontSize: 18, color: '#fff', fontWeight: 'bold' }}>Create New Blood Request</Text>
+              </View>
+              <View style={{alignItems:'center'}}>
+                <SelectDropdown
+                  renderDropdownIcon={() => <Ionicons
+                    name={'chevron-down'}
+                    size={20}
+                    color={'#000'}
+                  />}
+                  dropdownBackgroundColor='#fff'
+                  dropdownOverlayColor='transparent'
+                  buttonStyle={styles.bloodTypeInput}
+                  defaultButtonText='BloodTypes'
+                  buttonTextStyle={{ color: '#a1a1a1', fontSize: 16 }}
+                  data={BloodTypes}
+                  onSelect={(selectedItem, index) => {
+                    console.log(selectedItem, index);
+                    setSelectedBloodType(selectedItem);
+                  }}
+                  buttonTextAfterSelection={(selectedItem, index) => {
+                    return selectedItem
+                  }}
+                  rowTextForSelection={(item, index) => {
+                    return item
+                  }}
+                />
+                <View>
+                  <Button title='Save' onPress={() => {
+                    toggleModal();
+                    createBloodRequest();
+                  }}></Button>
+                </View>
+              </View>
+            </View>
+          </View>
+        </Modal>
       </View>
 
       <View style={styles.container}>
@@ -151,8 +231,6 @@ export default function EventsView() {
                   <View>
                     <Text style={styles.doctorText}>{item.date}</Text>
                     <Text style={styles.doctorText}>{item.bloodType}</Text>
-
-
                   </View>
                   <View style={{ marginRight: 5 }}>
                     {item.PatientIDs != null ? <Text style={{ fontSize: 25 }}>{item.PatientIDs.length}</Text> : null}
@@ -196,8 +274,6 @@ export default function EventsView() {
                   <View>
                     <Text style={styles.doctorText}>{item.date}</Text>
                     <Text style={styles.doctorText}>{item.bloodType}</Text>
-
-
                   </View>
                   <View style={{ marginRight: 5 }}>
                     {item.PatientIDs != null ? <Text style={{ fontSize: 25 }}>{item.PatientIDs.length}</Text> : null}
@@ -307,5 +383,53 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: 'white',
 
-  }
+  },
+  modal: {
+    width: 300,
+    height: 300,
+    backgroundColor: '#ffff',
+    // borderWidth: 1,
+    borderColor: '#000',
+    borderRadius: 20
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#00000099'
+  },
+  modalTitle: {
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#0099FF',
+    borderTopRightRadius: 20,
+    borderTopLeftRadius: 20,
+  },
+  modalBody: {
+    height: 200,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalButton: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  bloodTypeInput: {
+    width: 'auto',
+    margin: 20,
+    marginBottom: 50,
+    // marginLeft: 10,
+    // marginRight: 10,
+    borderRadius: 10,
+    padding: 15,
+    justifyContent: 'center',
+    // margin: 5,
+    backgroundColor: '#fff',
+    shadowColor: '#000000',
+    shadowOffset: { width: -1, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1,
+    elevation: 2,
+},
 });
