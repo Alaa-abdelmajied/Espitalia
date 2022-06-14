@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 
 import {
   Button,
@@ -22,6 +22,7 @@ import Svg, {Path} from 'react-native-svg';
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {StackActions} from '@react-navigation/native';
+
 
 import {Server_URL, Token_Secret, Credintials_Secret} from '@env';
 
@@ -60,7 +61,7 @@ export default function HomeScreen({navigation}) {
     };
     autoLogin();
   }, []);
-
+  
   const login = async (email, password, type) => {
     const url = `${Server_URL}:3000/${type}/login`;
     axios

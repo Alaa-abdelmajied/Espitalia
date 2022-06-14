@@ -13,8 +13,10 @@ import {
 } from 'react-native';
 //import RadioButtonRN from 'radio-buttons-react-native';
 //import RadioGroup from 'react-native-radio-buttons-group';
-import {CommonActions, StackActions} from '@react-navigation/native';
-import {NavigationActions} from 'react-navigation';
+import { CommonActions, StackActions } from '@react-navigation/native';
+import { NavigationActions } from 'react-navigation';
+// require("dotenv").config();
+
 import RadioGroup from 'react-native-radio-button-group';
 /*
 TODO: 
@@ -126,7 +128,10 @@ export default function Login({navigation, route}) {
       //   console.log('select hospital');
       //   setIsVisible(true);
       // }
+      console.log('Login page',Server_URL);
       const url = `${Server_URL}:3000/${selectedStaff.id}/login`;
+      console.log('Server URL:',Server_URL);
+      console.log(email, password, url);
       axios
         .post(url, {
           email: email,
@@ -171,6 +176,7 @@ export default function Login({navigation, route}) {
               }),
             );
             // console.log(selectedStaff.id);
+
           } else if (selectedStaff.id == 'doctor') {
             navigation.dispatch(StackActions.popToTop());
             navigation.dispatch(
@@ -184,7 +190,7 @@ export default function Login({navigation, route}) {
         })
         .catch(function (error) {
           setIsVisible(true);
-          console.log(errorMeesage);
+          console.log('axios faild',errorMeesage, Server_URL);
           console.log('ERROR:', error);
         });
     }

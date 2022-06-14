@@ -539,13 +539,7 @@ const styles = StyleSheet.create({
         },
         elevation: 5,
     },
-    centeredView: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        marginTop: 22,
-
-    },
+   
     dayInput: {
         // width: '50%',
         borderRadius: 10,

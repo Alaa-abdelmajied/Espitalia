@@ -38,8 +38,12 @@ import PatientHistory from './doctorPages/PatientHistory';
 import DoctorProfile from './doctorPages/Profile';
 import UpcomingReservations from './doctorPages/UpcomingReservations';
 
+
 //Receptionist pages
 import ReceptHome from './receptionistPages/ReceptHome';
+import DoctorsListPage from './receptionistPages/DoctorsListPage';
+import DoctorPage from './receptionistPages/DoctorPage';
+import AppointmentsList from './receptionistPages/AppointmentsList';
 import ReceptProfile from './receptionistPages/ReceptProfile';
 import ReceptNotification from './receptionistPages/Notifications';
 import ReceptBloodReq from './receptionistPages/BloodReq';
@@ -204,6 +208,9 @@ function ReceptStackView() {
         headerBackTitle: false,
       }}>
       <Stack.Screen name="HomePage" component={ReceptHome} />
+      <Stack.Screen name="DoctorsListPage" component={DoctorsListPage} />
+      <Stack.Screen name="DoctorPage" component={DoctorPage} />
+      <Stack.Screen name="AppointmentsList" component={AppointmentsList} />
       <Stack.Screen name="doctorPage" component={ReceptDoctorDetails} />
     </Stack.Navigator>
   );
