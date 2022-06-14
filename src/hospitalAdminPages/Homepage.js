@@ -34,6 +34,22 @@ export default function Homepage({ navigation, route }) {
     //   }); 
 
   }
+
+  const onPressLogout = async () => {
+    try {
+      await EncryptedStorage.removeItem(Token_Secret);
+      await EncryptedStorage.removeItem(Credintials_Secret);
+      navigation.reset({
+        index: 0,
+        routes: [{name: 'WelcomePage'}],
+      });
+    } catch (err) {
+      Alert.alert('Error', err.message, [
+        {text: 'Exit', onPress: () => BackHandler.exitApp()},
+      ]);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.logo}>
@@ -41,7 +57,6 @@ export default function Homepage({ navigation, route }) {
       </View>
       <View style={styles.info}>
         <Text style={styles.label}>Hospital:{'\t'} <Text style={styles.data}>{route.params.name}</Text></Text>
-
         <Text style={styles.label}>Adress:{'\t\t\t'} <Text style={styles.data}>{route.params.address}</Text></Text>
       </View>
 
@@ -55,6 +70,11 @@ export default function Homepage({ navigation, route }) {
           title="Reciptionists"
           color={'#1c1bad'}
           onPress={getReceptionists}
+        />
+        <Button
+          title="Logout"
+          color={'#1c1bad'}
+          onPress={onPressLogout}
         />
       </View>
       <Button

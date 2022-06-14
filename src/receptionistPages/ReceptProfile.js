@@ -10,6 +10,8 @@ import {
   FlatList,
   TouchableOpacity,
   Animated,
+  Alert,
+  BackHandler
 } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 
@@ -17,7 +19,7 @@ import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { Server_URL, Token_Secret, Credintials_Secret } from '@env';
 
-export default function UserProfileView() {
+export default function UserProfileView({navigation}) {
   const [refreshing, setRefreshing] = useState(false);
   const [myData, setMyData] = useState({});
   const onRefresh = useCallback(() => {
@@ -50,6 +52,21 @@ export default function UserProfileView() {
     getPersonalData();
   }, []);
 
+  const onPressLogout = async () => {
+    try {
+      await EncryptedStorage.removeItem(Token_Secret);
+      await EncryptedStorage.removeItem(Credintials_Secret);
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'WelcomePage' }],
+      });
+    } catch (err) {
+      Alert.alert('Error', err.message, [
+        { text: 'Exit', onPress: () => BackHandler.exitApp() },
+      ]);
+    }
+  };
+
   return (
     <ScrollView
       // style={styles.container}
@@ -63,6 +80,11 @@ export default function UserProfileView() {
     >
       <View style={styles.header}>
         <View style={styles.headerContent}>
+          <TouchableOpacity style={{ margin: 5, alignSelf: 'flex-end' }}>
+            <Pressable onPress={onPressLogout}>
+              <Text style={{ fontSize: 15, color: '#fff' }}>Logout</Text>
+            </Pressable>
+          </TouchableOpacity>
           <Image style={styles.avatar}
             source={require('../../images/Recept_black.png')} />
 

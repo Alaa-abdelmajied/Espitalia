@@ -13,35 +13,66 @@ import { Server_URL, Token_Secret, Credintials_Secret } from '@env';
 
 const Doctorspage = ({ navigation, route }) => {
     const [doctors, setDoctors] = useState();
+    // const [search, setSearch] = useState('');
+
+    const getDoctors = async () => {
+        const token = JSON.parse(await EncryptedStorage.getItem(Token_Secret)).token;
+        console.log(token);
+        axios
+            .get(`${Server_URL}:3000/hospital/viewDoctors`, {
+                headers: {
+                    'x-auth-token': token
+                }
+            })
+            .then(function (response) {
+                //console.log(response.data);
+                // navigation.navigate('Doctors', response.data);
+                setDoctors(response.data);
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+    }
+
     useEffect(() => {
-        const getDoctors = async () => {
-            const token = JSON.parse(await EncryptedStorage.getItem(Token_Secret)).token;
-            console.log(token);
-            axios
-                .get(`${Server_URL}:3000/hospital/viewDoctors`, {
-                    headers: {
-                        'x-auth-token': token
-                    }
-                })
-                .then(function (response) {
-                    //console.log(response.data);
-                    // navigation.navigate('Doctors', response.data);
-                    setDoctors(response.data);
-                })
-                .catch(function (error) {
-                    console.log(error);
-                });
-        }
         getDoctors();
-    },[]);
-    const [text, setText] = useState('');
-    const onChange = (textValue) => setText(textValue);
+    }, []);
+    // const onChange = (textValue) => setText(textValue);
+
+    const doctorSearch = async (search) => {
+        const token = JSON.parse(await EncryptedStorage.getItem(Token_Secret)).token;
+        // console.log(token);
+        axios
+            .get(`${Server_URL}:3000/hospital/searchDoctors/${search}`, {
+                headers: {
+                    'x-auth-token': token
+                }
+            })
+            .then(response => {
+                setDoctors(response.data);
+            })
+            .catch(function (error) {
+                const err = error.response.data;
+                if (err == 'No Doctors found') {
+                    setDoctors([]);
+                }
+            });
+    }
+
+    const updateSearch = search => {
+        console.log(search);
+        if (search.length > 0) {
+            doctorSearch(search);
+        } else {
+            getDoctors();
+        }
+    };
 
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.container}>
                 <View style={styles.titleStyle}>
-                    <TextInput placeholder='🔍Search' style={styles.input} onChangeText={onChange} />
+                    <TextInput placeholder='🔍Search' style={styles.input} onChangeText={value => updateSearch(value)} />
                 </View>
                 <FlatList
                     data={doctors}

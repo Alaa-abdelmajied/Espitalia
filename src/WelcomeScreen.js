@@ -18,21 +18,21 @@ import {
   TouchableOpacity,
   BackHandler,
 } from 'react-native';
-import Svg, {Path} from 'react-native-svg';
+import Svg, { Path } from 'react-native-svg';
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {StackActions} from '@react-navigation/native';
+import { StackActions } from '@react-navigation/native';
 
 
-import {Server_URL, Token_Secret, Credintials_Secret} from '@env';
+import { Server_URL, Token_Secret, Credintials_Secret } from '@env';
 
-export default function HomeScreen({navigation}) {
+export default function HomeScreen({ navigation }) {
   const [showButton, setShowButton] = useState(false);
 
   useEffect(() => {
     const autoLogin = async () => {
       try {
-        const {email, password, type} = JSON.parse(
+        const { email, password, type } = JSON.parse(
           await EncryptedStorage.getItem(Credintials_Secret),
         );
         console.log(email, password, type);
@@ -45,9 +45,11 @@ export default function HomeScreen({navigation}) {
             console.log("It's a doctor");
             break;
           case 'receptionist':
+            login(email, password, type);
             console.log("It's a receptionist");
             break;
           case 'hospital':
+            login(email, password, type);
             console.log("It's a hosptial");
             break;
           default:
@@ -61,7 +63,7 @@ export default function HomeScreen({navigation}) {
     };
     autoLogin();
   }, []);
-  
+
   const login = async (email, password, type) => {
     const url = `${Server_URL}:3000/${type}/login`;
     axios
@@ -75,15 +77,17 @@ export default function HomeScreen({navigation}) {
         try {
           await EncryptedStorage.setItem(
             Token_Secret,
-            JSON.stringify({token: token}),
+            JSON.stringify({ token: token }),
           );
         } catch (err) {
           Alert.alert('Error', err.code, [
-            {text: 'Exit', onPress: () => BackHandler.exitApp()},
+            { text: 'Exit', onPress: () => BackHandler.exitApp() },
           ]);
         }
         if (type == 'hospital') {
-          navigation.dispatch(StackActions.popToTop());
+          if (navigation.canGoBack()) {
+            navigation.dispatch(StackActions.popToTop());
+          }
           navigation.dispatch(
             StackActions.replace('HosptialAdminHomePage', {
               screen: 'Home',
@@ -91,7 +95,9 @@ export default function HomeScreen({navigation}) {
             }),
           );
         } else if (type == 'receptionist') {
-          navigation.dispatch(StackActions.popToTop());
+          if (navigation.canGoBack()) {
+            navigation.dispatch(StackActions.popToTop());
+          }
           navigation.dispatch(
             StackActions.replace('ReceptHomePage', {
               screen: 'Home',
@@ -101,7 +107,7 @@ export default function HomeScreen({navigation}) {
         } else if (type == 'doctor') {
           navigation.reset({
             index: 0,
-            routes: [{name: 'DoctorHomePage'}],
+            routes: [{ name: 'DoctorHomePage' }],
           });
         }
       })
@@ -117,24 +123,24 @@ export default function HomeScreen({navigation}) {
         password: password,
       })
       .then(async function (response) {
-        const {verified, token} = response.data;
+        const { verified, token } = response.data;
         try {
           await EncryptedStorage.setItem(
             Token_Secret,
-            JSON.stringify({token: token}),
+            JSON.stringify({ token: token }),
           );
         } catch (err) {
           Alert.alert('Error', err.code, [
-            {text: 'Exit', onPress: () => BackHandler.exitApp()},
+            { text: 'Exit', onPress: () => BackHandler.exitApp() },
           ]);
         }
         if (verified) {
           navigation.reset({
             index: 0,
-            routes: [{name: 'Patient'}],
+            routes: [{ name: 'Patient' }],
           });
         } else {
-          navigation.navigate('OTP', {isForgotten: false});
+          navigation.navigate('OTP', { isForgotten: false });
         }
       })
       .catch(function (error) {
@@ -150,7 +156,7 @@ export default function HomeScreen({navigation}) {
       <Image
         style={styles.logo}
         source={require('../images/logo_withoutBG.png')}></Image>
-      <Text style={{fontSize: 40, fontWeight: 'bold', color: '#1c1bad'}}>
+      <Text style={{ fontSize: 40, fontWeight: 'bold', color: '#1c1bad' }}>
         eSpitalia
       </Text>
       {showButton ? (
@@ -165,7 +171,7 @@ export default function HomeScreen({navigation}) {
                 },
               })
             }>
-            <Text style={[styles.buttonText, {color: '#000'}]}> USER </Text>
+            <Text style={[styles.buttonText, { color: '#000' }]}> USER </Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.staffButton}
@@ -177,7 +183,7 @@ export default function HomeScreen({navigation}) {
                 },
               })
             }>
-            <Text style={[styles.buttonText, {color: '#fff'}]}> STAFF </Text>
+            <Text style={[styles.buttonText, { color: '#fff' }]}> STAFF </Text>
           </TouchableOpacity>
         </View>
       ) : null}
