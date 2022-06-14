@@ -1,22 +1,35 @@
 import React from 'react';
-import {StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
 
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-const DoctorsCard = ({
-  card,
-  maxRating,
-  defaultRating,
-  navigation,
-  hospitalName,
-  hospitalAddress,
-}) => {
-  const onPress = () => {
-    navigation.navigate('DoctorDetails');
+import { Rating } from 'react-native-ratings';
+
+
+const DoctorsCard = ({ card, navigation, hospitalName, hospitalAddress }) => {
+  const onPress = (id, name, specialization, averageRating) => {
+    navigation.navigate('DoctorDetails', {
+      drID: id,
+      drName: name,
+      specialization: specialization,
+      hospitalName: hospitalName,
+      hospitalAddress: hospitalAddress,
+      averageRating: averageRating,
+      // fromSearch: false,
+    });
   };
 
   return (
-    <TouchableOpacity style={styles.card} onPress={onPress}>
+    <TouchableOpacity
+      style={styles.card}
+      onPress={() =>
+        onPress(
+          card._id,
+          card.name,
+          card.specialization,
+          card.rating
+        )
+      }>
       <View style={styles.card_header}>
         <Image
           style={styles.doctorImg}
@@ -34,8 +47,8 @@ const DoctorsCard = ({
             name={'hospital-o'}
             size={30}
             color="#1c1bad"
-            style={{margin: 10}}></FontAwesome>
-          <View style={{flex: 1}}>
+            style={{ margin: 10 }}></FontAwesome>
+          <View style={{ flex: 1 }}>
             <Text style={styles.hospital}>{hospitalName}</Text>
           </View>
         </View>
@@ -44,27 +57,26 @@ const DoctorsCard = ({
             name={'location-sharp'}
             size={30}
             color="#1c1bad"
-            style={{margin: 10}}></Ionicons>
-          <View style={{flex: 1}}>
+            style={{ margin: 10 }}></Ionicons>
+          <View style={{ flex: 1 }}>
             <Text style={styles.hospital}>{hospitalAddress}</Text>
           </View>
         </View>
         <View style={styles.customRatingBar}>
-          {maxRating.map((item, key) => {
-            return (
-              <TouchableOpacity
-                activeOpacity={0.7}
-                key={item}
-                onPress={() => setDefaultRating(item)}>
-                <FontAwesome
-                  name={item <= defaultRating ? 'star' : 'star-o'}
-                  size={25}
-                  color="#FDCC0D"
-                />
-                {/* <Text> Rate is {item} / 5</Text> */}
-              </TouchableOpacity>
-            );
-          })}
+          <Rating
+            type="custom"
+            ratingBackgroundColor="#bfbfbf"
+            tintColor="#fff"
+            ratingCount={5}
+            imageSize={25}
+            startingValue={card.rating}
+            fractions={1}
+            readonly={true}
+            style={{
+              margin: 5,
+              backgroundColor: 'transparent',
+              fontSize: 15,
+            }}></Rating>
         </View>
       </View>
     </TouchableOpacity>
@@ -73,7 +85,6 @@ const DoctorsCard = ({
 
 const styles = StyleSheet.create({
   card: {
-    // flexDirection:'column',
     width: '95%',
     borderRadius: 15,
     overflow: 'hidden',

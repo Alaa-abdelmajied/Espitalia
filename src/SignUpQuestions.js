@@ -1,17 +1,69 @@
 import React, {useState} from 'react';
 
-import {StyleSheet, Text, View, Pressable, TextInput} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Pressable,
+  TextInput,
+  TouchableOpacity,
+} from 'react-native';
 
 import {Picker} from '@react-native-picker/picker';
 import Svg, {Path} from 'react-native-svg';
 import {ScrollView} from 'react-native-gesture-handler';
+import axios from 'axios';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import {Server_URL, Token_Secret, Credintials_Secret} from '@env';
 
-export default function Questions({navigation}) {
-  const [diabetic, setDiabetic] = useState('no');
-  const [bloodPressure, setBloodPressure] = useState('no');
-  const [allergic, setAllergic] = useState('no');
-  const [bloodType, setBloodType] = useState('a+');
+export default function Questions({navigation, route}) {
+  const [diabetic, setDiabetic] = useState('unknown');
+  const [bloodPressure, setBloodPressure] = useState('unknown');
+  const [allergic, setAllergic] = useState('unknown');
+  const [bloodType, setBloodType] = useState('unknown');
+  const [allergy, setAllergy] = useState(false);
+  const {email, name, password, phoneNumber, date, selectedGender} =
+    route.params;
 
+  const onPressHandler = () => {
+    axios
+      .post(`${Server_URL}:3000/patient/signup`, {
+        email: email,
+        password: password,
+        name: name,
+        phoneNumber: phoneNumber,
+        dateOfBirth: date,
+        gender: selectedGender,
+        questions: diabetic,
+      })
+      .then(async function (response) {
+        const {token} = response.data;
+        try {
+          await EncryptedStorage.setItem(
+            Token_Secret,
+            JSON.stringify({token: token}),
+          );
+          await EncryptedStorage.setItem(
+            Credintials_Secret,
+            JSON.stringify({
+              email: email,
+              password: password,
+              type: 'patient',
+            }),
+          );
+        } catch (err) {
+          Alert.alert('Error', err.code, [
+            {text: 'Exit', onPress: () => BackHandler.exitApp()},
+          ]);
+        }
+        navigation.navigate('OTP', {isForgotten: false});
+      })
+      .catch(function (error) {
+        const err = error.response.data;
+        //alert signup issue
+        console.log('alert');
+      });
+  };
   return (
     <ScrollView>
       <View style={styles.WaveHeader}>
@@ -42,7 +94,7 @@ export default function Questions({navigation}) {
                   <Picker.Item label="O-" value="o-" />
                   <Picker.Item label="AB+" value="ab+" />
                   <Picker.Item label="AB-" value="ab-" />
-                  <Picker.Item label="I don't know" value="idk" />
+                  <Picker.Item label="I don't know" value="unknown" />
                 </Picker>
               </View>
             </View>
@@ -56,7 +108,7 @@ export default function Questions({navigation}) {
                   }>
                   <Picker.Item label="Yes" value="yes" />
                   <Picker.Item label="No" value="no" />
-                  <Picker.Item label="I don't know" value="idk" />
+                  <Picker.Item label="I don't know" value="unknown" />
                 </Picker>
               </View>
             </View>
@@ -72,7 +124,7 @@ export default function Questions({navigation}) {
                   }>
                   <Picker.Item label="Yes" value="yes" />
                   <Picker.Item label="No" value="no" />
-                  <Picker.Item label="I don't know" value="idk" />
+                  <Picker.Item label="I don't know" value="unknown" />
                 </Picker>
               </View>
             </View>
@@ -88,23 +140,25 @@ export default function Questions({navigation}) {
                   }>
                   <Picker.Item label="Yes" value="yes" />
                   <Picker.Item label="No" value="no" />
-                  <Picker.Item label="I don't know" value="idk" />
+                  <Picker.Item label="I don't know" value="unknown" />
                 </Picker>
               </View>
+              {allergic == 'yes' ? (
+                <View>
+                  <TextInput
+                    style={styles.Input}
+                    placeholder="What are you allergic to?"
+                    placeholderTextColor={'#a1a1a1'}
+                    onChangeText={text => setAllergy(text)}></TextInput>
+                </View>
+              ) : null}
             </View>
-            {/* <TextInput style={[styles.pickerContainer, { width: 300, textAlign: 'center' }]} placeholder="enter your allergy">
-                        </TextInput> */}
           </View>
-          <Pressable
+          <TouchableOpacity
             style={styles.RegisterButton}
-            onPress={() =>
-              navigation.reset({
-                index: 0,
-                routes: [{name: 'Patient'}],
-              })
-            }>
+            onPress={() => onPressHandler()}>
             <Text style={{color: '#fff'}}>Sign up</Text>
-          </Pressable>
+          </TouchableOpacity>
         </View>
       </View>
     </ScrollView>
@@ -192,5 +246,14 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     alignSelf: 'center',
     // color: '#fff'
+  },
+
+  Input: {
+    height: 60,
+    width: 300,
+    borderRadius: 10,
+    borderWidth: 1,
+    textAlign: 'center',
+    margin: 10,
   },
 });

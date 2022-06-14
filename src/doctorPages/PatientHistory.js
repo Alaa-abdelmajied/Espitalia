@@ -1,67 +1,65 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   StyleSheet,
   View,
   Text,
   RefreshControl,
   SectionList,
-  Image
+  Image,
+  FlatList,
+  ActivityIndicator
 } from 'react-native';
+import axios from 'axios';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import { Server_URL, Token_Secret, Credintials_Secret } from '@env';
 
-export default function PatientHistory() {
+export default function PatientHistory({ route }) {
 
-  const DATA = [
-    {
-      title: 'Title 1',
-      data: ['Doctor details', 'Report', 'Prescription'],
-    },
-    {
-      title: 'Title 2',
-      data: ['Doctor details', 'Report', 'Prescription'],
-    },
-    {
-      title: 'Title 3',
-      data: ['Doctor details', 'Report', 'Prescription'],
-    },
-    {
-      title: 'Title 4',
-      data: ['Doctor details', 'Report', 'Prescription'],
-    },
-  ]
-  // const [Refreshing, setRefreshing] = useState(false);
+  const { patientId, patientName } = route.params;
+  const [history, setHistory] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // const onRefresh = () => {
-  //     setRefreshing(true);
-  //     setRefreshing(false);
-  // }
+  useEffect(() => {
+    getHistory();
+  }, [])
+
+  const getHistory = async () => {
+    await axios
+      .get(
+        `${Server_URL}:3000/doctor/getPatientHistory/${patientId}`,
+      )
+      .then(response => {
+        setHistory(response.data);
+        setLoading(false);
+      })
+      .catch(function (error) {
+        console.log(error.message);
+      });
+  }
 
   return (
-    <View style={{ flex: 1 }}>
-      <View style={styles.header_}>
-        <Image style={styles.Image} source={require('../../images/app_logo-removebg-preview.png')}></Image>
+    loading ?
+      <View style={styles.loadingIcon}>
+        <ActivityIndicator size="large" color="#0451cc" />
+      </View> :
+      <View style={{ flex: 1 }}>
+        <View style={styles.header_}>
+          <Image style={styles.Image} source={require('../../images/app_logo-removebg-preview.png')}></Image>
+        </View>
+        <Text style={styles.title}>Medical History of {patientName}</Text>
+        <FlatList
+          keyExtractor={(item, index) => index.toString()}
+          data={history}
+          renderItem={({ item }) => (
+            <View style={styles.historyCard}>
+              <Text style={styles.text}>Doctor: {item.doctorName}</Text>
+              <Text style={styles.text}>Specialization: {item.specialization}</Text>
+              <Text style={styles.text}>Report: {item.report}</Text>
+              <Text style={styles.text}>Prescription: {item.prescription}</Text>
+            </View>
+          )}
+        />
       </View>
-      <SectionList
-        keyExtractor={(item, index) => index.toString()}
-        sections={DATA}
-        renderItem={({ item }) => (
-          <Text style={styles.text}>{item}</Text>
-        )}
-        renderSectionHeader={({ section }) => (
-          <View style={styles.item}>
-            <Text style={styles.title}>{section.title}</Text>
-          </View>
-        )}
-
-      // refreshControl={
-      //     <RefreshControl
-      //         refreshing={Refreshing}
-      //         onRefresh={onRefresh}
-      //         colors={['#ff00ff']}
-      //     />
-      // }
-      />
-    </View>
-
   );
 };
 
@@ -97,9 +95,33 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   title: {
-    color: '#fff',
-    fontSize: 30,
-    // fontStyle: 'italic',
-    margin: 10,
+    textAlign: 'center',
+    fontSize: 25,
+    fontWeight: '700',
+    color: 'bold',
+    color: '#000',
+    margin: '2%',
+
+    // marginBottom: 20,
   },
+  historyCard: {
+    width: '95%',
+    borderRadius: 15,
+    backgroundColor: '#fff',
+    alignSelf: 'center',
+    margin: 4,
+    shadowColor: '#000',
+    shadowOpacity: 1,
+    shadowOffset: {
+      width: 3,
+      height: 3,
+    },
+    elevation: 2,
+    overflow: 'hidden',
+  },
+  loadingIcon: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+  }
 });

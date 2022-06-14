@@ -1,29 +1,118 @@
-import React, {useState} from 'react';
-import {StyleSheet, View, TouchableOpacity, FlatList} from 'react-native';
-import {SearchBar} from 'react-native-elements';
+import React, {useEffect, useState} from 'react';
+import {StyleSheet, View, TouchableOpacity, FlatList, Text} from 'react-native';
+import {Button, SearchBar} from 'react-native-elements';
 import {Server_URL} from '@env';
 import axios from 'axios';
+import {useIsFocused} from '@react-navigation/native';
 
 export default function Search({navigation}) {
   const [search, setSearch] = useState('');
+  const [doctorsResult, setDoctorsResult] = useState([]);
+  const [doctorSeeMore, setDoctorSeeMore] = useState(false);
+  const [hospitalsResult, setHospitalsResult] = useState([]);
+  const [hospitalSeeMore, setHospitalSeeMore] = useState(false);
+  const [specializationsResult, setSpecializationsResult] = useState([]);
+  const [specializationSeeMore, setSpecializationSeeMore] = useState(false);
+  const isFocused = useIsFocused();
+
+  // useEffect(() => {
+  //   if (!isFocused) {
+  //     setSearch('');
+  //   }
+  // }, [isFocused])
 
   const updateSearch = search => {
     setSearch(search);
-    // generalSearch(search);
+    if (search.length > 0) {
+      generalSearch(search);
+    } else {
+      setDoctorsResult([]);
+      setDoctorSeeMore(false);
+      setHospitalsResult([]);
+      setHospitalSeeMore(false);
+      setSpecializationsResult([]);
+      setSpecializationSeeMore(false);
+    }
   };
-
-  const [searchResult, setSearchResult] = useState([]);
 
   const generalSearch = search => {
     axios
-      .get(`${Server_URL}:3000/patient/searchSpecialization/${search}`)
+      .get(`${Server_URL}:3000/patient/search/${search}`)
       .then(response => {
-        setSearchResult(response.data);
-        console.log(search);
+        setDoctorsResult(response.data.doctors);
+        setDoctorSeeMore(response.data.doctorSeeMore);
+        setHospitalsResult(response.data.hospitals);
+        setHospitalSeeMore(response.data.hospitalSeeMore);
+        setSpecializationsResult(response.data.specializations);
+        setSpecializationSeeMore(response.data.specializationsSeeMore);
+        // console.log(response.data);
       })
       .catch(function (error) {
-        console.log(error.message);
+        const err = error.response.data;
+        if (err == 'No hospitals or doctors or specializations found') {
+          setDoctorsResult([]);
+          setDoctorSeeMore(false);
+          setHospitalsResult([]);
+          setHospitalSeeMore(false);
+          setSpecializationsResult([]);
+          setSpecializationSeeMore(false);
+          // console.log(err);
+        }
       });
+  };
+
+  const onPressDr = (id, name) => {
+    navigation.navigate('DoctorDetails', {
+      drID: id,
+      drName: name,
+      fromSearch: true,
+    });
+    console.log(id, name);
+  };
+
+  const onPressHosp = (id, name, address) => {
+    navigation.navigate('SpecializationScreen', {
+      hospitalID: id,
+      hospitalName: name,
+      hospitalAddress: address,
+      isAllSpecializations: false,
+      specializationSeeMore: false,
+    });
+    console.log(id, name);
+  };
+
+  const onPressSpec = specialization => {
+    navigation.navigate('DoctorsScreen', {
+      speciality: specialization,
+      fromSearch: true,
+    });
+  };
+
+  const seeMoreDoctors = () => {
+    navigation.navigate('DoctorsScreen', {
+      doctorSeeMore: true,
+      targetSearch: search,
+      fromSearch: false,
+      isAllDoctors:false,
+    });
+    console.log(search, doctorSeeMore);
+  };
+
+  const seeMoreHospitals = () => {
+    navigation.navigate('HospitalList', {
+      hospitalSeeMore: true,
+      targetSearch: search,
+    });
+    console.log(search, hospitalSeeMore);
+  };
+
+  const seeMoreSpecializations = () => {
+    navigation.navigate('SpecializationScreen', {
+      specializationSeeMore: true,
+      targetSearch: search,
+      isAllSpecializations: false,
+    });
+    console.log(search, specializationSeeMore);
   };
 
   return (
@@ -31,34 +120,114 @@ export default function Search({navigation}) {
       <SearchBar
         lightTheme={true}
         placeholder="search for doctor, hospital or specialization"
-        onChangeText={generalSearch}
+        onChangeText={value => updateSearch(value)}
         value={search}
         fontSize={15}
         containerStyle={{backgroundColor: '#f0f0f0'}}
         inputContainerStyle={{borderRadius: 50, backgroundColor: '#fff'}}
       />
       <FlatList
-        data={searchResult}
-        keyExtractor={(item, index) => index.toString()}
+        keyExtractor={item => item._id}
+        data={doctorsResult}
+        ListHeaderComponent={() => (
+          <View style={styles.flatListHeader}>
+            <Text style={styles.titleText}>Doctors</Text>
+            {doctorSeeMore ? (
+              <TouchableOpacity
+                style={styles.seeMoreButton}
+                onPress={seeMoreDoctors}>
+                <Text style={{color: '#fff', fontSize: 15}}>See More</Text>
+              </TouchableOpacity>
+            ) : null}
+          </View>
+        )}
         renderItem={({item}) => {
           return (
             <TouchableOpacity
-              style={styles.specializationCard}
-              // onPress={() => onPress(item)}
-            >
-              <View style={{justifyContent: 'center', alignItems: 'center'}}>
-                <FontAwesome
-                  name={'stethoscope'}
-                  size={40}
-                  color="#1c1bad"
-                  style={{margin: 10}}></FontAwesome>
-              </View>
+              style={styles.searchCard}
+              onPress={() => onPressDr(item._id, item.name)}>
+              <View
+                style={{justifyContent: 'center', alignItems: 'center'}}></View>
               <View style={{flex: 2, justifyContent: 'center'}}>
-                <Text style={styles.speciality}>{item}</Text>
+                <Text style={styles.searchText}>{item.name}</Text>
               </View>
             </TouchableOpacity>
           );
         }}
+        ListEmptyComponent={
+          <Text style={{fontSize: 20, alignSelf: 'center'}}>No Results</Text>
+        }
+      />
+
+      <FlatList
+        keyExtractor={item => item._id}
+        data={hospitalsResult}
+        ListHeaderComponent={() => (
+          <View style={styles.flatListHeader}>
+            <Text style={styles.titleText}>Hospitals</Text>
+            {hospitalSeeMore ? (
+              <TouchableOpacity
+                style={styles.seeMoreButton}
+                onPress={seeMoreHospitals}>
+                <Text style={{color: '#fff', fontSize: 15}}>See More</Text>
+              </TouchableOpacity>
+            ) : null}
+          </View>
+        )}
+        renderItem={({item}) => {
+          return (
+            <TouchableOpacity
+              style={styles.searchCard}
+              onPress={() => onPressHosp(item._id, item.name, item.address)}>
+              <View
+                style={{justifyContent: 'center', alignItems: 'center'}}></View>
+              <View
+                style={{
+                  flex: 2,
+                  justifyContent: 'center',
+                  flexDirection: 'column',
+                }}>
+                <Text style={styles.searchText}>{item.name}</Text>
+                <Text style={styles.searchText}>{item.address}</Text>
+              </View>
+            </TouchableOpacity>
+          );
+        }}
+        ListEmptyComponent={
+          <Text style={{fontSize: 20, alignSelf: 'center'}}>No Results</Text>
+        }
+      />
+      <FlatList
+        keyExtractor={item => item._id}
+        data={specializationsResult}
+        ListHeaderComponent={() => (
+          <View style={styles.flatListHeader}>
+            <Text style={styles.titleText}>Specializations</Text>
+            {specializationSeeMore ? (
+              <TouchableOpacity
+                style={styles.seeMoreButton}
+                onPress={seeMoreSpecializations}>
+                <Text style={{color: '#fff', fontSize: 15}}>See More</Text>
+              </TouchableOpacity>
+            ) : null}
+          </View>
+        )}
+        renderItem={({item}) => {
+          return (
+            <TouchableOpacity
+              style={styles.searchCard}
+              onPress={() => onPressSpec(item.name)}>
+              <View
+                style={{justifyContent: 'center', alignItems: 'center'}}></View>
+              <View style={{flex: 2, justifyContent: 'center'}}>
+                <Text style={styles.searchText}>{item.name}</Text>
+              </View>
+            </TouchableOpacity>
+          );
+        }}
+        ListEmptyComponent={
+          <Text style={{fontSize: 20, alignSelf: 'center'}}>No Results</Text>
+        }
       />
     </View>
   );
@@ -119,7 +288,36 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     justifyContent: 'center',
   },
-
+  searchCard: {
+    alignSelf: 'center',
+    width: '95%',
+    paddingVertical: 5,
+    margin: 5,
+    backgroundColor: '#FFFFFF',
+    flexDirection: 'row',
+    borderRadius: 5,
+    shadowColor: '#000',
+    shadowOpacity: 1,
+    shadowOffset: {
+      width: 3,
+      height: 3,
+    },
+    elevation: 2,
+  },
+  flatListHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  seeMoreButton: {
+    flex: 1,
+    margin: 5,
+    alignSelf: 'flex-end',
+    borderRadius: 10,
+    backgroundColor: '#1c1bad',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   // notificationList: {
   //   marginTop: 0,
   //   padding: 0,
@@ -135,24 +333,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
 
-  specializationCard: {
-    // width: '100%',
-    paddingTop: 5,
-    paddingBottom: 5,
-    // margin: '1%',
-    margin: 3,
-    backgroundColor: '#FFFFFF',
-    flexDirection: 'row',
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOpacity: 1,
-    shadowOffset: {
-      width: 3,
-      height: 3,
-    },
-    elevation: 2,
-  },
-
   image: {
     width: 45,
     height: 45,
@@ -160,15 +340,18 @@ const styles = StyleSheet.create({
     marginLeft: 20,
   },
 
-  speciality: {
-    fontSize: 20,
+  searchText: {
+    fontSize: 15,
     color: '#000000',
     marginLeft: 10,
     alignSelf: 'center',
   },
 
-  search: {
-    borderRadius: 20,
-    height: 50,
+  titleText: {
+    color: '#000',
+    margin: 12,
+    fontSize: 20,
+    fontWeight: 'bold',
+    flex: 4,
   },
 });

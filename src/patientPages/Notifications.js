@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   StyleSheet,
   Text,
@@ -9,132 +9,126 @@ import {
   RefreshControl,
   FlatList,
   TouchableOpacity,
+  ActivityIndicator,
+  BackHandler,
+  Alert,
 } from 'react-native';
 import Dialog from 'react-native-dialog';
+import axios from 'axios';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import {Server_URL, Token_Secret} from '@env';
+import {useIsFocused} from '@react-navigation/native';
 
 export default function Notification({navigation}) {
-  const [visible, setVisible] = useState(false);
-  const [Items, setItems] = useState([
-    {
-      key: '1',
-      name: 'Royal Hospital',
-      msg: 'notification content',
-      date: '22/3/2022',
-    },
-    {
-      key: '2',
-      name: 'Al Andalusia',
-      msg: 'notification content',
-      date: '22/3/2022',
-    },
-    {
-      key: '3',
-      name: 'Alex Sydney',
-      msg: 'notification content',
-      date: '22/3/2022',
-    },
-    {
-      key: '4',
-      name: 'German Hospital',
-      msg: 'notification content',
-      date: '22/3/2022',
-    },
-    {
-      key: '5',
-      name: 'Middle East Hospital',
-      msg: 'notification content',
-      date: '22/3/2022',
-    },
-    {
-      key: '6',
-      name: 'Hospital Name',
-      msg: 'notification content',
-      date: '22/3/2022',
-    },
-    {
-      key: '7',
-      name: 'Hospital Name',
-      msg: 'notification content',
-      date: '22/3/2022',
-    },
-    {
-      key: '8',
-      name: 'Hospital Name',
-      msg: 'notification content',
-      date: '22/3/2022',
-    },
-    {
-      key: '9',
-      name: 'Hospital Name',
-      msg: 'notification content',
-      date: '22/3/2022',
-    },
-    {
-      key: '10',
-      name: 'Hospital Name',
-      msg: 'notification content',
-      date: '22/3/2022',
-    },
-    {
-      key: '11',
-      name: 'Hospital Name',
-      msg: 'notification content',
-      date: '22/3/2022',
-    },
-    {
-      key: '12',
-      name: 'Hospital Name',
-      msg: 'notification content',
-      date: '22/3/2022',
-    },
-    {
-      key: '13',
-      name: 'Hospital Name',
-      msg: 'notification content',
-      date: '22/3/2022',
-    },
-  ]);
+  const [notifications, setNotifications] = useState([]);
+  const [skipNumber, setSkipNumber] = useState(0);
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [refreshing, setRefreshing] = useState(false);
+  const [loadData, setLoadData] = useState(true);
+  const isFocused = useIsFocused();
 
-  const showDialog = () => {
-    setVisible(true);
+  const getNotifications = async () => {
+    try {
+      const token = JSON.parse(
+        await EncryptedStorage.getItem(Token_Secret),
+      ).token;
+      await axios
+        .get(`${Server_URL}:3000/patient/getNotification/${token}`)
+        .then(response => {
+          setNotifications(response.data);
+          setRefreshing(false);
+          setLoadData(false);
+        })
+        .catch(function (error) {
+          console.log(error.message);
+          setRefreshing(false);
+          setLoadData(false);
+        });
+    } catch (err) {
+      Alert.alert('Error', err.code, [
+        {text: 'Exit', onPress: () => BackHandler.exitApp()},
+      ]);
+    }
   };
 
-  const handleAccept = () => {
-    setVisible(false);
-  };
+  useEffect(() => {
+    setLoadData(true);
+    if (isFocused) {
+      getNotifications();
+    } else {
+      setNotifications([]);
+      setRefreshing(false);
+    }
+  }, [isFocused]);
 
-  const handleIgnore = () => {
-    setVisible(false);
+  useEffect(() => {
+    if (isFocused && refreshing) {
+      getNotifications();
+    }
+  }, [refreshing]);
+
+  const onRefreshing = () => {
+    setRefreshing(true);
   };
 
   return (
     <View style={styles.container}>
       <FlatList
-        data={Items}
+        data={notifications}
+        onRefresh={onRefreshing}
+        refreshing={refreshing}
+        ListEmptyComponent={
+          loadData ? (
+            <View>
+              <ActivityIndicator size="large" color="#0451cc" />
+            </View>
+          ) : (
+            <Text
+              style={{
+                fontSize: 20,
+                alignSelf: 'center',
+                color: '#000',
+                margin: '10%',
+              }}>
+              No Notifications :)
+            </Text>
+          )
+        }
         renderItem={({item}) => (
           <TouchableOpacity
             style={styles.notificationsCard}
-            onPress={showDialog}>
+            // onPress={showDialog}
+          >
             {/* <View style={styles.textContainer}> */}
             <View
-              style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-              <Text style={{color: '#1c1bad', fontSize: 17, margin: '3%'}}>
-                {item.name}
+              style={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+                margin: 5,
+              }}>
+              <Text
+                style={{color: '#1c1bad', fontSize: 17, textAlign: 'center'}}>
+                {item.title}
               </Text>
-              <Text style={{color: '#000', fontSize: 13}}>
-                Date: {item.date}
+              <Text style={{color: '#000', fontSize: 13, textAlign: 'center'}}>
+                {new Date(item.date).toLocaleDateString() +
+                  ' ' +
+                  new Date(item.date).toLocaleTimeString()}
               </Text>
             </View>
             <View
               style={{flex: 2, justifyContent: 'center', alignItems: 'center'}}>
-              <Text style={{color: '#000', fontSize: 17}}>{item.msg}</Text>
+              <Text style={{color: '#000', fontSize: 17, textAlign: 'center'}}>
+                {item.body}
+              </Text>
             </View>
-            <Dialog.Container visible={visible}>
+            {/* <Dialog.Container visible={visible}>
               <Dialog.Title>Blood Rquest</Dialog.Title>
               <Dialog.Description>notification details</Dialog.Description>
               <Dialog.Button label="Accept" onPress={handleAccept} />
               <Dialog.Button label="Ignore" onPress={handleIgnore} />
-            </Dialog.Container>
+            </Dialog.Container> */}
             {/* </View> */}
           </TouchableOpacity>
         )}
@@ -178,6 +172,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '98%',
     borderRadius: 15,
-    backgroundColor: '#ff0f',
+    // backgroundColor: '#ff0f',
   },
 });

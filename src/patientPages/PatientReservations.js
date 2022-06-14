@@ -1,69 +1,92 @@
 import React, {useState, useEffect} from 'react';
-import {StyleSheet, Text, View, FlatList, Pressable, Image} from 'react-native';
-import axios from 'axios';
-import {Server_URL} from '@env';
+import {
+  StyleSheet,
+  Text,
+  View,
+  FlatList,
+  Pressable,
+  Image,
+  Alert,
+  BackHandler,
+  ActivityIndicator,
+  TouchableOpacity,
+} from 'react-native';
 
-export default function Reservation({navigation}) {
+import FlashMessage from 'react-native-flash-message';
+import {showMessage, hideMessage} from 'react-native-flash-message';
+
+import EncryptedStorage from 'react-native-encrypted-storage';
+import axios from 'axios';
+import {Server_URL, Token_Secret} from '@env';
+import {useIsFocused} from '@react-navigation/native';
+
+export default function Reservation({}) {
   const [upcomingAppointments, setUpcomingAppointments] = useState([]);
+  const [loadData, setLoadData] = useState(true);
+  const isFocused = useIsFocused();
+
+  const getUpcomingAppointments = async () => {
+    const token = JSON.parse(
+      await EncryptedStorage.getItem(Token_Secret),
+    ).token;
+    await axios
+      .get(`${Server_URL}:3000/patient/upcomingAppointment/${token}`)
+      .then(response => {
+        setUpcomingAppointments(response.data);
+        setLoadData(false);
+        console.log('done');
+      })
+      .catch(function (error) {
+        console.log(error.message);
+        setLoadData(false);
+      });
+  };
 
   useEffect(() => {
-    const getUpcomingAppointments = async () => {
-      await axios
-        .get(
-          `${Server_URL}:3000/patient/upcomingAppointment/626815e4419d4e945c124cf4`,
-        )
-        .then(response => setUpcomingAppointments(response.data))
-        .catch(function (error) {
-          console.log(error.message);
-        });
-    };
-    getUpcomingAppointments();
-  }, []);
+    setLoadData(true);
+    if (isFocused) {
+      getUpcomingAppointments();
+    } else {
+      setUpcomingAppointments([]);
+    }
+  }, [isFocused]);
 
-  // const [Items, setItems] = useState([
-  //   {
-  //     key: '1',
-  //     Hname: 'Middle East Hospital',
-  //     doctor: 'Ahmed',
-  //     date: '15/3/2022',
-  //     resNum: 1,
-  //   },
-  //   {
-  //     key: '2',
-  //     Hname: 'ICC Hospital',
-  //     doctor: 'Maram',
-  //     date: '16/3/2022',
-  //     resNum: 2,
-  //   },
-  //   {
-  //     key: '3',
-  //     Hname: 'Al Andalusia Hospital',
-  //     doctor: 'Ali',
-  //     date: '19/3/2022',
-  //     resNum: 3,
-  //   },
-  //   {
-  //     key: '4',
-  //     Hname: 'Royal Hospital',
-  //     doctor: 'Alaa',
-  //     date: '25/3/2022',
-  //     resNum: 4,
-  //   },
-  //   {
-  //     key: '5',
-  //     Hname: 'German Hospital',
-  //     doctor: 'Mayar',
-  //     date: '5/4/2022',
-  //     resNum: 5,
-  //   },
-  //   {
-  //     key: '6',
-  //     Hname: 'Alexandria International Hospital',
-  //     doctor: 'Nadeen',
-  //     date: '15/4/2022',
-  //     resNum: 6,
-  //   },
-  // ]);
+  const cancelAppointment = appointmentID => {
+    // setRefreshFlatList(!refreshFlatlist);
+    console.log(appointmentID);
+    console.log('pressed');
+    try {
+      axios
+        .delete(`${Server_URL}:3000/patient/cancel/${appointmentID}`)
+        .then(function (response) {
+          console.log(appointmentID);
+          <View style={styles.loadingIcon}>
+            <ActivityIndicator size="large" color="#0451cc" />
+          </View>;
+          showMessage({
+            message: 'Appointment cancelled successfully',
+            type: 'success',
+          });
+          // Alert.alert('Appointment cancelled successfully');
+          getUpcomingAppointments();
+        })
+        .catch(function (error) {
+          const err = error.response.data;
+          console.log(err);
+          if (err == 'Error cancelling appointment') {
+            showMessage({
+              message: err,
+              type: 'warning',
+            });
+          }
+        });
+    } catch (err) {
+      Alert.alert('Error', err.code, [
+        {text: 'Exit', onPress: () => BackHandler.exitApp()},
+      ]);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -71,33 +94,56 @@ export default function Reservation({navigation}) {
           style={styles.Image}
           source={require('../../images/app_logo-removebg-preview.png')}></Image>
       </View>
-
       <FlatList
+        extraData={upcomingAppointments}
         data={upcomingAppointments}
-        // keyExtractor={item => {
-        //   return item.appointmentID;
-        // }}
+        keyExtractor={(item, index) => index.toString()}
+        // return item.appointmentID;
         renderItem={({item}) => (
           <View style={styles.appointmentsCard}>
             <View style={styles.infoView}>
-              <Text style={styles.infoText}>
-                Hospital Name: {item.hospitalName}
-              </Text>
-              <Text style={styles.infoText}>Doctor Name: {item.drName} </Text>
+              <Text style={styles.infoText}>Hospital: {item.hospitalName}</Text>
+              <Text style={styles.infoText}>Doctor: {item.drName} </Text>
               <Text style={styles.infoText}>Date: {item.date} </Text>
+              <Text style={styles.infoText}>
+                Time: {item.from} - {item.to}
+              </Text>
               <Text style={styles.infoText}>Reservation No: {item.resNum}</Text>
             </View>
             <View style={styles.view2}>
               <View style={styles.numberView}>
                 <Text style={styles.infoText}>Flow Number</Text>
               </View>
-              <Pressable style={styles.button}>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={() => cancelAppointment(item.appointmentID)}>
+                {/* <View style={styles.loadingIcon}>
+                  <ActivityIndicator size="large" color="#0451cc" />
+                </View> */}
                 <Text style={styles.buttonText}>CANCEL</Text>
-              </Pressable>
+              </TouchableOpacity>
             </View>
           </View>
         )}
+        ListEmptyComponent={
+          loadData ? (
+            <View>
+              <ActivityIndicator size="large" color="#0451cc" />
+            </View>
+          ) : (
+            <Text
+              style={{
+                fontSize: 20,
+                alignSelf: 'center',
+                color: '#000',
+                margin: '10%',
+              }}>
+              No upcoming reservations :)
+            </Text>
+          )
+        }
       />
+      <FlashMessage position="top" icon="auto" />
     </View>
   );
 }
@@ -204,5 +250,11 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     width: 160,
     color: '#fff',
+  },
+
+  loadingIcon: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
   },
 });

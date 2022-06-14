@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import OTPTextInput from 'react-native-otp-textinput';
 import Svg, {Path, stop, defs, linearGradient} from 'react-native-svg';
 import Ioinicons from 'react-native-vector-icons/Ionicons';
@@ -32,6 +32,10 @@ export default function OTP({navigation}) {
       });
   };
 
+  const resendOTP = () => {
+    console.log('pressed');
+  };
+
   return (
     <View style={styles.body}>
       <View style={styles.WaveHeader}>
@@ -58,6 +62,17 @@ export default function OTP({navigation}) {
           color={'#1c1bad'}
           style={{alignSelf: 'center', margin: 10}}
           onPress={onPressHandler}></Ioinicons>
+        {/* TODO: connect with backend */}
+        <TouchableOpacity onPress={resendOTP}>
+          <Text
+            style={{
+              color: '#000',
+              alignSelf: 'center',
+              textDecorationLine: 'underline',
+            }}>
+            Resend OTP
+          </Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -78,6 +93,6 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 20,
     color: '#000',
-    margin: 5,
+    margin: 10,
   },
 });

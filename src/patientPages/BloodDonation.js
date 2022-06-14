@@ -1,42 +1,88 @@
-import React, {useState, useEffect} from 'react';
-import {StyleSheet, Text, View, FlatList, Pressable} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, FlatList, Pressable, ActivityIndicator } from 'react-native';
 import axios from 'axios';
-import {Server_URL} from '@env';
+import { Server_URL } from '@env';
+import Item from '../../utils/ItemCard';
+import { useIsFocused } from '@react-navigation/native';
 
-export default function DonateBlood({navigation}) {
+
+export default function DonateBlood({ navigation }) {
   const [bloodRequests, setBloodRequests] = useState([]);
+  const [skipNumber, setSkipNumber] = useState(0);
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [refreshing, setRefreshing] = useState(false);
+  const [loadData, setLoadData] = useState(true);
+  const isFocused = useIsFocused();
 
+  //first time the page is opened 
+  //and when the page is closed
   useEffect(() => {
-    const getRequests = async () => {
-      await axios
-        .get(`${Server_URL}:3000/patient/getBloodRequests`)
-        .then(response => setBloodRequests(response.data))
-        .catch(function (error) {
-          console.log(error.message);
-        });
-    };
-    getRequests();
-  }, []);
+    setLoadData(true);
+    if (isFocused) {
+      getRequests(skipNumber);
+    } else {
+      setSkipNumber(0);
+      setBloodRequests([]);
+      setRefreshing(false);
+    }
+  }, [isFocused]);
 
-  // const [Items, setItems] = useState([
-  //   {
-  //     key: '1',
-  //     Hname: 'Middle East Hospital ',
-  //     bloodType: 'A+',
-  //     date: '22/3/2022',
-  //   },
-  //   {key: '2', Hname: 'ICC Hospital', bloodType: 'AB+', date: '25/3/2022'},
-  //   {key: '3', Hname: 'German Hospital', bloodType: 'O-', date: '28/3/2022'},
-  //   {key: '4', Hname: 'Royal Hospital', bloodType: 'O+', date: '13/4/2022'},
-  //   {key: '5', Hname: 'Alex Scan', bloodType: 'B-', date: '13/4/2022'},
-  //   {key: '6', Hname: 'Bet El Ne3ma', bloodType: 'AB-', date: '20/4/2022'},
-  //   {
-  //     key: '7',
-  //     Hname: 'Al Andalusia Hospital',
-  //     bloodType: 'A-',
-  //     date: '25/4/2022',
-  //   },
-  // ]);
+  //load more when bottom is reached
+  useEffect(() => {
+    if (isFocused) {
+      getRequests(skipNumber);
+    }
+  }, [skipNumber]);
+
+  //refreshing
+  useEffect(() => {
+    if (isFocused && refreshing) {
+      getRequests(0);
+    }
+  }, [refreshing])
+
+  const getRequests = async (skipNumber) => {
+    console.log("skip Number:", skipNumber);
+    await axios
+      .get(`${Server_URL}:3000/patient/getBloodRequests/${skipNumber}`)
+      .then((response) => {
+        if (skipNumber == 0) {
+          setBloodRequests(response.data);
+        } else {
+          setBloodRequests(bloodRequests => [...bloodRequests, ...response.data]);
+        }
+        setRefreshing(false);
+        setLoadData(false);
+      })
+      .catch(function (error) {
+        console.log(error.message);
+        setRefreshing(false);
+        setLoadData(false);
+      });
+  };
+
+  const checkForUpdates = async () => {
+    await axios
+      .get(`${Server_URL}:3000/patient/isBloodReqUpdated/${currentDate}`)
+      .then((response) => {
+        setCurrentDate(new Date());
+        setSkipNumber(response.data.newEntries + bloodRequests.length);
+      })
+      .catch(function (error) {
+        console.log(error.message);
+      });
+  }
+
+  const onEndReachedHandler = () => {
+    // setLoadMore(true);
+    checkForUpdates();
+    console.log(currentDate);
+  }
+
+  const onRefreshing = () => {
+    setCurrentDate(new Date());
+    setRefreshing(true);
+  }
 
   return (
     <View style={styles.container}>
@@ -45,22 +91,29 @@ export default function DonateBlood({navigation}) {
         keyExtractor={item => {
           return item.id;
         }}
-        renderItem={({item}) => (
-          <View style={styles.appointmentsCard}>
-            <View style={styles.infoView}>
-              <Text style={styles.infoText}>
-                Hospital Name: {item.hospital_Name}{' '}
-              </Text>
-              <Text style={styles.infoText}>Blood Type: {item.bloodType} </Text>
-              <Text style={styles.infoText}>Date : {item.quantity} </Text>
-            </View>
-            <View style={styles.buttonView}>
-              <Pressable style={styles.button}>
-                <Text style={styles.buttonText}>ACCEPT</Text>
-              </Pressable>
-            </View>
-          </View>
+        onRefresh={onRefreshing}
+        refreshing={refreshing}
+        onEndReached={onEndReachedHandler}
+        onEndReachedThreshold={0.1}
+        renderItem={({ item }) => (
+          <Item
+            item={item}
+          />
         )}
+        ListEmptyComponent={
+          loadData ? <View>
+            <ActivityIndicator size="large" color="#0451cc" />
+          </View> :
+            <Text
+              style={{
+                fontSize: 20,
+                alignSelf: 'center',
+                color: '#000',
+                margin: '10%',
+              }}>
+              No blood donation requests :)
+            </Text>
+        }
       />
     </View>
   );

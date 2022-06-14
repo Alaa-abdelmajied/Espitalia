@@ -1,9 +1,11 @@
 import React, {useState, useEffect} from 'react';
-import {View, FlatList, Pressable, Text} from 'react-native';
+import {View, FlatList, Pressable, Text, ActivityIndicator} from 'react-native';
 import DoctorsCard from '../../utils/DoctorsCard';
 import {SearchBar} from 'react-native-elements';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
 import {Server_URL} from '@env';
+import {useIsFocused} from '@react-navigation/native';
 
 export default function Doctors({navigation, route}) {
   const {
@@ -12,165 +14,120 @@ export default function Doctors({navigation, route}) {
     hospitalName,
     hospitalAddress,
     isAllDoctors,
+    speciality,
+    fromHomepage,
+    fromSearch,
+    doctorSeeMore,
+    targetSearch,
   } = route.params;
-  // const [allDoctors, setAllDoctors] = useState([]);
 
   const [doctors, setDoctors] = useState([]);
-  useEffect(() => {
-    console.log(Server_URL);
+  const [loadData, setLoadData] = useState(true);
+  // const [allDoctors, setAllDoctors] = useState([]);
+  const isFocused = useIsFocused();
 
-    if (isAllDoctors) {
-      const seeAllDoctors = async () => {
-        await axios
-          .get(`${Server_URL}:3000/patient/allDoctors`)
-          .then(response => setDoctors(response.data))
-          .catch(function (error) {
-            console.log(error.message);
-          });
-      };
-      seeAllDoctors();
+  const seeDoctors = async () => {
+    if (fromHomepage || fromSearch) {
+      await axios
+        .get(`${Server_URL}:3000/patient/searchSpecialization/${speciality}`)
+        .then(response => {
+          setDoctors(response.data);
+          console.log(response.data);
+          setLoadData(false);
+        })
+        .catch(function (error) {
+          console.log(error.message);
+          setLoadData(false);
+        });
+    } else if (isAllDoctors) {
+      await axios
+        .get(`${Server_URL}:3000/patient/allDoctors`)
+        .then(response => {
+          setDoctors(response.data);
+          setLoadData(false);
+        })
+        .catch(function (error) {
+          console.log(error.message);
+          setLoadData(false);
+        });
+    } else if (doctorSeeMore) {
+      await axios
+        .get(`${Server_URL}:3000/patient/searchDoctors/${targetSearch}`)
+        .then(response => {
+          setDoctors(response.data);
+        })
+        .catch(function (error) {
+          const err = error.response.data;
+          if (err == 'No doctors with that name found') {
+            setDoctors([]);
+          }
+        });
     } else {
-      const getDoctors = async () => {
-        console.log(Server_URL);
+      console.log(Server_URL);
+      await axios
+        .get(
+          `${Server_URL}:3000/patient/pressOnHospitalThenSpecialization/${hospitalID}/${specialization}`,
+        )
+        .then(response => {
+          setDoctors(response.data);
+          setLoadData(false);
+        })
+        .catch(function (error) {
+          console.log(error.message);
+          setLoadData(false);
+        });
+    }
+  };
 
-        await axios
-          .get(
-            `${Server_URL}:3000/patient/pressOnHospitalThenSpecialization/${hospitalID}/${specialization}`,
-          )
-          .then(response => {
-            setDoctors(response.data);
-          })
-          .catch(function (error) {
-            console.log(error.message);
-          });
-      };
-      getDoctors();
+  useEffect(() => {
+    setLoadData(true);
+    if (isFocused) {
+      seeDoctors();
     }
   }, []);
 
-  // useEffect(() => {
-  //   const getDoctors = async () => {
-  //     console.log(hospitalName, hospitalAddress);
-  //     await axios
-  //       .get(
-  //         `http://192.168.1.10:3000/patient/pressOnHospitalThenSpecialization/${hospitalID}/${specialization}`,
-  //       )
-  //       .then(response => {
-  //         setDoctors(response.data);
-  //       })
-  //       .catch(function (error) {
-  //         console.log(error.message);
-  //       });
-  //   };
-  //   getDoctors();
-  // }, []);
-
-  const [defaultRating, setDefaultRating] = useState(2);
-  const [maxRating, setMaxRating] = useState([1, 2, 3, 4, 5]);
-
   const [search, setSearch] = useState('');
-
+  const searchDoctor = search => {
+    axios
+      .get(`${Server_URL}:3000/patient/searchDoctors/${search}`)
+      .then(response => {
+        setDoctors(response.data);
+      })
+      .catch(function (error) {
+        const err = error.response.data;
+        if (err == 'No doctors with that name found') {
+          setDoctors([]);
+        }
+      });
+  };
   const updateSearch = search => {
     setSearch(search);
+    if (search.length > 0) {
+      searchDoctor(search);
+    } else {
+      setDoctors();
+    }
   };
-
-  // const doctors = [
-  //   {
-  //     key: 1,
-  //     drName: 'Alaa Abdelmajied',
-  //     speciality: 'Dermatologist',
-  //     hName: 'Al Andalusia Hospital',
-  //     address: '15 el midan st. - smouha',
-  //     color: '#1c1bad',
-  //   },
-  //   {
-  //     key: 2,
-  //     drName: 'Mayar Adel',
-  //     speciality: 'Dentist',
-  //     hName: 'Royal Hospital',
-  //     address: '17 abdelqader basha st.',
-  //     color: '#0d589e',
-  //   },
-  //   {
-  //     key: 3,
-  //     drName: 'Omar Shalaby',
-  //     speciality: 'Cardiologist',
-  //     hName: 'Alex Hospital',
-  //     address: '12 camp shizar st.',
-  //     color: '#0d789e',
-  //   },
-  //   {
-  //     key: 4,
-  //     drName: 'Nadeen Elgazar',
-  //     speciality: 'Gynaecologist',
-  //     hName: 'ICC Hospital',
-  //     address: '3 smouha st.',
-  //     color: '#0d899e',
-  //   },
-  //   {
-  //     key: 5,
-  //     drName: 'Maram Ghazal',
-  //     speciality: 'Cardiologist',
-  //     hName: 'Alex Hospital',
-  //     address: '6 camp shizar st.',
-  //     color: '#0d789e',
-  //   },
-  //   {
-  //     key: 6,
-  //     drName: 'Omar Radwan',
-  //     speciality: 'Dentist',
-  //     hName: 'Alex Hospital',
-  //     address: '5 camp shizar st.',
-  //     color: '#0d789e',
-  //   },
-  //   {
-  //     key: 7,
-  //     drName: 'Verginia Ehab',
-  //     speciality: 'Psychiatrist',
-  //     hName: 'Alex Hospital',
-  //     address: '5 camp shizar st.',
-  //     color: '#0d789e',
-  //   },
-  //   {
-  //     key: 8,
-  //     drName: 'Omar Hisham',
-  //     speciality: 'Dentist',
-  //     hName: 'Al Andalusia Hospital',
-  //     address: '15 el midan st. - smouha',
-  //     color: '#0d789e',
-  //   },
-  //   {
-  //     key: 9,
-  //     drName: 'Ali Ghazal',
-  //     speciality: 'Psychiatrist',
-  //     hName: 'German Hospital',
-  //     address: '6 gleem st.',
-  //     color: '#0d369e',
-  //   },
-  // ];
 
   return (
     <View style={{flex: 1, justifyContent: 'center', flexDirection: 'column'}}>
-      <SearchBar
-        lightTheme={true}
-        placeholder="search"
-        onChangeText={updateSearch}
-        value={search}
-        containerStyle={{backgroundColor: '#f0f0f0'}}
-        inputContainerStyle={{borderRadius: 50, backgroundColor: '#fff'}}
-      />
-      {/* <ScrollView>
-        {doctors.map((card, cardIndex) => {
-          return (
-            <DoctorsCard
-              card={card}
-              maxRating={maxRating}
-              defaultRating={defaultRating}
-              navigation={navigation}
-            />
-          );
-        })}
-      </ScrollView>  */}
+      <View style={{flexDirection: 'row'}}>
+        <Pressable
+          style={{flex: 1, alignSelf: 'center', marginLeft: 5}}
+          onPress={() => navigation.goBack()}>
+          <Ionicons name={'arrow-back'} size={30} color="#1c1bad"></Ionicons>
+        </Pressable>
+        {!doctorSeeMore ? (
+          <SearchBar
+            lightTheme={true}
+            placeholder="search"
+            onChangeText={updateSearch}
+            value={search}
+            containerStyle={{flex: 12, backgroundColor: '#f0f0f0'}}
+            inputContainerStyle={{borderRadius: 50, backgroundColor: '#fff'}}
+          />
+        ) : null}
+      </View>
       <FlatList
         data={doctors}
         keyExtractor={item => {
@@ -180,18 +137,41 @@ export default function Doctors({navigation, route}) {
           return (
             <DoctorsCard
               card={item}
-              maxRating={maxRating}
-              defaultRating={defaultRating}
               navigation={navigation}
               hospitalName={
-                isAllDoctors ? item.doctorHospitalName : hospitalName
+                fromHomepage || fromSearch
+                  ? item.hospitalName
+                  : isAllDoctors || doctorSeeMore
+                  ? item.doctorHospitalName
+                  : hospitalName
               }
               hospitalAddress={
-                isAllDoctors ? item.doctorHospitalAddress : hospitalAddress
+                fromHomepage || fromSearch
+                  ? item.hospitalAddress
+                  : isAllDoctors || doctorSeeMore
+                  ? item.doctorHospitalAddress
+                  : hospitalAddress
               }
             />
           );
         }}
+        ListEmptyComponent={
+          loadData ? (
+            <View>
+              <ActivityIndicator size="large" color="#0451cc" />
+            </View>
+          ) : (
+            <Text
+              style={{
+                fontSize: 20,
+                alignSelf: 'center',
+                color: '#000',
+                margin: '10%',
+              }}>
+              No doctors found :(
+            </Text>
+          )
+        }
       />
     </View>
   );

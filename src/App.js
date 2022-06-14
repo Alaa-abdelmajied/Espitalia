@@ -1,5 +1,8 @@
-import React from 'react';
-import {NavigationContainer} from '@react-navigation/native';
+import React, {useLayoutEffect} from 'react';
+import {
+  getFocusedRouteNameFromRoute,
+  NavigationContainer,
+} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createMaterialBottomTabNavigator} from '@react-navigation/material-bottom-tabs';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
@@ -13,6 +16,7 @@ import Login from './LoginScreen';
 import SignUp from './RegisterScreen';
 import Questions from './SignUpQuestions';
 import OTP from './VerificationScreen';
+import ChangePassword from './ChangePasswordScreen';
 
 //Patient pages
 import PatientHome from './patientPages/PatientHome';
@@ -21,7 +25,7 @@ import PatientReservations from './patientPages/PatientReservations';
 import Specializaion from './patientPages/SpecializationScreen';
 import DoctorList from './patientPages/DoctorList';
 import HospitalList from './patientPages/HospitalList';
-
+import EditProfile from './patientPages/EditProfile';
 import DoctorDetails from './patientPages/DoctorDetails';
 import BloodDonation from './patientPages/BloodDonation';
 import PatientNotification from './patientPages/Notifications';
@@ -34,7 +38,8 @@ import PatientHistory from './doctorPages/PatientHistory';
 import DoctorProfile from './doctorPages/Profile';
 import UpcomingReservations from './doctorPages/UpcomingReservations';
 
-//Patient pages(recept)
+
+//Receptionist pages
 import ReceptHome from './receptionistPages/ReceptHome';
 import DoctorsListPage from './receptionistPages/DoctorsListPage';
 import DoctorPage from './receptionistPages/DoctorPage';
@@ -57,12 +62,26 @@ import MyProfileHospitalPage from './hospitalAdminPages/MyProfileHospitalPage';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
-const bottomTab = createMaterialBottomTabNavigator();
+// const Tab = createMaterialBottomTabNavigator();
 const TopTabs = createMaterialTopTabNavigator();
 
-function PatientStackNav() {
+function PatientStackNav({navigation, route}) {
+  const tabHiddenRoutes = [
+    'SpecializationScreen',
+    'DoctorsScreen',
+    'DoctorDetails',
+    'HospitalList',
+  ];
+  useLayoutEffect(() => {
+    if (tabHiddenRoutes.includes(getFocusedRouteNameFromRoute(route))) {
+      navigation.setOptions({tabBarStyle: {display: 'none'}});
+    } else {
+      navigation.setOptions({tabBarStyle: {display: 'flex'}});
+    }
+  }, [navigation, route]);
   return (
     <Stack.Navigator
+      initialRouteName="PatientHomePage"
       screenOptions={{
         headerShown: false,
       }}>
@@ -70,21 +89,114 @@ function PatientStackNav() {
       <Stack.Screen name="SpecializationScreen" component={Specializaion} />
       <Stack.Screen name="DoctorsScreen" component={DoctorList} />
       <Stack.Screen name="DoctorDetails" component={DoctorDetails} />
-      <Stack.Screen name="DoctorList" component={DoctorList} />
+      {/* <Stack.Screen name="DoctorList" component={DoctorList} /> */}
+      <Stack.Screen name="HospitalList" component={HospitalList} />
+      {/* <Stack.Screen name="GeneralSearch" component={Search} /> */}
+    </Stack.Navigator>
+  );
+}
+function PatientSearchStackNav({navigation, route}) {
+  const tabHiddenRoutes = [
+    'SpecializationScreen',
+    'DoctorsScreen',
+    'DoctorDetails',
+    'HospitalList',
+  ];
+  useLayoutEffect(() => {
+    if (tabHiddenRoutes.includes(getFocusedRouteNameFromRoute(route))) {
+      navigation.setOptions({tabBarStyle: {display: 'none'}});
+    } else {
+      navigation.setOptions({tabBarStyle: {display: 'flex'}});
+    }
+  }, [navigation, route]);
+  return (
+    <Stack.Navigator
+      initialRouteName="GeneralSearch"
+      screenOptions={{
+        headerShown: false,
+      }}>
+      <Stack.Screen name="GeneralSearch" component={Search} />
+      <Stack.Screen name="SpecializationScreen" component={Specializaion} />
+      <Stack.Screen name="DoctorsScreen" component={DoctorList} />
+      <Stack.Screen name="DoctorDetails" component={DoctorDetails} />
       <Stack.Screen name="HospitalList" component={HospitalList} />
     </Stack.Navigator>
   );
 }
 
-function PatientProfileStackNav() {
+function PatientProfileStackNav({navigation, route}) {
+  const tabHiddenRoutes = ['EditProfile', 'Report'];
+  useLayoutEffect(() => {
+    if (tabHiddenRoutes.includes(getFocusedRouteNameFromRoute(route))) {
+      navigation.setOptions({tabBarStyle: {display: 'none'}});
+    } else {
+      navigation.setOptions({tabBarStyle: {display: 'flex'}});
+    }
+  }, [navigation, route]);
   return (
     <Stack.Navigator
+      initialRouteName="PatientProfile"
       screenOptions={{
         headerShown: false,
       }}>
       <Stack.Screen name="PatientProfile" component={PatientProfile} />
+      <Stack.Screen name="EditProfile" component={EditProfile} />
       <Stack.Screen name="Report" component={Report} />
     </Stack.Navigator>
+  );
+}
+
+function PatientNavBar() {
+  return (
+    <Tab.Navigator
+      screenOptions={({route}) => ({
+        tabBarIcon: ({focused, color, size}) => {
+          let iconName;
+
+          if (route.name === 'Home') {
+            iconName = focused ? 'home' : 'home-outline';
+            size = focused ? 25 : 23;
+          } else if (route.name === 'Profile') {
+            iconName = focused ? 'person-circle' : 'person-circle-outline';
+            size = focused ? 25 : 23;
+          } else if (route.name == 'Notifications') {
+            iconName = focused ? 'notifications' : 'notifications-outline';
+            size = focused ? 25 : 23;
+          } else if (route.name == 'Reservations') {
+            iconName = focused ? 'list' : 'list-outline';
+            size = focused ? 25 : 23;
+          } else if (route.name == 'Search') {
+            iconName = focused ? 'search' : 'search-outline';
+            size = focused ? 25 : 23;
+          }
+
+          return <Ionicons name={iconName} size={size} color={color} />;
+        },
+        header: () => null,
+        tabBarActiveTintColor: '#1c1bad',
+        tabBarInactiveTintColor: '#000',
+      })}
+      activeColor="#1c1bad"
+      inactiveColor="#000"
+      barStyle={{backgroundColor: '#fff'}}>
+      <Tab.Screen name="Home" component={PatientStackNav} />
+      <Tab.Screen name="Profile" component={PatientProfileStackNav} />
+      <Tab.Screen
+        name="Notifications"
+        component={PatientNotificationsTabNav}
+        options={{tabBarBadge: 10}}
+      />
+      <Tab.Screen name="Reservations" component={PatientReservations} />
+      <Tab.Screen
+        name="Search"
+        options={{unmountOnBlur: true}}
+        component={PatientSearchStackNav}
+      />
+      {/* <Tab.Screen
+        name="BloodDonation"
+        component={BloodDonation}
+      /> */}
+    </Tab.Navigator>
   );
 }
 
@@ -124,7 +236,10 @@ function HosptialAdminStackView() {
       <Stack.Screen name="Profile" component={HospitalAdminProfilepage} />
       <Stack.Screen name="Doctors" component={HospitalAdminDoctorsPage} />
       <Stack.Screen name="DoctorProfile" component={HospitalDoctorProfile} />
-      <Stack.Screen name="ReceptionistProfile" component={HospitalReceptionistProfile} />
+      <Stack.Screen
+        name="ReceptionistProfile"
+        component={HospitalReceptionistProfile}
+      />
       <Stack.Screen
         name="Reciptionist"
         component={HospitalAdminReceptionistPage}
@@ -146,56 +261,6 @@ function HosptialAdminStackView() {
         options={{title: 'Edit Data'}}
       />
     </Stack.Navigator>
-  );
-}
-
-function PatientNavBar() {
-  return (
-    <bottomTab.Navigator
-      screenOptions={({route}) => ({
-        tabBarIcon: ({focused, color, size}) => {
-          let iconName;
-
-          if (route.name === 'Home') {
-            iconName = focused ? 'home' : 'home-outline';
-            size = focused ? 25 : 23;
-          } else if (route.name === 'Profile') {
-            iconName = focused ? 'person-circle' : 'person-circle-outline';
-            size = focused ? 25 : 23;
-          } else if (route.name == 'Notifications') {
-            iconName = focused ? 'notifications' : 'notifications-outline';
-            size = focused ? 25 : 23;
-          } else if (route.name == 'Reservations') {
-            iconName = focused ? 'list' : 'list-outline';
-            size = focused ? 25 : 23;
-          } else if (route.name == 'Search') {
-            iconName = focused ? 'search' : 'search-outline';
-            size = focused ? 25 : 23;
-          }
-
-          return <Ionicons name={iconName} size={size} color={color} />;
-        },
-        header: () => null,
-        // tabBarActiveTintColor: '#0d259e',
-        // tabBarInactiveTintColor: '#000',
-      })}
-      activeColor="#0d259e"
-      inactiveColor="#000"
-      barStyle={{backgroundColor: '#fff'}}>
-      <bottomTab.Screen name="Home" component={PatientStackNav} />
-      <bottomTab.Screen name="Profile" component={PatientProfileStackNav} />
-      <bottomTab.Screen
-        name="Notifications"
-        component={PatientNotificationsTabNav}
-        options={{tabBarBadge: 10}}
-      />
-      <bottomTab.Screen name="Reservations" component={PatientReservations} />
-      <bottomTab.Screen name="Search" component={Search} />
-      {/* <Tab.Screen
-        name="BloodDonation"
-        component={BloodDonation}
-      /> */}
-    </bottomTab.Navigator>
   );
 }
 
@@ -230,7 +295,7 @@ function DoctorNavBar() {
 
 function ReceptNavBar() {
   return (
-    <bottomTab.Navigator
+    <Tab.Navigator
       screenOptions={({route}) => ({
         tabBarIcon: ({focused, size, color}) => {
           let iconName;
@@ -272,19 +337,19 @@ function ReceptNavBar() {
       activeColor="#f0edf6"
       inactiveColor="#ffffff"
       barStyle={{backgroundColor: '#003da5'}}>
-      <bottomTab.Screen
+      <Tab.Screen
         name="Home"
         component={ReceptStackView}
         //options={{ tabBarBadge: 3 }}
       />
-      <bottomTab.Screen name="Profile" component={ReceptProfile} />
-      <bottomTab.Screen name="Blood Requests" component={ReceptBloodReq} />
-      <bottomTab.Screen
+      <Tab.Screen name="Profile" component={ReceptProfile} />
+      <Tab.Screen name="Blood Requests" component={ReceptBloodReq} />
+      <Tab.Screen
         name="Notifications"
         component={ReceptNotification}
         options={{tabBarBadge: 3}}
       />
-    </bottomTab.Navigator>
+    </Tab.Navigator>
   );
 }
 
@@ -331,6 +396,7 @@ export default function App() {
         }}>
         <Stack.Screen name="WelcomePage" component={WelcomePage} />
         <Stack.Screen name="Login" component={Login} />
+        <Stack.Screen name="ChangePassword" component={ChangePassword} />
         <Stack.Screen name="OTP" component={OTP} />
         <Stack.Screen name="SignUp" component={SignUp} />
         <Stack.Screen name="SignUpQuestions" component={Questions} />
