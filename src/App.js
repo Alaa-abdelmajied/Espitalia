@@ -9,6 +9,8 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import Fontisto from 'react-native-vector-icons/Fontisto';
 
 //Common pages
 import WelcomePage from './WelcomeScreen';
@@ -301,42 +303,42 @@ function ReceptNavBar() {
           let iconName;
 
           if (route.name === 'Home') {
-            iconName = 'home';
-            size = focused ? 25 : 20;
-            // color = focused ? '#f0f' : '#555';
+            iconName = 'hospital';
+            size = focused ? 30 : 25;
+            // color = focused ? '#1c1bad' : '#555';
           } else if (route.name === 'Profile') {
-            iconName = 'user';
-            size = focused ? 25 : 20;
-            // color = focused ? '#f0f' : '#555';
+            iconName = 'user-circle';
+            size = focused ? 30 : 25;
+            color = focused ? 'green' : '#555';
           }
           // else if(route.name=='Blood Requests'){
           //   <Icon.Button
           //        name="pensil"></Icon.Button>
           // }
           else if (route.name === 'Blood Requests') {
-            iconName = 'calendar';
-            size = focused ? 25 : 20;
-            // color = focused ? '#f0f' : '#555';
+            iconName = 'blood-drop';
+            size = focused ? 30 : 25;
+            color = focused ? 'red' : '#555';
           } else if (route.name === 'Notifications') {
             iconName = 'bell';
-            size = focused ? 25 : 20;
-            // color = focused ? '#f0f' : '#555';
+            size = focused ? 30 : 25;
+            color = focused ? '#f2c52e' : '#555';
           }
-          return <FontAwesome5 name={iconName} size={size} color={color} />;
+          return iconName==='blood-drop'? <Fontisto name={iconName} size={size} color={color} /> : <FontAwesome5 name={iconName} size={size} color={color} />;
         },
       })}
       tabBarOptions={{
-        activeTintColor: '#f0f',
+        activeTintColor: '#1c1bad',
         inactiveTintColor: '#555',
         activeBackgroundColor: '#fff',
-        inactiveBackgroundColor: '#999',
-        showLabel: true,
+        inactiveBackgroundColor: '#fff',
+        showLabel: false,
         labelStyle: {fontSize: 14},
         showIcon: true,
       }}
       activeColor="#f0edf6"
       inactiveColor="#ffffff"
-      barStyle={{backgroundColor: '#003da5'}}>
+      barStyle={{backgroundColor: '#1c1bad'}}>
       <Tab.Screen
         name="Home"
         component={ReceptStackView}
