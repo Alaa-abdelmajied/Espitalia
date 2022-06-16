@@ -19,7 +19,7 @@ import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { Server_URL, Token_Secret, Credintials_Secret } from '@env';
 
-export default function UserProfileView({navigation}) {
+export default function UserProfileView({ navigation }) {
   const [refreshing, setRefreshing] = useState(false);
   const [myData, setMyData] = useState({});
   const onRefresh = useCallback(() => {
@@ -80,13 +80,12 @@ export default function UserProfileView({navigation}) {
     >
       <View style={styles.header}>
         <View style={styles.headerContent}>
-          <TouchableOpacity style={{ margin: 5, alignSelf: 'flex-end' }}>
-            <Pressable onPress={onPressLogout}>
-              <Text style={{ fontSize: 15, color: '#fff' }}>Logout</Text>
-            </Pressable>
+          <TouchableOpacity style={{ margin: 5, alignSelf: 'flex-end', backgroundColor:'#fff', padding: 10, position: 'absolute', right:10, top:10, borderRadius: 10, borderWidth:1, borderColor:'#e2372a' }} onPress={onPressLogout}>
+              <Text style={{ fontSize: 15, color: '#e2372a', fontWeight:'bold' }}>Logout</Text>
           </TouchableOpacity>
-          <Image style={styles.avatar}
-            source={require('../../images/Recept_black.png')} />
+          <View>
+            <Image style={[styles.avatar, ]} source={require('../../images/Recept_black.png')} />
+          </View>
 
           <Text style={styles.name}>{myData.name}</Text>
           {/* <Text style={styles.userInfo}> Receptionist at : Icc Hospital</Text> */}

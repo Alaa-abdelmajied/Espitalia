@@ -52,7 +52,34 @@ export default function ContactsView({ navigation, route }) {
   useEffect(() => {
     getSpecializations();
   }, []);
-  const [nameAddress, setNameAddress] = useState('')
+  const specializationSearch = async (search) => {
+    const token = JSON.parse(await EncryptedStorage.getItem(Token_Secret)).token;
+    // console.log(token);
+    axios
+        .get(`${Server_URL}:3000/receptionist/searchSpecializations/${search}`, {
+            headers: {
+                'x-auth-token': token
+            }
+        })
+        .then(response => {
+          setSpecializations(response.data);
+        })
+        .catch(function (error) {
+            const err = error.response.data;
+            if (err == 'No specializations found') {
+              setSpecializations([]);
+            }
+        });
+
+      }
+      const updateSearch = search => {
+        console.log(search);
+        if (search.length > 0) {
+            specializationSearch(search);
+        } else {
+            getSpecializations();
+        }
+    };
 
   return (
     <View style={styles.container}>
@@ -62,7 +89,7 @@ export default function ContactsView({ navigation, route }) {
             useref={'txtPassword'}
             placeholder="Search"
             underlineColorAndroid='transparent'
-            onChangeText={(name_address) => setNameAddress(name_address)} />
+            onChangeText={value => updateSearch(value)} />
         </View>
       </View>
 

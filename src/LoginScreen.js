@@ -133,7 +133,7 @@ export default function Login({ navigation, route }) {
       console.log('Server URL:', Server_URL);
       console.log(email, password, url);
       axios
-        .post(`${Server_URL}:3000/${selectedStaff.id}/login`, {
+        .post(url, {
           email: email,
           password: password,
         })
