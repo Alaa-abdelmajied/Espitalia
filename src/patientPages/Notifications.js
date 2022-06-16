@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -16,10 +16,10 @@ import {
 import Dialog from 'react-native-dialog';
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {Server_URL, Token_Secret} from '@env';
-import {useIsFocused} from '@react-navigation/native';
+import { Server_URL, Token_Secret } from '@env';
+import { useIsFocused } from '@react-navigation/native';
 
-export default function Notification({navigation}) {
+export default function Notification({ navigation }) {
   const [notifications, setNotifications] = useState([]);
   const [skipNumber, setSkipNumber] = useState(0);
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -33,7 +33,11 @@ export default function Notification({navigation}) {
         await EncryptedStorage.getItem(Token_Secret),
       ).token;
       await axios
-        .get(`${Server_URL}:3000/patient/getNotification/${token}`)
+        .get(`${Server_URL}:3000/patient/getNotification`, {
+          headers: {
+            'x-auth-token': token,
+          }
+        })
         .then(response => {
           setNotifications(response.data);
           setRefreshing(false);
@@ -46,7 +50,7 @@ export default function Notification({navigation}) {
         });
     } catch (err) {
       Alert.alert('Error', err.code, [
-        {text: 'Exit', onPress: () => BackHandler.exitApp()},
+        { text: 'Exit', onPress: () => BackHandler.exitApp() },
       ]);
     }
   };
@@ -94,10 +98,10 @@ export default function Notification({navigation}) {
             </Text>
           )
         }
-        renderItem={({item}) => (
+        renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.notificationsCard}
-            // onPress={showDialog}
+          // onPress={showDialog}
           >
             {/* <View style={styles.textContainer}> */}
             <View
@@ -108,18 +112,18 @@ export default function Notification({navigation}) {
                 margin: 5,
               }}>
               <Text
-                style={{color: '#1c1bad', fontSize: 17, textAlign: 'center'}}>
+                style={{ color: '#1c1bad', fontSize: 17, textAlign: 'center' }}>
                 {item.title}
               </Text>
-              <Text style={{color: '#000', fontSize: 13, textAlign: 'center'}}>
+              <Text style={{ color: '#000', fontSize: 13, textAlign: 'center' }}>
                 {new Date(item.date).toLocaleDateString() +
                   ' ' +
                   new Date(item.date).toLocaleTimeString()}
               </Text>
             </View>
             <View
-              style={{flex: 2, justifyContent: 'center', alignItems: 'center'}}>
-              <Text style={{color: '#000', fontSize: 17, textAlign: 'center'}}>
+              style={{ flex: 2, justifyContent: 'center', alignItems: 'center' }}>
+              <Text style={{ color: '#000', fontSize: 17, textAlign: 'center' }}>
                 {item.body}
               </Text>
             </View>

@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -10,17 +10,17 @@ import {
   Alert,
 } from 'react-native';
 import FlashMessage from 'react-native-flash-message';
-import {showMessage} from 'react-native-flash-message';
+import { showMessage } from 'react-native-flash-message';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import {Picker} from '@react-native-picker/picker';
+import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {Server_URL, Token_Secret} from '@env';
+import { Server_URL, Token_Secret } from '@env';
 
-export default function EditProfile({navigation, route}) {
-  const {name, phoneNumber, birthdate, gender, date} = route.params;
+export default function EditProfile({ navigation, route }) {
+  const { name, phoneNumber, birthdate, gender, date } = route.params;
 
   const [newName, setNewName] = useState(name);
   const [newPhoneNumber, setNewPhoneNumber] = useState(phoneNumber);
@@ -65,10 +65,13 @@ export default function EditProfile({navigation, route}) {
       console.log(token);
       axios
         .put(`${Server_URL}:3000/patient/editProfile`, {
-          token: token,
           newName: newName,
           newPhoneNumber: newPhoneNumber,
           newDate: newDate,
+        }, {
+          headers: {
+            'x-auth-token': token,
+          }
         })
         .then(async function (response) {
           console.log('done');
@@ -83,7 +86,7 @@ export default function EditProfile({navigation, route}) {
         });
     } catch (err) {
       Alert.alert('Error', err.code, [
-        {text: 'Exit', onPress: () => BackHandler.exitApp()},
+        { text: 'Exit', onPress: () => BackHandler.exitApp() },
       ]);
     }
   };
@@ -92,19 +95,19 @@ export default function EditProfile({navigation, route}) {
     <ScrollView>
       <View style={styles.header}>
         <Pressable
-          style={{flex: 1, alignSelf: 'center', marginLeft: 5}}
+          style={{ flex: 1, alignSelf: 'center', marginLeft: 5 }}
           onPress={() => navigation.goBack()}>
           <Ionicons name={'arrow-back'} size={30} color="#fff"></Ionicons>
         </Pressable>
         <View
-          style={{flex: 12, flexDirection: 'row', justifyContent: 'center'}}>
+          style={{ flex: 12, flexDirection: 'row', justifyContent: 'center' }}>
           <Image
             style={styles.image}
             source={require('../../images/app_logo-removebg-preview.png')}></Image>
 
           <Text style={styles.headerText}>espitalia</Text>
         </View>
-        <View style={{flex: 1.5}}></View>
+        <View style={{ flex: 1.5 }}></View>
       </View>
       <View style={styles.body}>
         <Text style={styles.title}>Edit your info</Text>
@@ -157,8 +160,8 @@ export default function EditProfile({navigation, route}) {
               <Text
                 style={
                   !updateColor
-                    ? {textAlign: 'center', color: '#a1a1a1'}
-                    : {textAlign: 'center', color: '#000'}
+                    ? { textAlign: 'center', color: '#a1a1a1' }
+                    : { textAlign: 'center', color: '#000' }
                 }>
                 {text}
               </Text>
@@ -313,7 +316,7 @@ const styles = StyleSheet.create({
     margin: 10,
     backgroundColor: '#fff',
     shadowColor: '#000000',
-    shadowOffset: {width: -1, height: 1},
+    shadowOffset: { width: -1, height: 1 },
     shadowOpacity: 0.2,
     shadowRadius: 1,
     elevation: 2,
@@ -387,7 +390,7 @@ const styles = StyleSheet.create({
     height: 50,
     width: 200,
     shadowColor: '#000000',
-    shadowOffset: {width: -2, height: 2},
+    shadowOffset: { width: -2, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 3,
     elevation: 2,

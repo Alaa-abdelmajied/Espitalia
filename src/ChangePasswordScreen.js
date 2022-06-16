@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import Svg, {Path} from 'react-native-svg';
+import React, { useState } from 'react';
+import Svg, { Path } from 'react-native-svg';
 
 import {
   StyleSheet,
@@ -14,13 +14,13 @@ import {
 
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import FlashMessage from 'react-native-flash-message';
-import {showMessage} from 'react-native-flash-message';
+import { showMessage } from 'react-native-flash-message';
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {Server_URL, Token_Secret} from '@env';
+import { Server_URL, Token_Secret } from '@env';
 
-export default function ChangePassword({navigation, route}) {
-  const {changePassword, profileChangePassword} = route.params;
+export default function ChangePassword({ navigation, route }) {
+  const { changePassword, profileChangePassword } = route.params;
   const [email, setEmail] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
@@ -32,18 +32,18 @@ export default function ChangePassword({navigation, route}) {
         email: email,
       })
       .then(async function (response) {
-        const {token} = response.data;
+        const { token } = response.data;
         try {
           await EncryptedStorage.setItem(
             Token_Secret,
-            JSON.stringify({token: token}),
+            JSON.stringify({ token: token }),
           );
         } catch (err) {
           Alert.alert('Error', err.code, [
-            {text: 'Exit', onPress: () => BackHandler.exitApp()},
+            { text: 'Exit', onPress: () => BackHandler.exitApp() },
           ]);
         }
-        navigation.navigate('OTP', {isForgotten: true});
+        navigation.navigate('OTP', { isForgotten: true });
       })
       .catch(function (error) {
         const err = error.response.data;
@@ -67,10 +67,13 @@ export default function ChangePassword({navigation, route}) {
         axios
           .post(`${Server_URL}:3000/patient/forgotPasswordChange`, {
             newPassword: newPassword,
-            token: token,
+          }, {
+            headers: {
+              'x-auth-token': token,
+            }
           })
           .then(async function (response) {
-            navigation.navigate('Login', {staff: false});
+            navigation.navigate('Login', { staff: false });
           })
           .catch(function (error) {
             const err = error.response.data;
@@ -78,7 +81,7 @@ export default function ChangePassword({navigation, route}) {
           });
       } catch (err) {
         Alert.alert('Error', err.code, [
-          {text: 'Exit', onPress: () => BackHandler.exitApp()},
+          { text: 'Exit', onPress: () => BackHandler.exitApp() },
         ]);
       }
     } else {
@@ -102,7 +105,10 @@ export default function ChangePassword({navigation, route}) {
           .post(`${Server_URL}:3000/patient/changePassword`, {
             oldPassword: currentPassword,
             newPassword: newPassword,
-            token: token,
+          }, {
+            headers: {
+              'x-auth-token': token,
+            }
           })
           .then(async function (response) {
             navigation.navigate('Profile');
@@ -113,7 +119,7 @@ export default function ChangePassword({navigation, route}) {
           });
       } catch (err) {
         Alert.alert('Error', err.code, [
-          {text: 'Exit', onPress: () => BackHandler.exitApp()},
+          { text: 'Exit', onPress: () => BackHandler.exitApp() },
         ]);
       }
     } else {
@@ -149,7 +155,7 @@ export default function ChangePassword({navigation, route}) {
                   <Pressable
                     style={styles.RegisterButton}
                     onPress={verifyEmail}>
-                    <Text style={[styles.buttonText, {color: '#fff'}]}>
+                    <Text style={[styles.buttonText, { color: '#fff' }]}>
                       Verify
                     </Text>
                   </Pressable>
@@ -174,7 +180,7 @@ export default function ChangePassword({navigation, route}) {
                   <Pressable
                     style={styles.RegisterButton}
                     onPress={forgottenPasswordChange}>
-                    <Text style={[styles.buttonText, {color: '#fff'}]}>
+                    <Text style={[styles.buttonText, { color: '#fff' }]}>
                       Done
                     </Text>
                   </Pressable>
@@ -204,7 +210,7 @@ export default function ChangePassword({navigation, route}) {
               <Pressable
                 style={styles.RegisterButton}
                 onPress={profilePasswordChange}>
-                <Text style={[styles.buttonText, {color: '#fff'}]}>Done</Text>
+                <Text style={[styles.buttonText, { color: '#fff' }]}>Done</Text>
               </Pressable>
             </View>
           </View>
@@ -258,7 +264,7 @@ const styles = StyleSheet.create({
     margin: '3%',
     backgroundColor: '#fff',
     shadowColor: '#000000',
-    shadowOffset: {width: -1, height: 1},
+    shadowOffset: { width: -1, height: 1 },
     shadowOpacity: 0.2,
     shadowRadius: 1,
     elevation: 2,

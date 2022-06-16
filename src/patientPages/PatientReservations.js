@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -13,14 +13,14 @@ import {
 } from 'react-native';
 
 import FlashMessage from 'react-native-flash-message';
-import {showMessage, hideMessage} from 'react-native-flash-message';
+import { showMessage, hideMessage } from 'react-native-flash-message';
 
 import EncryptedStorage from 'react-native-encrypted-storage';
 import axios from 'axios';
-import {Server_URL, Token_Secret} from '@env';
-import {useIsFocused} from '@react-navigation/native';
+import { Server_URL, Token_Secret } from '@env';
+import { useIsFocused } from '@react-navigation/native';
 
-export default function Reservation({}) {
+export default function Reservation({ }) {
   const [upcomingAppointments, setUpcomingAppointments] = useState([]);
   const [loadData, setLoadData] = useState(true);
   const isFocused = useIsFocused();
@@ -30,7 +30,11 @@ export default function Reservation({}) {
       await EncryptedStorage.getItem(Token_Secret),
     ).token;
     await axios
-      .get(`${Server_URL}:3000/patient/upcomingAppointment/${token}`)
+      .get(`${Server_URL}:3000/patient/upcomingAppointment`, {
+        headers: {
+          'x-auth-token': token,
+        }
+      })
       .then(response => {
         setUpcomingAppointments(response.data);
         setLoadData(false);
@@ -82,7 +86,7 @@ export default function Reservation({}) {
         });
     } catch (err) {
       Alert.alert('Error', err.code, [
-        {text: 'Exit', onPress: () => BackHandler.exitApp()},
+        { text: 'Exit', onPress: () => BackHandler.exitApp() },
       ]);
     }
   };
@@ -99,7 +103,7 @@ export default function Reservation({}) {
         data={upcomingAppointments}
         keyExtractor={(item, index) => index.toString()}
         // return item.appointmentID;
-        renderItem={({item}) => (
+        renderItem={({ item }) => (
           <View style={styles.appointmentsCard}>
             <View style={styles.infoView}>
               <Text style={styles.infoText}>Hospital: {item.hospitalName}</Text>
@@ -111,8 +115,8 @@ export default function Reservation({}) {
               <Text style={styles.infoText}>Reservation No: {item.resNum}</Text>
             </View>
             <View style={styles.view2}>
-              <View style={styles.numberView}>
-                <Text style={styles.infoText}>Flow Number</Text>
+              <View style={[styles.numberView, { backgroundColor: item.entered ? '#00FF00' : '#FF0000' }]}>
+                <Text style={styles.infoText}>{item.currentFlowNumber}</Text>
               </View>
               <TouchableOpacity
                 style={styles.button}

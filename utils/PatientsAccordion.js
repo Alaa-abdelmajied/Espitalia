@@ -32,6 +32,7 @@ const patientAccordion = ({ item, navigation }) => {
             console.log(data[0].patients[activeSections[0]].appointmentID);
             await axios
                 .post(`${Server_URL}:3000/doctor/endAppointments`, {
+                    scheduleId: data[0].patients[activeSections[0]].scheduleID,
                     appointmentId: data[0].patients[activeSections[0]].appointmentID,
                     patientId: data[0].patients[activeSections[0]].patientID
                 }, {
@@ -50,7 +51,51 @@ const patientAccordion = ({ item, navigation }) => {
                     console.log(response.data);
                 })
                 .catch(function (error) {
-                    console.log(error.message);
+                    if (error.response.data == 'no ongoing') {
+                        showMessage({
+                            message: 'There are no ongoing appointment',
+                            type: 'warning',
+                        });
+                    }
+                    console.log(error.response.data);
+                });
+        } catch (err) {
+            Alert.alert('Error', err.code, [
+                { text: 'Exit', onPress: () => BackHandler.exitApp() },
+            ]);
+        }
+    };
+
+    const onPressEntered = async () => {
+        try {
+            const token = JSON.parse(
+                await EncryptedStorage.getItem(Token_Secret),
+            ).token;
+            console.log(data[0].patients[activeSections[0]].appointmentID);
+            await axios
+                .post(`${Server_URL}:3000/doctor/patientEntered`, {
+                    scheduleId: data[0].patients[activeSections[0]].scheduleID
+                }, {
+                    headers: {
+                        'x-auth-token': token,
+                    }
+                })
+                .then(response => {
+                    console.log('here');
+                    showMessage({
+                        message: 'Appointment started',
+                        type: 'success',
+                    });
+                    console.log(response.data);
+                })
+                .catch(function (error) {
+                    if (error.response.data == 'still ongoing') {
+                        showMessage({
+                            message: 'There are already an ongoing appointment',
+                            type: 'warning',
+                        });
+                    }
+                    console.log(error.response.data);
                 });
         } catch (err) {
             Alert.alert('Error', err.code, [
@@ -91,7 +136,8 @@ const patientAccordion = ({ item, navigation }) => {
                 style={[styles.content, isActive ? styles.active : styles.inactive]}
                 transition="backgroundColor">
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <Pressable style={{ backgroundColor: '#1c1bad', padding: 5 }}>
+                    <Pressable style={{ backgroundColor: '#1c1bad', padding: 5 }}
+                        onPress={onPressEntered}>
                         <Text style={{ color: '#fff' }}>Entered</Text>
                     </Pressable>
                     <Pressable

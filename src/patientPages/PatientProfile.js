@@ -1,4 +1,4 @@
-import React, {useState, useEffect, Suspense} from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import {
   StyleSheet,
   Text,
@@ -18,11 +18,11 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Collapsible from 'react-native-collapsible';
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {Server_URL, Token_Secret, Credintials_Secret} from '@env';
-import {useIsFocused} from '@react-navigation/native';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import { Server_URL, Token_Secret, Credintials_Secret } from '@env';
+import { useIsFocused } from '@react-navigation/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-export default function Profile({navigation}) {
+export default function Profile({ navigation }) {
   const [personalData, setPersonalData] = useState('');
   const [oldAppointments, setOldAppointments] = useState([]);
   const [loadData, setLoadData] = useState(true);
@@ -39,17 +39,21 @@ export default function Profile({navigation}) {
       ).token;
       console.log(token);
       await axios
-        .get(`${Server_URL}:3000/patient/getPatient/${token}`)
+        .get(`${Server_URL}:3000/patient/getPatient`, {
+          headers: {
+            'x-auth-token': token,
+          }
+        })
         .then(response => {
           setPersonalData(response.data);
           console.log(response.data.name);
         })
         .catch(function (error) {
-          console.log(error.message);
+          console.log(error.response.message);
         });
     } catch (err) {
       Alert.alert('Error', err.code, [
-        {text: 'Exit', onPress: () => BackHandler.exitApp()},
+        { text: 'Exit', onPress: () => BackHandler.exitApp() },
       ]);
     }
   };
@@ -60,7 +64,11 @@ export default function Profile({navigation}) {
         await EncryptedStorage.getItem(Token_Secret),
       ).token;
       await axios
-        .get(`${Server_URL}:3000/patient/oldAppointment/${token}`)
+        .get(`${Server_URL}:3000/patient/oldAppointment`, {
+          headers: {
+            'x-auth-token': token,
+          }
+        })
         .then(response => {
           setOldAppointments(response.data);
           console.log(response.data);
@@ -70,7 +78,7 @@ export default function Profile({navigation}) {
         });
     } catch (err) {
       Alert.alert('Error', err.code, [
-        {text: 'Exit', onPress: () => BackHandler.exitApp()},
+        { text: 'Exit', onPress: () => BackHandler.exitApp() },
       ]);
     }
   };
@@ -116,7 +124,9 @@ export default function Profile({navigation}) {
       ).token;
       axios
         .post(`${Server_URL}:3000/patient/logout`, {
-          token: token,
+          headers: {
+            'x-auth-token': token,
+          }
         })
         .then(async function (response) {
           try {
@@ -124,11 +134,11 @@ export default function Profile({navigation}) {
             await EncryptedStorage.removeItem(Credintials_Secret);
             navigation.reset({
               index: 0,
-              routes: [{name: 'WelcomePage'}],
+              routes: [{ name: 'WelcomePage' }],
             });
           } catch (err) {
             Alert.alert('Error', err.code, [
-              {text: 'Exit', onPress: () => BackHandler.exitApp()},
+              { text: 'Exit', onPress: () => BackHandler.exitApp() },
             ]);
           }
         })
@@ -138,7 +148,7 @@ export default function Profile({navigation}) {
         });
     } catch (err) {
       Alert.alert('Error', err.code, [
-        {text: 'Exit', onPress: () => BackHandler.exitApp()},
+        { text: 'Exit', onPress: () => BackHandler.exitApp() },
       ]);
     }
   };
@@ -175,21 +185,21 @@ export default function Profile({navigation}) {
           style={styles.avatar}
           source={femaleAvatar}
 
-          // source={{uri: 'https://www.pedigreecatworld.co.uk/wp-content/uploads/2019/05/customers-icon-3.png'}}
+        // source={{uri: 'https://www.pedigreecatworld.co.uk/wp-content/uploads/2019/05/customers-icon-3.png'}}
         />
       ) : (
         <Image style={styles.avatar} source={maleAvatar} />
       )}
       <View
-        style={{position: 'absolute', alignSelf: 'flex-end', marginTop: 15}}>
-        <TouchableOpacity style={{margin: 5}} onPress={onPressLogout}>
-          <Text style={{fontSize: 15, color: '#fff'}}>Logout</Text>
+        style={{ position: 'absolute', alignSelf: 'flex-end', marginTop: 15 }}>
+        <TouchableOpacity style={{ margin: 5 }} onPress={onPressLogout}>
+          <Text style={{ fontSize: 15, color: '#fff' }}>Logout</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.body}>
         <View style={styles.bodyContent}>
           <Text style={styles.name}>{personalData.name}</Text>
-          <View style={{flexDirection: 'row', margin: 5}}>
+          <View style={{ flexDirection: 'row', margin: 5 }}>
             <Text style={styles.subtitle}>BASIC DATA</Text>
             <TouchableOpacity
               style={{
@@ -211,12 +221,12 @@ export default function Profile({navigation}) {
           </View>
           <View style={styles.description}>
             <View
-              style={{flexDirection: 'row', alignItems: 'center', margin: 2}}>
+              style={{ flexDirection: 'row', alignItems: 'center', margin: 2 }}>
               <Ionicons name={'mail'} size={20} color={'#000'}></Ionicons>
               <Text style={styles.mainText}>{personalData.email}</Text>
             </View>
             <View
-              style={{flexDirection: 'row', alignItems: 'center', margin: 2}}>
+              style={{ flexDirection: 'row', alignItems: 'center', margin: 2 }}>
               <FontAwesome
                 name={'phone'}
                 size={20}
@@ -224,7 +234,7 @@ export default function Profile({navigation}) {
               <Text style={styles.mainText}>{personalData.phoneNumber}</Text>
             </View>
             <View
-              style={{flexDirection: 'row', alignItems: 'center', margin: 2}}>
+              style={{ flexDirection: 'row', alignItems: 'center', margin: 2 }}>
               <FontAwesome
                 name={'birthday-cake'}
                 size={20}
@@ -232,28 +242,28 @@ export default function Profile({navigation}) {
               <Text style={styles.mainText}>{personalData.birthdate}</Text>
             </View>
             <View
-              style={{flexDirection: 'row', alignItems: 'center', margin: 2}}>
+              style={{ flexDirection: 'row', alignItems: 'center', margin: 2 }}>
               <FontAwesome
                 name={'calendar'}
                 size={20}
                 color={'#000'}></FontAwesome>
               <Text style={styles.mainText}>{personalData.age} yo</Text>
             </View>
-            <View style={{flexDirection: 'column'}}>
+            <View style={{ flexDirection: 'column' }}>
               <View
-                style={{flexDirection: 'row', alignItems: 'center', margin: 2}}>
+                style={{ flexDirection: 'row', alignItems: 'center', margin: 2 }}>
                 <Ionicons
                   name={'information-circle-outline'}
                   size={20}
                   color={'#000'}></Ionicons>
                 <TouchableOpacity onPress={toggleExpanded}>
-                  <Text style={{marginLeft: 10, color: '#000'}}>
+                  <Text style={{ marginLeft: 10, color: '#000' }}>
                     More info...
                   </Text>
                 </TouchableOpacity>
               </View>
               <Collapsible collapsed={collapsed} align="center">
-                <View style={{padding: 20}}>
+                <View style={{ padding: 20 }}>
                   <View
                     style={{
                       flexDirection: 'row',
