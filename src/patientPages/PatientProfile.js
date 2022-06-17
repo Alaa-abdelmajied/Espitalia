@@ -123,7 +123,7 @@ export default function Profile({ navigation }) {
         await EncryptedStorage.getItem(Token_Secret),
       ).token;
       axios
-        .post(`${Server_URL}:3000/patient/logout`, {
+        .post(`${Server_URL}:3000/patient/logout`, null, {
           headers: {
             'x-auth-token': token,
           }
@@ -144,6 +144,7 @@ export default function Profile({ navigation }) {
         })
         .catch(function (error) {
           const err = error.response.data;
+          console.log(err);
           //alert err.msg
         });
     } catch (err) {
