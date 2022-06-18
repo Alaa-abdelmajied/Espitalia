@@ -111,11 +111,11 @@ export default function Report({ navigation, route }) {
             color={'#1c1bad'}
             onPress={() => setShowModal(false)}
             style={{ alignSelf: 'flex-start', margin: 5 }}></FontAwesome>
-          <View
+          {/* <View
             style={{
               flexDirection: 'row',
               alignSelf: 'center',
-            }}>
+            }}> */}
             <Rating
               type="star"
               tintColor="#f0f0f0"
@@ -130,7 +130,7 @@ export default function Report({ navigation, route }) {
                 backgroundColor: 'transparent',
                 fontSize: 15,
               }}></Rating>
-          </View>
+          {/* </View> */}
           <View style={styles.modalInput}>
             <TextInput
               placeholder="Write Review"
@@ -194,11 +194,11 @@ export default function Report({ navigation, route }) {
 
 const styles = StyleSheet.create({
   modal: {
-    height: '60%',
+    height: 350,
     backgroundColor: '#f0f0f0',
     borderRadius: 15,
     width: '80%',
-    margin: 10,
+    marginTop: '30%',
     // margin: 300,
     alignSelf: 'center',
     justifyContent: 'center',
@@ -243,7 +243,7 @@ const styles = StyleSheet.create({
   },
 
   modalInput: {
-    height: '70%',
+    height: '50%',
     width: '95%',
     justifyContent: 'center',
     alignItems: 'center',
