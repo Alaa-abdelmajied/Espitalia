@@ -26,7 +26,7 @@ export default function Doctors({navigation, route}) {
   // const [allDoctors, setAllDoctors] = useState([]);
   const isFocused = useIsFocused();
 
-  const seeDoctors = async () => {
+  const getDoctors = async () => {
     if (fromHomepage || fromSearch) {
       await axios
         .get(`${Server_URL}:3000/patient/searchSpecialization/${speciality}`)
@@ -82,7 +82,7 @@ export default function Doctors({navigation, route}) {
   useEffect(() => {
     setLoadData(true);
     if (isFocused) {
-      seeDoctors();
+      getDoctors();
     }
   }, []);
 
@@ -105,7 +105,7 @@ export default function Doctors({navigation, route}) {
     if (search.length > 0) {
       searchDoctor(search);
     } else {
-      setDoctors();
+      getDoctors();
     }
   };
 

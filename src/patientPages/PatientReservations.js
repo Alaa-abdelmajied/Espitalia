@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   StyleSheet,
   Text,
@@ -13,14 +13,15 @@ import {
 } from 'react-native';
 
 import FlashMessage from 'react-native-flash-message';
-import { showMessage, hideMessage } from 'react-native-flash-message';
+import {showMessage, hideMessage} from 'react-native-flash-message';
+import AwesomeAlert from 'react-native-awesome-alerts';
 
 import EncryptedStorage from 'react-native-encrypted-storage';
 import axios from 'axios';
-import { Server_URL, Token_Secret } from '@env';
-import { useIsFocused } from '@react-navigation/native';
+import {Server_URL, Token_Secret} from '@env';
+import {useIsFocused} from '@react-navigation/native';
 
-export default function Reservation({ }) {
+export default function Reservation({}) {
   const [upcomingAppointments, setUpcomingAppointments] = useState([]);
   const [loadData, setLoadData] = useState(true);
   const isFocused = useIsFocused();
@@ -33,7 +34,7 @@ export default function Reservation({ }) {
       .get(`${Server_URL}:3000/patient/upcomingAppointment`, {
         headers: {
           'x-auth-token': token,
-        }
+        },
       })
       .then(response => {
         setUpcomingAppointments(response.data);
@@ -86,11 +87,14 @@ export default function Reservation({ }) {
         });
     } catch (err) {
       Alert.alert('Error', err.code, [
-        { text: 'Exit', onPress: () => BackHandler.exitApp() },
+        {text: 'Exit', onPress: () => BackHandler.exitApp()},
       ]);
     }
   };
 
+  const alert = () => {
+    setShowAlert(true);
+  };
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -103,7 +107,7 @@ export default function Reservation({ }) {
         data={upcomingAppointments}
         keyExtractor={(item, index) => index.toString()}
         // return item.appointmentID;
-        renderItem={({ item }) => (
+        renderItem={({item}) => (
           <View style={styles.appointmentsCard}>
             <View style={styles.infoView}>
               <Text style={styles.infoText}>Hospital: {item.hospitalName}</Text>
@@ -114,9 +118,28 @@ export default function Reservation({ }) {
               </Text>
               <Text style={styles.infoText}>Reservation No: {item.resNum}</Text>
             </View>
-            <View style={styles.view2}>
-              <View style={[styles.numberView, { backgroundColor: item.entered ? '#00FF00' : '#FF0000' }]}>
-                <Text style={styles.infoText}>{item.currentFlowNumber}</Text>
+            <View style={styles.lineStyle} />
+
+            <View style={styles.cancelView}>
+              <View
+                style={[
+                  styles.flowNumberView,
+                  // {backgroundColor: item.entered ? '#299e29' : '#299e29'},
+                ]}>
+                <Text style={styles.infoText}>Flow Number</Text>
+                <View
+                  style={[
+                    styles.numberView,
+                    {backgroundColor: item.entered ? '#00ff00' : '#ff0000'},
+                  ]}>
+                  <Text
+                    style={{
+                      color: item.entered ? '#000' : '#fff',
+                      alignSelf: 'center',
+                    }}>
+                    {item.currentFlowNumber}
+                  </Text>
+                </View>
               </View>
               <TouchableOpacity
                 style={styles.button}
@@ -184,6 +207,8 @@ const styles = StyleSheet.create({
     width: '95%',
     height: 230,
     borderRadius: 15,
+    borderWidth: 1,
+    borderColor: '#1c1bad',
     backgroundColor: '#fff',
     alignSelf: 'center',
     // marginLeft: 10,
@@ -200,7 +225,7 @@ const styles = StyleSheet.create({
   },
 
   infoView: {
-    flex: 1,
+    flex: 2,
     flexDirection: 'column',
     height: '90%',
     alignSelf: 'center',
@@ -209,17 +234,30 @@ const styles = StyleSheet.create({
     // marginTop:'2%',
     // marginBottom: '5%',
     justifyContent: 'center',
-    margin: '1%',
+    margin: 2,
     // borderRadius: 5,
   },
+
   infoText: {
     color: '#000',
     margin: 10,
     fontSize: 15,
   },
 
-  view2: {
+  lineStyle: {
+    width: 1,
+    height: '95%',
+    borderWidth: 0.5,
+    borderColor: '#1c1bad',
+    // margin: '2%',
+    alignSelf: 'center',
+    backgroundColor: '#1c1bad',
+  },
+
+  cancelView: {
     flex: 1,
+    width: '99%',
+    margin: 10,
     flexDirection: 'column',
     justifyContent: 'space-evenly',
     height: '95%',
@@ -228,17 +266,19 @@ const styles = StyleSheet.create({
     // backgroundColor: '#0ff'
   },
 
-  numberView: {
-    borderColor: '#1c1bad',
-    borderWidth: 2,
-    width: 160,
-    height: 100,
-    // marginBottom: 75,
-    // margin: 30,
+  flowNumberView: {
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 5,
-    // backgroundColor: '#5c9ae0',
+  },
+
+  numberView: {
+    width: 40,
+    height: 40,
+    borderRadius: 60,
+    justifyContent: 'center',
+    margin: 5,
+    borderColor: '#1c1bad',
+    borderWidth: 3,
   },
 
   buttonText: {
@@ -252,7 +292,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 5,
-    width: 160,
+    width: '100%',
     color: '#fff',
   },
 

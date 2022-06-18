@@ -6,6 +6,7 @@ import {
   Text,
   ActivityIndicator,
   Pressable,
+  TextInput,
 } from 'react-native';
 import HospitalsCard from '../../utils/HospitalsCard';
 import {SearchBar} from 'react-native-elements';
@@ -14,13 +15,13 @@ import axios from 'axios';
 import {Server_URL} from '@env';
 import {useIsFocused} from '@react-navigation/native';
 
-export default function Hospitals({navigation,route}) {
+export default function Hospitals({navigation, route}) {
   const {hospitalSeeMore, targetSearch} = route.params;
   const [allHospitals, setAllHospitals] = useState([]);
   const [loadData, setLoadData] = useState(true);
   const isFocused = useIsFocused();
 
-  const seeAllHospitals = async () => {
+  const getHospitals = async () => {
     if (hospitalSeeMore) {
       axios
         .get(`${Server_URL}:3000/patient/searchHospitals/${targetSearch}`)
@@ -50,7 +51,7 @@ export default function Hospitals({navigation,route}) {
   useEffect(() => {
     setLoadData(true);
     if (isFocused) {
-      seeAllHospitals();
+      getHospitals();
     }
   }, []);
 
@@ -74,7 +75,7 @@ export default function Hospitals({navigation,route}) {
     if (search.length > 0) {
       searchHospital(search);
     } else {
-      setAllHospitals();
+      getHospitals();
     }
   };
 
