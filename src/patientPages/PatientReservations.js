@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
     height: '95%',
     borderWidth: 0.5,
     borderColor: '#1c1bad',
-    // margin: '2%',
+    margin: '2%',
     alignSelf: 'center',
     backgroundColor: '#1c1bad',
   },
