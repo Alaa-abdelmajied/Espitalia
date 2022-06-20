@@ -67,7 +67,9 @@ export default function PatientHome({navigation}) {
       hospitalID: id,
       hospitalName: name,
       hospitalAddress: address,
+      fromHospital: true,
       isAllSpecializations: false,
+      specializationSeeMore: false,
     });
     console.log(id, name, address);
   };
@@ -102,8 +104,10 @@ export default function PatientHome({navigation}) {
   const onPressSpecialization = speciality => {
     navigation.navigate('DoctorsScreen', {
       speciality: speciality,
-      fromHomepage: true,
+      fromSpecialization: true,
       isAllDoctors: false,
+      doctorSeeMore: false,
+      fromHospitalThenSpec: false,
     });
     console.log(speciality);
   };
@@ -112,11 +116,18 @@ export default function PatientHome({navigation}) {
     navigation.navigate('HospitalList', {hospitalSeeMore: false});
   };
   const seeAllDoctors = () => {
-    navigation.navigate('DoctorsScreen', {isAllDoctors: true});
+    navigation.navigate('DoctorsScreen', {
+      fromSpecialization: false,
+      isAllDoctors: true,
+      doctorSeeMore: false,
+      fromHospitalThenSpec: false,
+    });
   };
   const seeAllSpecializations = () => {
     navigation.navigate('SpecializationScreen', {
+      fromHospital: false,
       isAllSpecializations: true,
+      specializationSeeMore: false,
     });
   };
 

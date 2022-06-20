@@ -1,13 +1,17 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
+import {StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
 
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { Rating } from 'react-native-ratings';
+import {Rating} from 'react-native-ratings';
 
-
-const DoctorsCard = ({ card, navigation, hospitalName, hospitalAddress }) => {
-  const onPress = (id, name, specialization, averageRating) => {
+const DoctorsCard = ({card, navigation,hospitalName,hospitalAddress}) => {
+  const onPress = (
+    id,
+    name,
+    specialization,
+    averageRating,
+  ) => {
     navigation.navigate('DoctorDetails', {
       drID: id,
       drName: name,
@@ -27,7 +31,9 @@ const DoctorsCard = ({ card, navigation, hospitalName, hospitalAddress }) => {
           card._id,
           card.name,
           card.specialization,
-          card.rating
+          card.rating,
+          card.doctorHospitalName,
+          card.doctorHospitalAddress,
         )
       }>
       <View style={styles.card_header}>
@@ -47,8 +53,8 @@ const DoctorsCard = ({ card, navigation, hospitalName, hospitalAddress }) => {
             name={'hospital-o'}
             size={30}
             color="#1c1bad"
-            style={{ margin: 10 }}></FontAwesome>
-          <View style={{ flex: 1 }}>
+            style={{margin: 10}}></FontAwesome>
+          <View style={{flex: 1}}>
             <Text style={styles.hospital}>{hospitalName}</Text>
           </View>
         </View>
@@ -57,8 +63,8 @@ const DoctorsCard = ({ card, navigation, hospitalName, hospitalAddress }) => {
             name={'location-sharp'}
             size={30}
             color="#1c1bad"
-            style={{ margin: 10 }}></Ionicons>
-          <View style={{ flex: 1 }}>
+            style={{margin: 10}}></Ionicons>
+          <View style={{flex: 1}}>
             <Text style={styles.hospital}>{hospitalAddress}</Text>
           </View>
         </View>

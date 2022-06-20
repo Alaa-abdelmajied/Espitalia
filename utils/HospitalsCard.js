@@ -2,7 +2,6 @@ import React from 'react';
 import {StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import LinearGradient from 'react-native-linear-gradient';
 
 const HospitalsCard = ({card, navigation}) => {
   const onPressHospitals = () => {
@@ -10,6 +9,9 @@ const HospitalsCard = ({card, navigation}) => {
       hospitalID: card.hospitalID,
       hospitalName: card.hospitalName,
       hospitalAddress: card.address,
+      fromHospital: true,
+      isAllSpecializations: false,
+      specializationSeeMore: false,
     });
   };
 
