@@ -112,6 +112,9 @@ export default function Login({ navigation, route }) {
             });
             //alert worng email or password
             console.log('alert');
+          }else if(err.includes('banned')){
+            console.log(err);
+            Alert.alert('Banned Account',err);
           }
         });
       // navigation.reset({
