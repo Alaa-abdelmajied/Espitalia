@@ -137,15 +137,18 @@ export default function PatientHome({navigation}) {
     </View>
   ) : (
     <ScrollView
+      stickyHeaderIndices={[0]}
       vertical={true}
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefreshing} />
       }>
       <View style={styles.header}>
-        <Image
-          style={styles.Image}
-          source={require('../../images/app_logo-removebg-preview.png')}></Image>
-        <Text style={styles.headerText}>espitalia</Text>
+        <View style={{flexDirection:'row',justifyContent:'center'}}>
+          <Image
+            style={styles.Image}
+            source={require('../../images/app_logo-removebg-preview.png')}></Image>
+          <Text style={styles.headerText}>espitalia</Text>
+        </View>
       </View>
       <View style={styles.headline}>
         <Text style={styles.titleText}>Hospitals</Text>

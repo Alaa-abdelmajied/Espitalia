@@ -78,9 +78,9 @@ export default function ProfileScreen({navigation, route}) {
           `${Server_URL}:3000/patient/book`,
           {
             drId: drID,
-            date: date,
-            from: from,
-            to: to,
+            appDate: date,
+            appFrom: from,
+            appTo: to,
           },
           {
             headers: {
@@ -94,14 +94,23 @@ export default function ProfileScreen({navigation, route}) {
             message: 'Appointment successfully booked',
             type: 'success',
           });
-          // Alert.alert('Appointment successfully booked');
         })
         .catch(function (error) {
           const err = error.response.data;
-          if (err == 'Error booking appointment') {
+          if (err.includes('same doctor')) {
             showMessage({
               message: err,
-              type: 'warning',
+              type: 'danger',
+            });
+          } else if (err.includes('same time')) {
+            showMessage({
+              message: err,
+              type: 'danger',
+            });
+          } else {
+            showMessage({
+              message: 'Something went wrong',
+              type: 'danger',
             });
           }
           console.log(err);

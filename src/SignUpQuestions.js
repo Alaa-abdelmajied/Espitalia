@@ -17,11 +17,12 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import {Server_URL, Token_Secret, Credintials_Secret} from '@env';
 
 export default function Questions({navigation, route}) {
-  const [diabetic, setDiabetic] = useState('unknown');
-  const [bloodPressure, setBloodPressure] = useState('unknown');
-  const [allergic, setAllergic] = useState('unknown');
-  const [bloodType, setBloodType] = useState('unknown');
-  const [allergy, setAllergy] = useState(false);
+  const [diabetic, setDiabetic] = useState('Unknown');
+  const [bloodType, setBloodType] = useState('Unknown');
+  const [bloodPressure, setBloodPressure] = useState('Unknown');
+  const [allergic, setAllergic] = useState('Unknown');
+  const [allergies, setAllergies] = useState("");
+
   const {email, name, password, phoneNumber, date, selectedGender} =
     route.params;
 
@@ -34,7 +35,11 @@ export default function Questions({navigation, route}) {
         phoneNumber: phoneNumber,
         dateOfBirth: date,
         gender: selectedGender,
-        questions: diabetic,
+        diabetic:diabetic,
+        bloodType:bloodType,
+        bloodPressure:bloodPressure,
+        allergic:allergic,
+        allergies:allergies
       })
       .then(async function (response) {
         const {token} = response.data;
@@ -86,15 +91,15 @@ export default function Questions({navigation, route}) {
                   onValueChange={(itemValue, itemIndex) =>
                     setBloodType(itemValue)
                   }>
-                  <Picker.Item label="A+" value="a+" />
-                  <Picker.Item label="A-" value="a-" />
-                  <Picker.Item label="B+" value="b+" />
-                  <Picker.Item label="B-" value="b-" />
-                  <Picker.Item label="O+" value="o+" />
-                  <Picker.Item label="O-" value="o-" />
-                  <Picker.Item label="AB+" value="ab+" />
-                  <Picker.Item label="AB-" value="ab-" />
-                  <Picker.Item label="I don't know" value="unknown" />
+                  <Picker.Item label="A+" value="A+" />
+                  <Picker.Item label="A-" value="A-" />
+                  <Picker.Item label="B+" value="B+" />
+                  <Picker.Item label="B-" value="B-" />
+                  <Picker.Item label="O+" value="O+" />
+                  <Picker.Item label="O-" value="O-" />
+                  <Picker.Item label="AB+" value="Ab+" />
+                  <Picker.Item label="AB-" value="Ab-" />
+                  <Picker.Item label="I don't know" value="Unknown" />
                 </Picker>
               </View>
             </View>
@@ -106,9 +111,9 @@ export default function Questions({navigation, route}) {
                   onValueChange={(itemValue, itemIndex) =>
                     setDiabetic(itemValue)
                   }>
-                  <Picker.Item label="Yes" value="yes" />
-                  <Picker.Item label="No" value="no" />
-                  <Picker.Item label="I don't know" value="unknown" />
+                  <Picker.Item label="Yes" value="Yes" />
+                  <Picker.Item label="No" value="No" />
+                  <Picker.Item label="I don't know" value="Unknown" />
                 </Picker>
               </View>
             </View>
@@ -122,9 +127,10 @@ export default function Questions({navigation, route}) {
                   onValueChange={(itemValue, itemIndex) =>
                     setBloodPressure(itemValue)
                   }>
-                  <Picker.Item label="Yes" value="yes" />
-                  <Picker.Item label="No" value="no" />
-                  <Picker.Item label="I don't know" value="unknown" />
+                  <Picker.Item label="Normal" value="Normal" />
+                  <Picker.Item label="High" value="High" />
+                  <Picker.Item label="Low" value="Low" />
+                  <Picker.Item label="I don't know" value="Unknown" />
                 </Picker>
               </View>
             </View>
@@ -138,9 +144,9 @@ export default function Questions({navigation, route}) {
                   onValueChange={(itemValue, itemIndex) =>
                     setAllergic(itemValue)
                   }>
-                  <Picker.Item label="Yes" value="yes" />
-                  <Picker.Item label="No" value="no" />
-                  <Picker.Item label="I don't know" value="unknown" />
+                  <Picker.Item label="Yes" value="Yes" />
+                  <Picker.Item label="No" value="No" />
+                  <Picker.Item label="I don't know" value="Unknown" />
                 </Picker>
               </View>
               {allergic == 'yes' ? (
@@ -149,7 +155,7 @@ export default function Questions({navigation, route}) {
                     style={styles.Input}
                     placeholder="What are you allergic to?"
                     placeholderTextColor={'#a1a1a1'}
-                    onChangeText={text => setAllergy(text)}></TextInput>
+                    onChangeText={text => setAllergies(text)}></TextInput>
                 </View>
               ) : null}
             </View>

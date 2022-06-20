@@ -1,31 +1,43 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import React, {useState} from 'react';
+import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import OTPTextInput from 'react-native-otp-textinput';
-import Svg, { Path, stop, defs, linearGradient } from 'react-native-svg';
+import Svg, {Path, stop, defs, linearGradient} from 'react-native-svg';
 import Ioinicons from 'react-native-vector-icons/Ionicons';
+import FlashMessage from 'react-native-flash-message';
+import {showMessage} from 'react-native-flash-message';
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { Server_URL, Token_Secret } from '@env';
+import {Server_URL, Token_Secret} from '@env';
 
-export default function OTP({ navigation }) {
+export default function OTP({navigation, route}) {
   const [OTP, setOTP] = useState('');
+  const {isForgotten} = route.params;
 
-  const onPressHandler = async () => {
+  const verify = async () => {
     axios
-      .post(`${Server_URL}:3000/patient/verify`, {
-        otp: OTP,
-        // token: ,
-        forgot: false,
-      }, {
-        headers: {
-          'x-auth-token': JSON.parse(await EncryptedStorage.getItem(Token_Secret)).token,
-        }
-      })
+      .post(
+        `${Server_URL}:3000/patient/verify`,
+        {
+          otp: OTP,
+          forgot: false,
+        },
+        {
+          headers: {
+            'x-auth-token': JSON.parse(
+              await EncryptedStorage.getItem(Token_Secret),
+            ).token,
+          },
+        },
+      )
       .then(function (response) {
-        navigation.reset({
-          index: 0,
-          routes: [{ name: 'Patient' }],
-        });
+        if (!isForgotten) {
+          navigation.reset({
+            index: 0,
+            routes: [{name: 'Patient'}],
+          });
+        } else {
+          navigation.navigate('ChangePassword', {changePassword: true});
+        }
       })
       .catch(function (error) {
         const err = error.response.data;
@@ -36,8 +48,26 @@ export default function OTP({ navigation }) {
       });
   };
 
-  const resendOTP = () => {
-    console.log('pressed');
+  const resendOTP = async () => {
+    axios
+      .post(`${Server_URL}:3000/patient/resendOTP`, null, {
+        headers: {
+          'x-auth-token': JSON.parse(
+            await EncryptedStorage.getItem(Token_Secret),
+          ).token,
+        },
+      })
+      .then(function (response) {
+        console.log('resent');
+        showMessage({
+          message: 'OTP resent to your email',
+          type: 'success',
+        });
+      })
+      .catch(function (error) {
+        const err = error.response.data;
+        console.log(err);
+      });
   };
 
   return (
@@ -53,10 +83,10 @@ export default function OTP({ navigation }) {
           />
         </Svg>
       </View>
-      <View style={{ marginTop: '30%' }}>
+      <View style={{marginTop: '30%'}}>
         <Text style={styles.text}> Enter the code sent to your email</Text>
         <OTPTextInput
-          textInputStyle={{ borderWidth: 2, borderRadius: 251 }}
+          textInputStyle={{borderWidth: 2, borderRadius: 251}}
           inputCount={5}
           tintColor="#1c1bad"
           handleTextChange={text => setOTP(text)}></OTPTextInput>
@@ -64,8 +94,8 @@ export default function OTP({ navigation }) {
           name="checkmark-circle"
           size={55}
           color={'#1c1bad'}
-          style={{ alignSelf: 'center', margin: 10 }}
-          onPress={onPressHandler}></Ioinicons>
+          style={{alignSelf: 'center', margin: 10}}
+          onPress={verify}></Ioinicons>
         {/* TODO: connect with backend */}
         <TouchableOpacity onPress={resendOTP}>
           <Text
@@ -78,6 +108,7 @@ export default function OTP({ navigation }) {
           </Text>
         </TouchableOpacity>
       </View>
+      <FlashMessage position="top" icon="auto" />
     </View>
   );
 }

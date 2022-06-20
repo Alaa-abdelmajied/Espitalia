@@ -101,6 +101,7 @@ export default function Reservation({}) {
         <Image
           style={styles.Image}
           source={require('../../images/app_logo-removebg-preview.png')}></Image>
+        <Text style={styles.headerText}>espitalia</Text>
       </View>
       <FlatList
         extraData={upcomingAppointments}
@@ -190,16 +191,23 @@ const styles = StyleSheet.create({
   },
 
   header: {
-    height: '8%',
-    backgroundColor: '#0d159e',
+    flexDirection: 'row',
+    height: 50,
+    backgroundColor: '#1c1bad',
     justifyContent: 'center',
+  },
+
+  headerText: {
+    fontSize: 20,
+    color: '#fff',
+    fontWeight: 'bold',
+    alignSelf: 'center',
   },
 
   Image: {
     width: 50,
     height: 50,
     alignSelf: 'center',
-    // marginTop:10,
   },
 
   appointmentsCard: {
