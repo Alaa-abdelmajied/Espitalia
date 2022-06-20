@@ -101,9 +101,7 @@ export default function Notification({navigation}) {
         renderItem={({item}) => (
           <TouchableOpacity
             style={styles.notificationsCard}
-            // onPress={showDialog}
           >
-            {/* <View style={styles.textContainer}> */}
             <View
               style={{
                 flex: 1,
@@ -116,9 +114,10 @@ export default function Notification({navigation}) {
                 {item.title}
               </Text>
               <Text style={{color: '#000', fontSize: 13, textAlign: 'center'}}>
-                {new Date(item.date).toLocaleDateString() +
+                {/* {new Date(item.date).toLocaleDateString() +
                   ' ' +
-                  new Date(item.date).toLocaleTimeString()}
+                  new Date(item.date).toLocaleTimeString()} */}
+                  {new Date(item.date).toLocaleString()}
               </Text>
             </View>
             <View
@@ -127,13 +126,6 @@ export default function Notification({navigation}) {
                 {item.body}
               </Text>
             </View>
-            {/* <Dialog.Container visible={visible}>
-              <Dialog.Title>Blood Rquest</Dialog.Title>
-              <Dialog.Description>notification details</Dialog.Description>
-              <Dialog.Button label="Accept" onPress={handleAccept} />
-              <Dialog.Button label="Ignore" onPress={handleIgnore} />
-            </Dialog.Container> */}
-            {/* </View> */}
           </TouchableOpacity>
         )}
       />
