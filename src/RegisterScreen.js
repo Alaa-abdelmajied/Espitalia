@@ -28,10 +28,12 @@ export default function SignUp({navigation}) {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [selectedGender, setSelectedGender] = useState('');
-  const [validEmail, setValidEmail] = useState(true);
-  const [minLength, setMinLength] = useState(true);
-  const [passwordsMatch, setPasswordsMatch] = useState(true);
-  const [emptyField, setEmptyField] = useState(false);
+  // const [validEmail, setValidEmail] = useState(true);
+  // const [minLength, setMinLength] = useState(true);
+  // const [passwordsMatch, setPasswordsMatch] = useState(true);
+  // const [emptyField, setEmptyField] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const OpenDateWindow = () => {
     setShow(true);
@@ -52,31 +54,35 @@ export default function SignUp({navigation}) {
   };
 
   const gender = ['Female', 'Male'];
-  const [selectedValue, setSelectedValue] = useState('no');
 
   const onPressNextHandler = () => {
     var re =
       /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     if (
-      email == '' ||
-      name == '' ||
-      phoneNumber == '' ||
-      password == '' ||
-      confirmPassword == '' ||
+      email.length == 0 ||
+      name.length == 0 ||
+      phoneNumber.length == 0 ||
+      password.length == 0 ||
+      confirmPassword.length == 0 ||
       selectedGender == '' ||
       date == ''
     ) {
-      setEmptyField(true);
-    }
-    if (password != confirmPassword) {
+      setIsVisible(true);
+      setErrorMessage('All fields are required');
+      // setEmptyField(true);
+    } else if (!re.test(email)) {
+      setIsVisible(true);
+      setErrorMessage('Invalid email');
+      // setValidEmail(false);
+    } else if (password.length < 8) {
+      setIsVisible(true);
+      setErrorMessage('Passwords must be at least 8 characters in length');
+      // setMinLength(false);
+    } else if (password != confirmPassword) {
+      setIsVisible(true);
+      setErrorMessage(`Passwords don't match`);
       console.log('dont match');
-      setPasswordsMatch(false);
-    }
-    if (password.length < 8) {
-      setMinLength(false);
-    }
-    if (!re.test(email)) {
-      setValidEmail(false);
+      // setPasswordsMatch(false);
     } else {
       navigation.navigate('SignUpQuestions', {
         email: email,
@@ -104,58 +110,55 @@ export default function SignUp({navigation}) {
         <View style={styles.RegisterCard}>
           <Text style={styles.TitleText}>Sign Up</Text>
           <View style={styles.InputsRegion}>
-            {emptyField ? (
+            {isVisible ? (
               <View style={{height: 30}}>
                 <Text style={styles.validationText}>
-                  All fields should be filled
+                  {errorMessage}
+                  {/* All fields are required */}
                 </Text>
               </View>
             ) : null}
             <TextInput
               style={styles.Input}
               placeholder="Enter your email"
-              placeholderTextColor={'#a1a1a1'}
+              keyboardType={'email-address'}
               onChangeText={text => setEmail(text)}></TextInput>
-            {!validEmail ? (
+            {/* {!validEmail ? (
               <View style={{height: 30}}>
                 <Text style={styles.validationText}>Email is not valid</Text>
               </View>
-            ) : null}
+            ) : null} */}
             <TextInput
               style={styles.Input}
               placeholder="Enter your name"
-              placeholderTextColor={'#a1a1a1'}
               onChangeText={text => setName(text)}></TextInput>
             <TextInput
               style={styles.Input}
               placeholder="Enter your phone number"
-              placeholderTextColor={'#a1a1a1'}
               keyboardType={'number-pad'}
               onChangeText={text => setPhoneNumber(text)}></TextInput>
             <TextInput
               secureTextEntry={true}
               style={styles.Input}
               placeholder="Enter your password"
-              placeholderTextColor={'#a1a1a1'}
               onChangeText={text => setPassword(text)}></TextInput>
-            {!minLength ? (
+            {/* {!minLength ? (
               <View style={{height: 30}}>
                 <Text style={styles.validationText}>
                   Passwords must be at least 8 characters in length
                 </Text>
               </View>
-            ) : null}
+            ) : null} */}
             <TextInput
               secureTextEntry={true}
               style={styles.Input}
               placeholder="Confirm your password"
-              placeholderTextColor={'#a1a1a1'}
               onChangeText={text => setConfirmPassword(text)}></TextInput>
-            {!passwordsMatch ? (
+            {/* {!passwordsMatch ? (
               <View style={{height: 30}}>
                 <Text style={styles.validationText}>Passwords don't match</Text>
               </View>
-            ) : null}
+            ) : null} */}
             <View style={styles.view}>
               <View style={{flex: 1, alignItems: 'flex-start'}}>
                 <Pressable onPress={OpenDateWindow} style={styles.dateInput}>

@@ -18,7 +18,7 @@ import FlashMessage from 'react-native-flash-message';
 import {showMessage} from 'react-native-flash-message';
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {Server_URL, Token_Secret} from '@env';
+import {Server_URL, Token_Secret, Credintials_Secret} from '@env';
 
 export default function ChangePassword({navigation, route}) {
   const {changePassword, profileChangePassword} = route.params;
@@ -26,6 +26,8 @@ export default function ChangePassword({navigation, route}) {
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
   const [currentPassword, setCurrentPassword] = useState('');
+  const [isVisible, setIsVisible] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const verifyEmail = () => {
     axios
@@ -58,7 +60,21 @@ export default function ChangePassword({navigation, route}) {
   };
 
   const forgottenPasswordChange = async () => {
-    if (newPassword == confirmNewPassword) {
+    if (newPassword.length == 0 || confirmNewPassword.length == 0) {
+      setIsVisible(true);
+      setErrorMessage('All fields are required');
+    } else if (newPassword.length < 8) {
+      setIsVisible(true);
+      setErrorMessage('Passwords must be at least 8 characters in length');
+    } else if (newPassword != confirmNewPassword) {
+      setIsVisible(true);
+      setErrorMessage("Passwords don't match");
+    }
+    // else if (confirmNewPassword.length < 8) {
+    //   setIsVisible(true);
+    //   setErrorMessage('Passwords must be at least 8 characters in length');
+    // }
+    else {
       try {
         const token = JSON.parse(
           await EncryptedStorage.getItem(Token_Secret),
@@ -89,17 +105,30 @@ export default function ChangePassword({navigation, route}) {
           {text: 'Exit', onPress: () => BackHandler.exitApp()},
         ]);
       }
-    } else {
-      showMessage({
-        message: "Passwords don't match",
-        type: 'info',
-      });
+
       // Alert.alert("Passwords don't match");
     }
   };
 
   const profilePasswordChange = async () => {
-    if (newPassword == confirmNewPassword) {
+    const {email, password} = JSON.parse(
+      await EncryptedStorage.getItem(Credintials_Secret),
+    );
+    console.log(password);
+    if (
+      newPassword.length == 0 ||
+      confirmNewPassword.length == 0 ||
+      currentPassword.length == 0
+    ) {
+      setIsVisible(true);
+      setErrorMessage('All fields are required');
+    } else if (newPassword.length < 8) {
+      setIsVisible(true);
+      setErrorMessage('Passwords must be at least 8 characters in length');
+    } else if (newPassword != confirmNewPassword) {
+      setIsVisible(true);
+      setErrorMessage("Passwords don't match");
+    } else {
       try {
         const token = JSON.parse(
           await EncryptedStorage.getItem(Token_Secret),
@@ -120,22 +149,27 @@ export default function ChangePassword({navigation, route}) {
             },
           )
           .then(async function (response) {
+            await EncryptedStorage.setItem(
+              Credintials_Secret,
+              JSON.stringify({
+                email: email,
+                password: newPassword,
+                type: 'patient',
+              }),
+            );
             navigation.navigate('PatientProfile');
           })
           .catch(function (error) {
             const err = error.response.data;
             console.log(err);
+            setIsVisible(true);
+            setErrorMessage('Current password is incorrect');
           });
       } catch (err) {
         Alert.alert('Error', err.code, [
           {text: 'Exit', onPress: () => BackHandler.exitApp()},
         ]);
       }
-    } else {
-      showMessage({
-        message: "Passwords don't match",
-        type: 'info',
-      });
     }
   };
 
@@ -178,6 +212,7 @@ export default function ChangePassword({navigation, route}) {
                   <TextInput
                     style={styles.Input}
                     placeholder="Enter your email"
+                    keyboardType={'email-address'}
                     onChangeText={text => setEmail(text)}></TextInput>
                   <Pressable
                     style={styles.RegisterButton}
@@ -204,6 +239,9 @@ export default function ChangePassword({navigation, route}) {
                     onChangeText={text =>
                       setConfirmNewPassword(text)
                     }></TextInput>
+                  {isVisible ? (
+                    <Text style={styles.validationText}>{errorMessage}</Text>
+                  ) : null}
                   <Pressable
                     style={styles.RegisterButton}
                     onPress={forgottenPasswordChange}>
@@ -234,6 +272,9 @@ export default function ChangePassword({navigation, route}) {
                 style={styles.Input}
                 placeholder="Confirm your new password"
                 onChangeText={text => setConfirmNewPassword(text)}></TextInput>
+              {isVisible ? (
+                <Text style={styles.validationText}>{errorMessage}</Text>
+              ) : null}
               <Pressable
                 style={styles.RegisterButton}
                 onPress={profilePasswordChange}>
@@ -332,5 +373,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#1c1bad',
     alignItems: 'center',
     textAlign: 'center',
+  },
+
+  validationText: {
+    fontSize: 15,
+    color: '#ff0000',
   },
 });
