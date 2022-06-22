@@ -32,7 +32,7 @@ import { Server_URL, Token_Secret, Credintials_Secret } from '@env';
 import { useEffect } from 'react';
 
 const Day = ['Saterday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
-const BloodTypes = ['A RhD positive (A+)','A RhD negative (A-)','B RhD positive (B+)','B RhD negative (B-)','O RhD positive (O+)','O RhD negative (O-)','AB RhD positive (AB+)','AB RhD negative (AB-)'];
+const BloodTypes = ['A RhD positive (A+)', 'A RhD negative (A-)', 'B RhD positive (B+)', 'B RhD negative (B-)', 'O RhD positive (O+)', 'O RhD negative (O-)', 'AB RhD positive (AB+)', 'AB RhD negative (AB-)'];
 
 export default function EventsView() {
   const [selectedBloodType, setSelectedBloodType] = useState('');
@@ -177,15 +177,17 @@ export default function EventsView() {
         TODO: add selector for blood type, button for save, button for cancel
         */}
         <Modal
+          animationType="fade"
+          hardwareAccelerated={true}
           visible={showModal}
           transparent
-          onRequestClose={() => setShowModal(false)}>
+          onRequestClose={() => toggleModal()}>
           <View style={styles.centeredView}>
             <View style={styles.modal}>
               <View style={styles.modalTitle}>
                 <Text style={{ fontSize: 18, color: '#fff', fontWeight: 'bold' }}>Create New Blood Request</Text>
               </View>
-              <View style={{alignItems:'center'}}>
+              <View style={{ alignItems: 'center' }}>
                 <SelectDropdown
                   renderDropdownIcon={() => <Ionicons
                     name={'chevron-down'}
@@ -209,11 +211,25 @@ export default function EventsView() {
                     return item
                   }}
                 />
-                <View>
-                  <Button title='Save' onPress={() => {
-                    toggleModal();
-                    createBloodRequest();
-                  }}></Button>
+                <View style={{ flexDirection: 'row' }}>
+                  <Pressable
+                    style={[styles.button, styles.buttonClose]}
+                    onPress={() => {
+                      toggleModal();
+                      createBloodRequest();
+                    }
+                    }
+                  >
+                    <Icon style={styles.newDay} name='save' />
+                  </Pressable>
+                  <Pressable
+                    style={[styles.button, styles.buttonClose, { backgroundColor: "#f00" }]}
+                    onPress={() => {
+                      toggleModal();
+                    }}
+                  >
+                    <Icon style={styles.newDay} name='close' />
+                  </Pressable>
                 </View>
               </View>
             </View>
@@ -386,7 +402,7 @@ const styles = StyleSheet.create({
   },
   modal: {
     width: 300,
-    height: 300,
+    height: 250,
     backgroundColor: '#ffff',
     // borderWidth: 1,
     borderColor: '#000',
@@ -431,5 +447,5 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 1,
     elevation: 2,
-},
+  },
 });

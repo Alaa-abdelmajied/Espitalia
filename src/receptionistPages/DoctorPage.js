@@ -211,11 +211,10 @@ export default function ProfileScreen({ navigation, route }) {
                 </View>
                 <Modal
                     animationType="slide"
-                    transparent={true}
+                    transparent
                     hardwareAccelerated={true}
                     visible={modalVisible}
                     onRequestClose={() => {
-                        Alert.alert("Modal has been closed.");
                         setModalVisible(!modalVisible);
                     }}
                 >
