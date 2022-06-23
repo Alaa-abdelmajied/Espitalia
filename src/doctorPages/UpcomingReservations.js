@@ -93,9 +93,6 @@ export default function UpcomingReservations() {
           source={require('../../images/app_logo-removebg-preview.png')}></Image>
       </View>
       <ScrollView>
-        <Pressable onPress={() => console.log(patients)}>
-          <Text>press me</Text>
-        </Pressable>
         <Text style={styles.title}>Upcoming appointments</Text>
         <Accordion
           activeSections={activeSections}

@@ -40,7 +40,6 @@ import PatientHistory from './doctorPages/PatientHistory';
 import DoctorProfile from './doctorPages/Profile';
 import UpcomingReservations from './doctorPages/UpcomingReservations';
 
-
 //Receptionist pages
 import ReceptHome from './receptionistPages/ReceptHome';
 import DoctorsListPage from './receptionistPages/DoctorsListPage';
@@ -183,11 +182,7 @@ function PatientNavBar() {
       barStyle={{backgroundColor: '#fff'}}>
       <Tab.Screen name="Home" component={PatientStackNav} />
       <Tab.Screen name="Profile" component={PatientProfileStackNav} />
-      <Tab.Screen
-        name="Notifications"
-        component={PatientNotificationsTabNav}
-        options={{tabBarBadge: 10}}
-      />
+      <Tab.Screen name="Notifications" component={PatientNotificationsTabNav} />
       <Tab.Screen name="Reservations" component={PatientReservations} />
       <Tab.Screen
         name="Search"
@@ -324,7 +319,11 @@ function ReceptNavBar() {
             size = focused ? 30 : 25;
             color = focused ? '#f2c52e' : '#555';
           }
-          return iconName==='blood-drop'? <Fontisto name={iconName} size={size} color={color} /> : <FontAwesome5 name={iconName} size={size} color={color} />;
+          return iconName === 'blood-drop' ? (
+            <Fontisto name={iconName} size={size} color={color} />
+          ) : (
+            <FontAwesome5 name={iconName} size={size} color={color} />
+          );
         },
       })}
       tabBarOptions={{

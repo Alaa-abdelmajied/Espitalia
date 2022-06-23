@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import {
   StyleSheet,
   Text,
@@ -11,15 +11,17 @@ import {
   TouchableOpacity,
   Animated,
   Alert,
-  BackHandler
+  BackHandler,
+  ScrollView,
 } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { Server_URL, Token_Secret, Credintials_Secret } from '@env';
+import {Server_URL, Token_Secret, Credintials_Secret} from '@env';
 
-export default function UserProfileView({ navigation }) {
+export default function UserProfileView({navigation}) {
   const [refreshing, setRefreshing] = useState(false);
   const [myData, setMyData] = useState({});
   const onRefresh = useCallback(() => {
@@ -34,8 +36,8 @@ export default function UserProfileView({ navigation }) {
     axios
       .get(`${Server_URL}:3000/receptionist/getMyData`, {
         headers: {
-          'x-auth-token': token
-        }
+          'x-auth-token': token,
+        },
       })
       .then(function (response) {
         setMyData(response.data);
@@ -44,9 +46,7 @@ export default function UserProfileView({ navigation }) {
       .catch(function (error) {
         console.log(error);
       });
-
-  }
-
+  };
 
   useEffect(() => {
     getPersonalData();
@@ -58,11 +58,11 @@ export default function UserProfileView({ navigation }) {
       await EncryptedStorage.removeItem(Credintials_Secret);
       navigation.reset({
         index: 0,
-        routes: [{ name: 'WelcomePage' }],
+        routes: [{name: 'WelcomePage'}],
       });
     } catch (err) {
       Alert.alert('Error', err.message, [
-        { text: 'Exit', onPress: () => BackHandler.exitApp() },
+        {text: 'Exit', onPress: () => BackHandler.exitApp()},
       ]);
     }
   };
@@ -72,65 +72,103 @@ export default function UserProfileView({ navigation }) {
       // style={styles.container}
       contentContainerStyle={styles.contentContainer}
       refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={onRefresh}
-        />
-      }
-    >
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }>
       <View style={styles.header}>
         <View style={styles.headerContent}>
-          <TouchableOpacity style={{ margin: 5, alignSelf: 'flex-end', backgroundColor:'#fff', padding: 10, position: 'absolute', right:10, top:10, borderRadius: 10, borderWidth:1, borderColor:'#e2372a' }} onPress={onPressLogout}>
-              <Text style={{ fontSize: 15, color: '#e2372a', fontWeight:'bold' }}>Logout</Text>
+          <TouchableOpacity
+            style={{
+              margin: 5,
+              alignSelf: 'flex-end',
+              backgroundColor: '#fff',
+              padding: 10,
+              position: 'absolute',
+              right: 10,
+              top: 10,
+              borderRadius: 10,
+              borderWidth: 1,
+              borderColor: '#e2372a',
+            }}
+            onPress={onPressLogout}>
+            <Text style={{fontSize: 15, color: '#e2372a', fontWeight: 'bold'}}>
+              Logout
+            </Text>
           </TouchableOpacity>
           <View>
-            <Image style={[styles.avatar, ]} source={require('../../images/Recept_black.png')} />
+            <Image
+              style={[styles.avatar]}
+              // source={require('../../images/Recept_black.png')}
+              source={require('../../images/receptionist.png')}
+            />
           </View>
 
           <Text style={styles.name}>{myData.name}</Text>
           {/* <Text style={styles.userInfo}> Receptionist at : Icc Hospital</Text> */}
         </View>
       </View>
-      <View style={styles.body}>
-        <View style={styles.card}>
-          <Text style={styles.cardTittle}>Profile Information</Text>
-          {/* <Text style={styles.cardInfo}> - Karim Ahmed Saleh</Text> */}
-          {/* <Text style={styles.cardInfo}> - Graduated from: ..................</Text> */}
-          <Text style={styles.cardInfo}> - Phone:    {myData.phoneNumber}</Text>
-          <Text style={styles.cardInfo}> - Email:      {myData.email}</Text>
-          {/* <Text style={styles.cardInfo}> - From: Alexandria , Egypt</Text> */}
-          <Text style={styles.cardInfo}> - Work hours: { }</Text>
-          {myData._id ? myData.workingDays.map((card, cardIndex) => {
-            return (
-              <Animated.View
-                key={cardIndex.toString()}
-                style={{ margin: 5, flexDirection: 'row', borderRadius: 25, justifyContent: 'space-evenly', padding: 10, elevation: 3 }}
-              >
-                <Text style={{ color: '#000', fontSize: 20 }}>
-                  Day: {card.day}
-                </Text>
-                <Text style={{ color: '#000', fontSize: 20 }}>
-                  From: {card.from}
-                </Text>
-                <Text style={{ color: '#000', fontSize: 20 }}>
-                  To: {card.to}
-                </Text>
-              </Animated.View>
-            );
-          }) : null}
+      {/* <View style={styles.body}> */}
+      <View style={styles.card}>
+        <Text style={styles.title}>Personal Information</Text>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            margin: 2,
+            justifyContent: 'center',
+          }}>
+          <Ionicons name={'mail'} size={20} color={'#000'}></Ionicons>
+          <Text style={styles.mainText}> {myData.email}</Text>
         </View>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            margin: 2,
+            justifyContent: 'center',
+          }}>
+          <FontAwesome name={'phone'} size={20} color={'#000'}></FontAwesome>
+          <Text style={styles.mainText}>{myData.phoneNumber}</Text>
+        </View>
+        <Text style={styles.mainText}> - Work hours: {}</Text>
+        {myData._id
+          ? myData.workingDays.map((card, cardIndex) => {
+              return (
+                <Animated.View
+                  key={cardIndex.toString()}
+                  style={{
+                    margin: 5,
+                    flexDirection: 'row',
+                    borderRadius: 25,
+                    justifyContent: 'space-evenly',
+                    padding: 10,
+                    elevation: 3,
+                  }}>
+                  <Text style={{color: '#000', fontSize: 20}}>
+                    Day: {card.day}
+                  </Text>
+                  <Text style={{color: '#000', fontSize: 20}}>
+                    From: {card.from}
+                  </Text>
+                  <Text style={{color: '#000', fontSize: 20}}>
+                    To: {card.to}
+                  </Text>
+                </Animated.View>
+              );
+            })
+          : null}
       </View>
+      {/* </View> */}
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   contentContainer: {
-    paddingBottom: 70
+    paddingBottom: 70,
   },
   header: {
-    backgroundColor: "#003da5",
-    height: 250
+    backgroundColor: '#1c1bad',
+    height: 250,
   },
   headerContent: {
     padding: 30,
@@ -139,36 +177,48 @@ const styles = StyleSheet.create({
   avatar: {
     width: 130,
     height: 130,
-    borderRadius: 100,
-    // borderWidth: 4,
-    padding: 10,
-    borderColor: "white",
+    borderRadius: 63,
+    borderWidth: 4,
+    borderColor: 'white',
     marginBottom: 10,
+    backgroundColor: '#fff',
   },
   name: {
     fontSize: 25,
-    color: "#ffffff",
+    color: '#fff',
     fontWeight: '900',
   },
   userInfo: {
     fontSize: 18,
-    color: "#ffffff",
+    color: '#ffffff',
     fontWeight: '600',
   },
   body: {
     flex: 1,
-    backgroundColor: "#ffffff",
+    backgroundColor: '#ffffff',
     height: 500,
-
   },
   item: {
     flexDirection: 'row',
+  },
+  title: {
+    alignSelf: 'center',
+    fontSize: 20,
+    color: '#000',
+    fontWeight: 'bold',
+    marginTop: 20,
+  },
+  mainText: {
+    margin: 3,
+    color: '#000',
+    fontSize: 18,
+    marginLeft: 10,
   },
   infoContent: {
     flex: 1,
     alignItems: 'flex-start',
     paddingLeft: 5,
-    color: "#000000"
+    color: '#000000',
   },
   iconContent: {
     flex: 1,
@@ -183,25 +233,25 @@ const styles = StyleSheet.create({
   info: {
     fontSize: 18,
     marginTop: 20,
-    color: "#000000",
+    color: '#000000',
   },
 
   card: {
-    backgroundColor: "#f2f2f5",
+    // backgroundColor: "#f2f2f5",
     borderRadius: 10,
     padding: 10,
     height: 450,
     marginTop: 10,
   },
   cardTittle: {
-    color: "#000000",
+    color: '#000000',
     fontSize: 22,
     marginBottom: 5,
   },
   cardInfo: {
     fontSize: 18,
-    color: "#000000",
-    margin: 5
+    color: '#000000',
+    margin: 5,
   },
   button: {
     alignItems: 'center',
@@ -211,11 +261,10 @@ const styles = StyleSheet.create({
     marginTop: 150,
     borderRadius: 4,
     elevation: 3,
-    backgroundColor: "#003da5",
+    backgroundColor: '#1c1bad',
   },
   buttonText: {
     fontSize: 20,
-    color: "#ffffff"
-
-  }
+    color: '#ffffff',
+  },
 });

@@ -9,6 +9,7 @@ import {
   Modal,
   Pressable,
   ActivityIndicator,
+  FlatList,
   RefreshControl,
 } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -39,13 +40,17 @@ export default function Profile({navigation}) {
       ).token;
       console.log(token);
       await axios
-        .get(`${Server_URL}:3000/patient/getPatient/${token}`)
+        .get(`${Server_URL}:3000/patient/getPatient`, {
+          headers: {
+            'x-auth-token': token,
+          },
+        })
         .then(response => {
           setPersonalData(response.data);
           console.log(response.data.name);
         })
         .catch(function (error) {
-          console.log(error.message);
+          console.log(error.response.message);
         });
     } catch (err) {
       Alert.alert('Error', err.code, [
@@ -60,7 +65,11 @@ export default function Profile({navigation}) {
         await EncryptedStorage.getItem(Token_Secret),
       ).token;
       await axios
-        .get(`${Server_URL}:3000/patient/oldAppointment/${token}`)
+        .get(`${Server_URL}:3000/patient/oldAppointment`, {
+          headers: {
+            'x-auth-token': token,
+          },
+        })
         .then(response => {
           setOldAppointments(response.data);
           console.log(response.data);
@@ -82,7 +91,7 @@ export default function Profile({navigation}) {
       getOldAppointments();
       setLoadData(false);
     }
-  }, []);
+  }, [isFocused]);
 
   useEffect(() => {
     if (isFocused && refreshing) {
@@ -115,8 +124,10 @@ export default function Profile({navigation}) {
         await EncryptedStorage.getItem(Token_Secret),
       ).token;
       axios
-        .post(`${Server_URL}:3000/patient/logout`, {
-          token: token,
+        .post(`${Server_URL}:3000/patient/logout`, null, {
+          headers: {
+            'x-auth-token': token,
+          },
         })
         .then(async function (response) {
           try {
@@ -134,6 +145,7 @@ export default function Profile({navigation}) {
         })
         .catch(function (error) {
           const err = error.response.data;
+          console.log(err);
           //alert err.msg
         });
     } catch (err) {
@@ -150,6 +162,11 @@ export default function Profile({navigation}) {
       phoneNumber: personalData.phoneNumber,
       gender: personalData.gender,
       date: personalData.dateOfBirth,
+      bloodType: personalData.bloodType,
+      diabetic: personalData.diabetic,
+      bloodPressure: personalData.bloodPressure,
+      allergic: personalData.allergic,
+      allergies: personalData.allergies,
     });
     console.log(
       'patientbirthdate',
@@ -283,20 +300,8 @@ export default function Profile({navigation}) {
                       name={'book-medical'}
                       size={20}
                       color={'#000'}></FontAwesome5>
-                    <Text style={styles.mainText}>Blood Type: A+</Text>
-                  </View>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      margin: 2,
-                    }}>
-                    <FontAwesome5
-                      name={'book-medical'}
-                      size={20}
-                      color={'#000'}></FontAwesome5>
                     <Text style={styles.mainText}>
-                      Blood Pressure Problems: No
+                      Blood Type: {personalData.bloodType}
                     </Text>
                   </View>
                   <View
@@ -309,7 +314,46 @@ export default function Profile({navigation}) {
                       name={'book-medical'}
                       size={20}
                       color={'#000'}></FontAwesome5>
-                    <Text style={styles.mainText}>Diabetic: No</Text>
+                    <Text style={styles.mainText}>
+                      Diabetic: {personalData.diabetic}
+                    </Text>
+                  </View>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      margin: 2,
+                    }}>
+                    <FontAwesome5
+                      name={'book-medical'}
+                      size={20}
+                      color={'#000'}></FontAwesome5>
+                    <Text style={styles.mainText}>
+                      Blood Pressure: {personalData.bloodPressure}
+                    </Text>
+                  </View>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      margin: 2,
+                    }}>
+                    <FontAwesome5
+                      name={'book-medical'}
+                      size={20}
+                      color={'#000'}></FontAwesome5>
+                    {personalData.allergic == 'No' ||
+                    personalData.allergic == 'Unknown' ? (
+                      <Text style={styles.mainText}>
+                        Allergic: {personalData.allergic}
+                        {personalData.allergies}
+                      </Text>
+                    ) : (
+                      <Text style={styles.mainText}>
+                        Allergic: {personalData.allergic} - Allergies:
+                        {personalData.allergies}
+                      </Text>
+                    )}
                   </View>
                 </View>
               </Collapsible>
@@ -325,12 +369,12 @@ export default function Profile({navigation}) {
                 onPress={() =>
                   onPressReport(item.appointmentID, item.reviewed)
                 }>
-                <Text style={styles.infoText}>
-                  Hospital Name: {item.hospitalName}
-                </Text>
-                <Text style={styles.infoText}>Doctor Name: {item.drName} </Text>
+                <Text style={styles.infoText}>Doctor: {item.drName} </Text>
                 <Text style={styles.infoText}>
                   Specialization: {item.specialization}
+                </Text>
+                <Text style={styles.infoText}>
+                  Hospital: {item.hospitalName}
                 </Text>
                 <Text style={styles.infoText}>Date: {item.date} </Text>
               </TouchableOpacity>

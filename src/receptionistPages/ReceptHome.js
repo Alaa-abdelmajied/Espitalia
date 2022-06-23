@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   StyleSheet,
   Text,
@@ -10,14 +10,14 @@ import {
   RefreshControl,
   TextInput,
   FlatList,
-  TouchableOpacity
+  TouchableOpacity,
 } from 'react-native';
 
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { Server_URL, Token_Secret, Credintials_Secret } from '@env';
+import {Server_URL, Token_Secret, Credintials_Secret} from '@env';
 
-export default function ContactsView({ navigation, route }) {
+export default function ContactsView({navigation, route}) {
   // const data = ["Dermatology (Skin)", "Dentistry (Teeth)", "Psychiatry (Mental-Emotional or Behavioral Disorders)", "Pediatrics and NewBorn (Child)", "Neurology (Brain & Nerves)"];
   const [specializations, setSpecializations] = useState([]);
   // const [dataChanged, setDataChanged] = useState(true);
@@ -38,8 +38,8 @@ export default function ContactsView({ navigation, route }) {
     axios
       .get(`${Server_URL}:3000/receptionist/GetSpecializations`, {
         headers: {
-          'x-auth-token': token
-        }
+          'x-auth-token': token,
+        },
       })
       .then(function (response) {
         setSpecializations(response.data);
@@ -47,74 +47,82 @@ export default function ContactsView({ navigation, route }) {
       .catch(function (error) {
         console.log(error);
       });
-  }
+  };
 
   useEffect(() => {
     getSpecializations();
   }, []);
-  const specializationSearch = async (search) => {
-    const token = JSON.parse(await EncryptedStorage.getItem(Token_Secret)).token;
+  const specializationSearch = async search => {
+    const token = JSON.parse(
+      await EncryptedStorage.getItem(Token_Secret),
+    ).token;
     // console.log(token);
     axios
-        .get(`${Server_URL}:3000/receptionist/searchSpecializations/${search}`, {
-            headers: {
-                'x-auth-token': token
-            }
-        })
-        .then(response => {
-          setSpecializations(response.data);
-        })
-        .catch(function (error) {
-            const err = error.response.data;
-            if (err == 'No specializations found') {
-              setSpecializations([]);
-            }
-        });
-
-      }
-      const updateSearch = search => {
-        console.log(search);
-        if (search.length > 0) {
-            specializationSearch(search);
-        } else {
-            getSpecializations();
+      .get(`${Server_URL}:3000/receptionist/searchSpecializations/${search}`, {
+        headers: {
+          'x-auth-token': token,
+        },
+      })
+      .then(response => {
+        setSpecializations(response.data);
+      })
+      .catch(function (error) {
+        const err = error.response.data;
+        if (err == 'No specializations found') {
+          setSpecializations([]);
         }
-    };
+      });
+  };
+  const updateSearch = search => {
+    console.log(search);
+    if (search.length > 0) {
+      specializationSearch(search);
+    } else {
+      getSpecializations();
+    }
+  };
 
   return (
     <View style={styles.container}>
-      <View style={styles.formContent}>
-        <View style={styles.inputContainer}>
-          <TextInput style={styles.inputs}
+      {/* <View style={styles.formContent}> */}
+      {/* <View style={styles.inputContainer}> */}
+      {/* <TextInput
+            style={styles.inputs}
             useref={'txtPassword'}
             placeholder="Search"
-            underlineColorAndroid='transparent'
-            onChangeText={value => updateSearch(value)} />
-        </View>
-      </View>
+            underlineColorAndroid="transparent"
+            onChangeText={value => updateSearch(value)}
+          /> */}
+      <TextInput
+        placeholder="🔍Search"
+        style={styles.input}
+        onChangeText={value => updateSearch(value)}
+      />
+      {/* </View> */}
+      {/* </View> */}
 
       <FlatList
         style={styles.notificationList}
         data={specializations}
-        keyExtractor={(item) => {
+        keyExtractor={item => {
           return item.toString();
         }}
         refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-          />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
-        renderItem={({ item }) => {
+        renderItem={({item}) => {
           return (
-            <TouchableOpacity onPress={() => navigation.navigate('DoctorsListPage', { name: item })}>
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate('DoctorsListPage', {name: item})
+              }>
               <View style={styles.notificationBox}>
-
                 <Text style={styles.name}>{item}</Text>
               </View>
             </TouchableOpacity>
-          )
-        }} />
+          );
+        }}
+      />
     </View>
   );
 }
@@ -122,7 +130,7 @@ export default function ContactsView({ navigation, route }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#EBEBEB',
+    // backgroundColor: '#EBEBEB',
   },
   formContent: {
     flexDirection: 'row',
@@ -144,7 +152,7 @@ const styles = StyleSheet.create({
     height: 30,
   },
   iconBtnSearch: {
-    alignSelf: 'center'
+    alignSelf: 'center',
   },
   inputs: {
     height: 45,
@@ -152,9 +160,22 @@ const styles = StyleSheet.create({
     borderBottomColor: '#FFFFFF',
     flex: 1,
   },
+  input: {
+    height: 40,
+    padding: 8,
+    paddingLeft: 15,
+    paddingRight: 15,
+    margin: 5,
+    fontSize: 16,
+    borderRadius: 50,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    color: 'black',
+    elevation: 1,
+  },
   inputIcon: {
     marginLeft: 15,
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   notificationList: {
     height: '100%',
@@ -176,13 +197,13 @@ const styles = StyleSheet.create({
     width: 45,
     height: 45,
     borderRadius: 20,
-    marginLeft: 20
+    marginLeft: 20,
   },
   name: {
     fontSize: 20,
-    fontWeight: 'bold',
-    color: "#000000",
+    // fontWeight: 'bold',
+    color: '#000000',
     marginLeft: 10,
-    alignSelf: 'center'
+    alignSelf: 'center',
   },
-}); 
+});

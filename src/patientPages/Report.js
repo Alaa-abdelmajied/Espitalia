@@ -56,13 +56,20 @@ export default function Report({navigation, route}) {
       await EncryptedStorage.getItem(Token_Secret),
     ).token;
     await axios
-      .post(`${Server_URL}:3000/patient/rateAndReview`, {
-        review: review,
-        rate: rate,
-        doctorId: report.drId,
-        token: token,
-        appointmentID: appointmentID,
-      })
+      .post(
+        `${Server_URL}:3000/patient/rateAndReview`,
+        {
+          review: review,
+          rate: rate,
+          doctorId: report.drId,
+          appointmentID: appointmentID,
+        },
+        {
+          headers: {
+            'x-auth-token': token,
+          },
+        },
+      )
       .then(response => {
         showMessage({
           message: 'Review done',
@@ -108,26 +115,26 @@ export default function Report({navigation, route}) {
             color={'#1c1bad'}
             onPress={() => setShowModal(false)}
             style={{alignSelf: 'flex-start', margin: 5}}></FontAwesome>
-          <View
+          {/* <View
             style={{
               flexDirection: 'row',
               alignSelf: 'center',
-            }}>
-            <Rating
-              type="star"
-              tintColor="#f0f0f0"
-              ratingCount={5}
-              imageSize={25}
-              startingValue={1}
-              fractions={1}
-              showRating
-              onFinishRating={rate => setRate(rate)}
-              style={{
-                margin: 5,
-                backgroundColor: 'transparent',
-                fontSize: 15,
-              }}></Rating>
-          </View>
+            }}> */}
+          <Rating
+            type="star"
+            tintColor="#f0f0f0"
+            ratingCount={5}
+            imageSize={25}
+            startingValue={1}
+            fractions={1}
+            showRating
+            onFinishRating={rate => setRate(rate)}
+            style={{
+              margin: 5,
+              backgroundColor: 'transparent',
+              fontSize: 15,
+            }}></Rating>
+          {/* </View> */}
           <View style={styles.modalInput}>
             <TextInput
               placeholder="Write Review"
@@ -156,13 +163,11 @@ export default function Report({navigation, route}) {
         <View style={{flex: 1}}></View>
       </View>
       <View style={{alignItems: 'center'}}>
-        <Text style={styles.infoText}>
-          Hospital Name: {report.hospitalName}
-        </Text>
-        <Text style={styles.infoText}>Doctor Name: {report.drName} </Text>
+        <Text style={styles.infoText}>Doctor: {report.drName} </Text>
         <Text style={styles.infoText}>
           Specialization: {report.specialization}
         </Text>
+        <Text style={styles.infoText}>Hospital: {report.hospitalName}</Text>
         <Text style={styles.infoText}>Date: {report.date} </Text>
         <TouchableOpacity
           // visible={showReviewButton}
@@ -191,11 +196,11 @@ export default function Report({navigation, route}) {
 
 const styles = StyleSheet.create({
   modal: {
-    height: '60%',
+    height: 350,
     backgroundColor: '#f0f0f0',
     borderRadius: 15,
     width: '80%',
-    margin: 10,
+    marginTop: '30%',
     // margin: 300,
     alignSelf: 'center',
     justifyContent: 'center',
@@ -240,7 +245,7 @@ const styles = StyleSheet.create({
   },
 
   modalInput: {
-    height: '70%',
+    height: '50%',
     width: '95%',
     justifyContent: 'center',
     alignItems: 'center',

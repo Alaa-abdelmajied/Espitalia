@@ -14,6 +14,7 @@ import {
 
 import FlashMessage from 'react-native-flash-message';
 import {showMessage, hideMessage} from 'react-native-flash-message';
+import AwesomeAlert from 'react-native-awesome-alerts';
 
 import EncryptedStorage from 'react-native-encrypted-storage';
 import axios from 'axios';
@@ -30,7 +31,11 @@ export default function Reservation({}) {
       await EncryptedStorage.getItem(Token_Secret),
     ).token;
     await axios
-      .get(`${Server_URL}:3000/patient/upcomingAppointment/${token}`)
+      .get(`${Server_URL}:3000/patient/upcomingAppointment`, {
+        headers: {
+          'x-auth-token': token,
+        },
+      })
       .then(response => {
         setUpcomingAppointments(response.data);
         setLoadData(false);
@@ -87,12 +92,16 @@ export default function Reservation({}) {
     }
   };
 
+  const alert = () => {
+    setShowAlert(true);
+  };
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Image
           style={styles.Image}
           source={require('../../images/app_logo-removebg-preview.png')}></Image>
+        <Text style={styles.headerText}>espitalia</Text>
       </View>
       <FlatList
         extraData={upcomingAppointments}
@@ -110,9 +119,28 @@ export default function Reservation({}) {
               </Text>
               <Text style={styles.infoText}>Reservation No: {item.resNum}</Text>
             </View>
-            <View style={styles.view2}>
-              <View style={styles.numberView}>
+            <View style={styles.lineStyle} />
+
+            <View style={styles.cancelView}>
+              <View
+                style={[
+                  styles.flowNumberView,
+                  // {backgroundColor: item.entered ? '#299e29' : '#299e29'},
+                ]}>
                 <Text style={styles.infoText}>Flow Number</Text>
+                <View
+                  style={[
+                    styles.numberView,
+                    {backgroundColor: item.entered ? '#00ff00' : '#ff0000'},
+                  ]}>
+                  <Text
+                    style={{
+                      color: item.entered ? '#000' : '#fff',
+                      alignSelf: 'center',
+                    }}>
+                    {item.currentFlowNumber}
+                  </Text>
+                </View>
               </View>
               <TouchableOpacity
                 style={styles.button}
@@ -163,16 +191,23 @@ const styles = StyleSheet.create({
   },
 
   header: {
-    height: '8%',
-    backgroundColor: '#0d159e',
+    flexDirection: 'row',
+    height: 50,
+    backgroundColor: '#1c1bad',
     justifyContent: 'center',
+  },
+
+  headerText: {
+    fontSize: 20,
+    color: '#fff',
+    fontWeight: 'bold',
+    alignSelf: 'center',
   },
 
   Image: {
     width: 50,
     height: 50,
     alignSelf: 'center',
-    // marginTop:10,
   },
 
   appointmentsCard: {
@@ -180,6 +215,8 @@ const styles = StyleSheet.create({
     width: '95%',
     height: 230,
     borderRadius: 15,
+    borderWidth: 1,
+    borderColor: '#1c1bad',
     backgroundColor: '#fff',
     alignSelf: 'center',
     // marginLeft: 10,
@@ -196,7 +233,7 @@ const styles = StyleSheet.create({
   },
 
   infoView: {
-    flex: 1,
+    flex: 2,
     flexDirection: 'column',
     height: '90%',
     alignSelf: 'center',
@@ -205,17 +242,30 @@ const styles = StyleSheet.create({
     // marginTop:'2%',
     // marginBottom: '5%',
     justifyContent: 'center',
-    margin: '1%',
+    margin: 2,
     // borderRadius: 5,
   },
+
   infoText: {
     color: '#000',
     margin: 10,
     fontSize: 15,
   },
 
-  view2: {
+  lineStyle: {
+    width: 1,
+    height: '95%',
+    borderWidth: 0.5,
+    borderColor: '#1c1bad',
+    margin: '2%',
+    alignSelf: 'center',
+    backgroundColor: '#1c1bad',
+  },
+
+  cancelView: {
     flex: 1,
+    width: '99%',
+    margin: 10,
     flexDirection: 'column',
     justifyContent: 'space-evenly',
     height: '95%',
@@ -224,17 +274,19 @@ const styles = StyleSheet.create({
     // backgroundColor: '#0ff'
   },
 
-  numberView: {
-    borderColor: '#1c1bad',
-    borderWidth: 2,
-    width: 160,
-    height: 100,
-    // marginBottom: 75,
-    // margin: 30,
+  flowNumberView: {
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 5,
-    // backgroundColor: '#5c9ae0',
+  },
+
+  numberView: {
+    width: 40,
+    height: 40,
+    borderRadius: 60,
+    justifyContent: 'center',
+    margin: 5,
+    borderColor: '#1c1bad',
+    borderWidth: 3,
   },
 
   buttonText: {
@@ -248,7 +300,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 5,
-    width: 160,
+    width: '100%',
     color: '#fff',
   },
 

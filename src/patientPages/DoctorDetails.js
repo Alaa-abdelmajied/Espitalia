@@ -74,27 +74,43 @@ export default function ProfileScreen({navigation, route}) {
         await EncryptedStorage.getItem(Token_Secret),
       ).token;
       axios
-        .post(`${Server_URL}:3000/patient/book`, {
-          token: token,
-          drId: drID,
-          date: date,
-          from: from,
-          to: to,
-        })
-        .then(async function (response) {
+        .post(
+          `${Server_URL}:3000/patient/book`,
+          {
+            drId: drID,
+            appDate: date,
+            appFrom: from,
+            appTo: to,
+          },
+          {
+            headers: {
+              'x-auth-token': token,
+            },
+          },
+        )
+        .then(function (response) {
           console.log('done');
           showMessage({
             message: 'Appointment successfully booked',
             type: 'success',
           });
-          // Alert.alert('Appointment successfully booked');
         })
         .catch(function (error) {
           const err = error.response.data;
-          if (err == 'Error booking appointment') {
+          if (err.includes('same doctor')) {
             showMessage({
               message: err,
-              type: 'warning',
+              type: 'danger',
+            });
+          } else if (err.includes('same time')) {
+            showMessage({
+              message: err,
+              type: 'danger',
+            });
+          } else {
+            showMessage({
+              message: 'Something went wrong',
+              type: 'danger',
             });
           }
           console.log(err);
@@ -143,7 +159,12 @@ export default function ProfileScreen({navigation, route}) {
                   style={{margin: 5}}></FontAwesome>
                 <Text style={styles.description}>{hospitalName}</Text>
               </View>
-              <View style={{flexDirection: 'row'}}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  width: '98%',
+                  justifyContent: 'center',
+                }}>
                 <Ionicons
                   name={'location-sharp'}
                   size={25}

@@ -29,12 +29,13 @@ export default function Speciality({navigation, route}) {
     hospitalAddress,
     isAllSpecializations,
     specializationSeeMore,
+    fromHospital,
     targetSearch,
     // fromHomepage,
   } = route.params;
 
   const getSpecializations = () => {
-    if (!isAllSpecializations && !specializationSeeMore) {
+    if (fromHospital && !isAllSpecializations && !specializationSeeMore) {
       axios
         .get(`${Server_URL}:3000/patient/pressOnHospital/${hospitalID}`)
         .then(response => {
@@ -52,8 +53,8 @@ export default function Speciality({navigation, route}) {
           `${Server_URL}:3000/patient/searchAllSpecializations/${targetSearch}`,
         )
         .then(response => {
-          setSpecialization(response.data.specializations);
-          console.log(response.data.specializations);
+          setSpecialization(response.data);
+          console.log('search all spec==>', response.data);
         })
         .catch(function (error) {
           const err = error.response.data;
@@ -67,6 +68,7 @@ export default function Speciality({navigation, route}) {
         .then(response => {
           console.log(response.data);
           setSpecialization(response.data);
+          console.log(response.data);
           setLoadData(false);
         })
         .catch(function (error) {
@@ -76,46 +78,49 @@ export default function Speciality({navigation, route}) {
     }
   };
 
-  // const seeMoreSpecializationsResult = () => {
-  //   axios
-  //     .get(
-  //       `${Server_URL}:3000/patient/searchAllSpecializations/${targetSearch}`,
-  //     )
-  //     .then(response => {
-  //       setSpecialization(response.data.specializations);
-  //       console.log(response.data.specializations);
-  //     })
-  //     .catch(function (error) {
-  //       const err = error.response.data;
-  //       if (err == 'No specializations found') {
-  //         setSpecialization([]);
-  //       }
-  //     });
-  // };
-
   useEffect(() => {
     setLoadData(true);
     if (isFocused) {
-      // if (specializationSeeMore) {
-      //   console.log(search);
-      // } else {
       getSpecializations();
-      // }
     }
   }, []);
 
   const specSearch = search => {
-    axios
-      .get(`${Server_URL}:3000/patient/searchAllSpecializations/${search}`)
-      .then(response => {
-        setSpecialization(response.data.specializations);
-      })
-      .catch(function (error) {
-        const err = error.response.data;
-        if (err == 'No specializations found') {
-          setSpecialization([]);
-        }
-      });
+    if (fromHospital && !isAllSpecializations && !specializationSeeMore) {
+      // specSearch();
+      axios
+        .get(
+          `${Server_URL}:3000/patient/searchSpecializationInHospital/${hospitalID}/${search}`,
+        )
+        .then(response => {
+          setSpecialization(response.data);
+          console.log(
+            'search spec in hospital==>',
+            hospitalID,
+            search,
+            response.data,
+          );
+        })
+        .catch(function (error) {
+          const err = error.response.data;
+          if (err == 'No specializations found') {
+            setSpecialization([]);
+          }
+        });
+    } else if (isAllSpecializations) {
+      axios
+        .get(`${Server_URL}:3000/patient/searchAllSpecializations/${search}`)
+        .then(response => {
+          setSpecialization(response.data);
+          console.log('search all spec==>', response.data);
+        })
+        .catch(function (error) {
+          const err = error.response.data;
+          if (err == 'No specializations found') {
+            setSpecialization([]);
+          }
+        });
+    }
   };
 
   const updateSearch = search => {
@@ -134,16 +139,26 @@ export default function Speciality({navigation, route}) {
       hospitalName: hospitalName,
       hospitalAddress: hospitalAddress,
       isAllDoctors: false,
-      fromHomepage: false,
+      fromSpecialization: false,
+      doctorSeeMore: false,
+      fromHospitalThenSpec: true,
     });
-    console.log(item, hospitalID, hospitalName, hospitalAddress);
+    console.log(
+      'here',
+      item,
+      hospitalID,
+      hospitalName,
+      hospitalAddress,
+    );
   };
 
   const onPressSpec = item => {
     navigation.navigate('DoctorsScreen', {
       speciality: item,
       isAllDoctors: false,
-      fromHomepage: true,
+      fromSpecialization: true,
+      doctorSeeMore: false,
+      fromHospitalThenSpec: false,
     });
     console.log(item);
   };
@@ -161,7 +176,7 @@ export default function Speciality({navigation, route}) {
             lightTheme={true}
             placeholder="search for specialization"
             containerStyle={{flex: 12, backgroundColor: '#f0f0f0'}}
-            onChangeText={value => updateSearch(value)}
+            onChangeText={updateSearch}
             value={search}
             inputContainerStyle={{borderRadius: 50, backgroundColor: '#fff'}}
           />
@@ -174,9 +189,8 @@ export default function Speciality({navigation, route}) {
           return (
             <TouchableOpacity
               style={styles.specializationCard}
-              // onPress={() => onPress(!isAllSpecializations ? item : item.name)}
               onPress={
-                !isAllSpecializations && !specializationSeeMore
+                fromHospital && !isAllSpecializations  && !specializationSeeMore
                   ? () => onPressSpecInHosp(item)
                   : () => onPressSpec(item.name)
               }>
@@ -187,13 +201,14 @@ export default function Speciality({navigation, route}) {
                   color="#1c1bad"
                   style={{margin: 10}}></FontAwesome>
               </View>
-              {!isAllSpecializations && !specializationSeeMore ? (
+
+              {isAllSpecializations || specializationSeeMore ? (
                 <View style={{flex: 2, justifyContent: 'center'}}>
-                  <Text style={styles.speciality}>{item}</Text>
+                  <Text style={styles.speciality}>{item.name}</Text>
                 </View>
               ) : (
                 <View style={{flex: 2, justifyContent: 'center'}}>
-                  <Text style={styles.speciality}>{item.name}</Text>
+                  <Text style={styles.speciality}>{item}</Text>
                 </View>
               )}
             </TouchableOpacity>
@@ -256,11 +271,6 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
 
-  specializationContainer: {
-    flexDirection: 'row',
-    width: '98%',
-    justifyContent: 'center',
-  },
   image: {
     width: 45,
     height: 45,
@@ -269,7 +279,7 @@ const styles = StyleSheet.create({
   },
 
   speciality: {
-    fontSize: 20,
+    fontSize: 15,
     color: '#000',
   },
 });

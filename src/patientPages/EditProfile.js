@@ -20,7 +20,18 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import {Server_URL, Token_Secret} from '@env';
 
 export default function EditProfile({navigation, route}) {
-  const {name, phoneNumber, birthdate, gender, date} = route.params;
+  const {
+    name,
+    phoneNumber,
+    birthdate,
+    gender,
+    date,
+    bloodType,
+    diabetic,
+    bloodPressure,
+    allergic,
+    allergies,
+  } = route.params;
 
   const [newName, setNewName] = useState(name);
   const [newPhoneNumber, setNewPhoneNumber] = useState(phoneNumber);
@@ -28,11 +39,11 @@ export default function EditProfile({navigation, route}) {
   const [show, setShow] = useState(false);
   const [newDate, setNewData] = useState(new Date(date));
   const [updateColor, setUpdateColor] = useState(false);
-  const [diabetic, setDiabetic] = useState('no');
-  const [bloodPressure, setBloodPressure] = useState('no');
-  const [allergic, setAllergic] = useState('no');
-  const [allergy, setAllergy] = useState(false);
-  const [bloodType, setBloodType] = useState('a+');
+  const [newBloodType, setNewBloodType] = useState(bloodType);
+  const [newDiabetic, setNewDiabetic] = useState(diabetic);
+  const [newBloodPressure, setNewBloodPressure] = useState(bloodPressure);
+  const [newAllergic, setNewAllergic] = useState(allergic);
+  const [newAllergies, setNewAllergies] = useState(allergies);
 
   const OpenDateWindow = () => {
     setShow(true);
@@ -54,7 +65,10 @@ export default function EditProfile({navigation, route}) {
   };
 
   const editProfile = async () => {
-    console.log(date);
+    if (newAllergic == 'No' || newAllergic == 'Unknown') {
+      setNewAllergies('');
+    }
+    console.log('new', newAllergic, newAllergies);
     console.log(newName, newPhoneNumber, newDate);
     console.log(birthdate, name, phoneNumber);
     console.log('pressed');
@@ -64,14 +78,27 @@ export default function EditProfile({navigation, route}) {
       ).token;
       console.log(token);
       axios
-        .put(`${Server_URL}:3000/patient/editProfile`, {
-          token: token,
-          newName: newName,
-          newPhoneNumber: newPhoneNumber,
-          newDate: newDate,
-        })
+        .put(
+          `${Server_URL}:3000/patient/editProfile`,
+          {
+            newName: newName,
+            newPhoneNumber: newPhoneNumber,
+            newDate: newDate,
+            newBloodType: newBloodType,
+            newDiabetic: newDiabetic,
+            newBloodPressure: newBloodPressure,
+            newAllergic: newAllergic,
+            newAllergies: newAllergies,
+          },
+          {
+            headers: {
+              'x-auth-token': token,
+            },
+          },
+        )
         .then(async function (response) {
           console.log('done');
+          // navigation.navigate('PatientProfile');
           showMessage({
             message: 'Info updated successfully',
             type: 'success',
@@ -104,8 +131,8 @@ export default function EditProfile({navigation, route}) {
 
           <Text style={styles.headerText}>espitalia</Text>
         </View>
-        <View style={{flex: 1.5}}></View>
       </View>
+      <View style={{flex: 1.5}}></View>
       <View style={styles.body}>
         <Text style={styles.title}>Edit your info</Text>
         <View style={styles.bodyContent}>
@@ -122,7 +149,8 @@ export default function EditProfile({navigation, route}) {
           </View>
           <TextInput
             style={styles.input}
-            placeholder={name}
+            value={newName}
+            // placeholder={name}
             onChangeText={text => setNewName(text)}></TextInput>
         </View>
 
@@ -137,7 +165,9 @@ export default function EditProfile({navigation, route}) {
           </View>
           <TextInput
             style={styles.input}
-            placeholder={phoneNumber}
+            value={newPhoneNumber}
+            // placeholder={phoneNumber}
+            keyboardType={'number-pad'}
             onChangeText={text => setNewPhoneNumber(text)}></TextInput>
         </View>
         <View style={styles.bodyContent}>
@@ -156,9 +186,10 @@ export default function EditProfile({navigation, route}) {
             <Pressable onPress={OpenDateWindow} style={styles.dateInput}>
               <Text
                 style={
-                  !updateColor
-                    ? {textAlign: 'center', color: '#a1a1a1'}
-                    : {textAlign: 'center', color: '#000'}
+                  {textAlign: 'center', color: '#000'}
+                  // !updateColor
+                  //   ? {textAlign: 'center', color: '#a1a1a1'}
+                  //   : {textAlign: 'center', color: '#000'}
                 }>
                 {text}
               </Text>
@@ -181,17 +212,19 @@ export default function EditProfile({navigation, route}) {
           <Text style={styles.PickerText}>What is your blood type?</Text>
           <View style={styles.pickerContainer}>
             <Picker
-              selectedValue={bloodType}
-              onValueChange={(itemValue, itemIndex) => setBloodType(itemValue)}>
-              <Picker.Item label="A+" value="a+" />
-              <Picker.Item label="A-" value="a-" />
-              <Picker.Item label="B+" value="b+" />
-              <Picker.Item label="B-" value="b-" />
-              <Picker.Item label="O+" value="o+" />
-              <Picker.Item label="O-" value="o-" />
-              <Picker.Item label="AB+" value="ab+" />
-              <Picker.Item label="AB-" value="ab-" />
-              <Picker.Item label="I don't know" value="idk" />
+              selectedValue={newBloodType}
+              onValueChange={(itemValue, itemIndex) =>
+                setNewBloodType(itemValue)
+              }>
+              <Picker.Item label="A+" value="A+" />
+              <Picker.Item label="A-" value="A-" />
+              <Picker.Item label="B+" value="B+" />
+              <Picker.Item label="B-" value="B-" />
+              <Picker.Item label="O+" value="O+" />
+              <Picker.Item label="O-" value="O-" />
+              <Picker.Item label="AB+" value="AB+" />
+              <Picker.Item label="AB-" value="AB-" />
+              <Picker.Item label="I don't know" value="Unknown" />
             </Picker>
           </View>
         </View>
@@ -199,11 +232,13 @@ export default function EditProfile({navigation, route}) {
           <Text style={styles.PickerText}>Are you diabetic?</Text>
           <View style={styles.pickerContainer}>
             <Picker
-              selectedValue={diabetic}
-              onValueChange={(itemValue, itemIndex) => setDiabetic(itemValue)}>
-              <Picker.Item label="Yes" value="yes" />
-              <Picker.Item label="No" value="no" />
-              <Picker.Item label="I don't know" value="idk" />
+              selectedValue={newDiabetic}
+              onValueChange={(itemValue, itemIndex) =>
+                setNewDiabetic(itemValue)
+              }>
+              <Picker.Item label="Yes" value="Yes" />
+              <Picker.Item label="No" value="No" />
+              <Picker.Item label="I don't know" value="Unknown" />
             </Picker>
           </View>
         </View>
@@ -213,13 +248,14 @@ export default function EditProfile({navigation, route}) {
           </Text>
           <View style={styles.pickerContainer}>
             <Picker
-              selectedValue={bloodPressure}
+              selectedValue={newBloodPressure}
               onValueChange={(itemValue, itemIndex) =>
-                setBloodPressure(itemValue)
+                setNewBloodPressure(itemValue)
               }>
-              <Picker.Item label="Yes" value="yes" />
-              <Picker.Item label="No" value="no" />
-              <Picker.Item label="I don't know" value="idk" />
+              <Picker.Item label="Normal" value="Normal" />
+              <Picker.Item label="High" value="High" />
+              <Picker.Item label="Low" value="Low" />
+              <Picker.Item label="I don't know" value="Unknown" />
             </Picker>
           </View>
         </View>
@@ -227,20 +263,24 @@ export default function EditProfile({navigation, route}) {
           <Text style={styles.PickerText}>Are you allergic to anything?</Text>
           <View style={styles.pickerContainer}>
             <Picker
-              selectedValue={allergic}
-              onValueChange={(itemValue, itemIndex) => setAllergic(itemValue)}>
-              <Picker.Item label="Yes" value="yes" />
-              <Picker.Item label="No" value="no" />
-              <Picker.Item label="I don't know" value="idk" />
+              selectedValue={newAllergic}
+              onValueChange={(itemValue, itemIndex) =>
+                setNewAllergic(itemValue)
+              }>
+              <Picker.Item label="Yes" value="Yes" />
+              <Picker.Item label="No" value="No" />
+              <Picker.Item label="I don't know" value="Unknown" />
             </Picker>
           </View>
-          {allergic == 'yes' ? (
+          {newAllergic == 'Yes' ? (
             <View>
+              <Text></Text>
               <TextInput
                 style={styles.Input}
-                placeholder="What are you allergic to?"
-                placeholderTextColor={'#a1a1a1'}
-                onChangeText={text => setAllergy(text)}></TextInput>
+                value={newAllergies}
+                // placeholder={allergies}
+                // placeholderTextColor={'#a1a1a1'}
+                onChangeText={text => setNewAllergies(text)}></TextInput>
             </View>
           ) : null}
         </View>
@@ -274,17 +314,19 @@ export default function EditProfile({navigation, route}) {
           <Text style={styles.buttonText}>Save Changes</Text>
         </Pressable>
       </View>
-      <FlashMessage position="top" icon="auto" />
+      <FlashMessage position="bottom" icon="auto" />
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   header: {
+    // flex: 1,
     flexDirection: 'row',
     height: 50,
     backgroundColor: '#1c1bad',
     justifyContent: 'center',
+    // position: 'absolute',
   },
 
   headerText: {

@@ -67,7 +67,9 @@ export default function PatientHome({navigation}) {
       hospitalID: id,
       hospitalName: name,
       hospitalAddress: address,
+      fromHospital: true,
       isAllSpecializations: false,
+      specializationSeeMore: false,
     });
     console.log(id, name, address);
   };
@@ -102,8 +104,10 @@ export default function PatientHome({navigation}) {
   const onPressSpecialization = speciality => {
     navigation.navigate('DoctorsScreen', {
       speciality: speciality,
-      fromHomepage: true,
+      fromSpecialization: true,
       isAllDoctors: false,
+      doctorSeeMore: false,
+      fromHospitalThenSpec: false,
     });
     console.log(speciality);
   };
@@ -112,11 +116,18 @@ export default function PatientHome({navigation}) {
     navigation.navigate('HospitalList', {hospitalSeeMore: false});
   };
   const seeAllDoctors = () => {
-    navigation.navigate('DoctorsScreen', {isAllDoctors: true});
+    navigation.navigate('DoctorsScreen', {
+      fromSpecialization: false,
+      isAllDoctors: true,
+      doctorSeeMore: false,
+      fromHospitalThenSpec: false,
+    });
   };
   const seeAllSpecializations = () => {
     navigation.navigate('SpecializationScreen', {
+      fromHospital: false,
       isAllSpecializations: true,
+      specializationSeeMore: false,
     });
   };
 
@@ -126,15 +137,18 @@ export default function PatientHome({navigation}) {
     </View>
   ) : (
     <ScrollView
+      stickyHeaderIndices={[0]}
       vertical={true}
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefreshing} />
       }>
       <View style={styles.header}>
-        <Image
-          style={styles.Image}
-          source={require('../../images/app_logo-removebg-preview.png')}></Image>
-        <Text style={styles.headerText}>espitalia</Text>
+        <View style={{flexDirection:'row',justifyContent:'center'}}>
+          <Image
+            style={styles.Image}
+            source={require('../../images/app_logo-removebg-preview.png')}></Image>
+          <Text style={styles.headerText}>espitalia</Text>
+        </View>
       </View>
       <View style={styles.headline}>
         <Text style={styles.titleText}>Hospitals</Text>

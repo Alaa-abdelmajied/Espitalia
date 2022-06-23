@@ -147,6 +147,10 @@ export default function HomeScreen({ navigation }) {
         const err = error.response.data;
         if (err == 'Incorrect email or password') {
           setShowButton(true);
+        } else if (err.includes('banned')) {
+          console.log(err);
+          Alert.alert('Banned Account',err);
+          setShowButton(true);
         }
       });
   };

@@ -15,55 +15,26 @@ export default function Doctors({navigation, route}) {
     hospitalAddress,
     isAllDoctors,
     speciality,
-    fromHomepage,
-    fromSearch,
+    fromSpecialization,
     doctorSeeMore,
+    fromHospitalThenSpec,
     targetSearch,
   } = route.params;
 
   const [doctors, setDoctors] = useState([]);
   const [loadData, setLoadData] = useState(true);
-  // const [allDoctors, setAllDoctors] = useState([]);
+  const [search, setSearch] = useState('');
   const isFocused = useIsFocused();
 
-  const seeDoctors = async () => {
-    if (fromHomepage || fromSearch) {
-      await axios
-        .get(`${Server_URL}:3000/patient/searchSpecialization/${speciality}`)
-        .then(response => {
-          setDoctors(response.data);
-          console.log(response.data);
-          setLoadData(false);
-        })
-        .catch(function (error) {
-          console.log(error.message);
-          setLoadData(false);
-        });
-    } else if (isAllDoctors) {
-      await axios
-        .get(`${Server_URL}:3000/patient/allDoctors`)
-        .then(response => {
-          setDoctors(response.data);
-          setLoadData(false);
-        })
-        .catch(function (error) {
-          console.log(error.message);
-          setLoadData(false);
-        });
-    } else if (doctorSeeMore) {
-      await axios
-        .get(`${Server_URL}:3000/patient/searchDoctors/${targetSearch}`)
-        .then(response => {
-          setDoctors(response.data);
-        })
-        .catch(function (error) {
-          const err = error.response.data;
-          if (err == 'No doctors with that name found') {
-            setDoctors([]);
-          }
-        });
-    } else {
+  const getDoctors = async () => {
+    if (
+      fromHospitalThenSpec &&
+      !fromSpecialization &&
+      !isAllDoctors &&
+      !doctorSeeMore
+    ) {
       console.log(Server_URL);
+      console.log('id===>', hospitalID, 'spec====>', specialization);
       await axios
         .get(
           `${Server_URL}:3000/patient/pressOnHospitalThenSpecialization/${hospitalID}/${specialization}`,
@@ -76,36 +47,115 @@ export default function Doctors({navigation, route}) {
           console.log(error.message);
           setLoadData(false);
         });
+    } else if (
+      fromSpecialization &&
+      !isAllDoctors &&
+      !doctorSeeMore &&
+      !fromHospitalThenSpec
+    ) {
+      await axios
+        .get(`${Server_URL}:3000/patient/doctorInSpecialization/${speciality}`)
+        .then(response => {
+          setDoctors(response.data);
+          console.log(response.data);
+          setLoadData(false);
+        })
+        .catch(function (error) {
+          console.log(error.message);
+          setLoadData(false);
+        });
+    } else if (
+      isAllDoctors &&
+      !fromHospitalThenSpec &&
+      !doctorSeeMore &&
+      !fromSpecialization
+    ) {
+      await axios
+        .get(`${Server_URL}:3000/patient/allDoctors`)
+        .then(response => {
+          setDoctors(response.data);
+          setLoadData(false);
+        })
+        .catch(function (error) {
+          console.log(error.message);
+          setLoadData(false);
+        });
+    } else if (
+      doctorSeeMore &&
+      !isAllDoctors &&
+      !fromHospitalThenSpec &&
+      !fromSpecialization
+    ) {
+      await axios
+        .get(`${Server_URL}:3000/patient/searchDoctors/${targetSearch}`)
+        .then(response => {
+          setDoctors(response.data);
+        })
+        .catch(function (error) {
+          const err = error.response.data;
+          if (err == 'No doctors with that name found') {
+            setDoctors([]);
+          }
+        });
     }
   };
 
   useEffect(() => {
     setLoadData(true);
     if (isFocused) {
-      seeDoctors();
+      getDoctors();
     }
   }, []);
 
-  const [search, setSearch] = useState('');
   const searchDoctor = search => {
-    axios
-      .get(`${Server_URL}:3000/patient/searchDoctors/${search}`)
-      .then(response => {
-        setDoctors(response.data);
-      })
-      .catch(function (error) {
-        const err = error.response.data;
-        if (err == 'No doctors with that name found') {
-          setDoctors([]);
-        }
-      });
+    if (isAllDoctors && !fromSpecialization && !fromHospitalThenSpec) {
+      axios
+        .get(`${Server_URL}:3000/patient/searchDoctors/${search}`)
+        .then(response => {
+          setDoctors(response.data);
+        })
+        .catch(function (error) {
+          const err = error.response.data;
+          if (err == 'No doctors with that name found') {
+            setDoctors([]);
+          }
+        });
+    } else if (!isAllDoctors && fromSpecialization && !fromHospitalThenSpec) {
+      axios
+        .get(
+          `${Server_URL}:3000/patient/searchDoctorInSpecialization/${speciality}/${search}`,
+        )
+        .then(response => {
+          setDoctors(response.data);
+        })
+        .catch(function (error) {
+          const err = error.response.data;
+          if (err == 'No doctors with that name found') {
+            setDoctors([]);
+          }
+        });
+    } else if (!isAllDoctors && !fromSpecialization && fromHospitalThenSpec) {
+      axios
+        .get(
+          `${Server_URL}:3000/patient/searchDoctorInSpecInHosp/${hospitalID}/${specialization}/${search}`,
+        )
+        .then(response => {
+          setDoctors(response.data);
+        })
+        .catch(function (error) {
+          const err = error.response.data;
+          if (err == 'No doctors with that name found') {
+            setDoctors([]);
+          }
+        });
+    }
   };
   const updateSearch = search => {
     setSearch(search);
     if (search.length > 0) {
       searchDoctor(search);
     } else {
-      setDoctors();
+      getDoctors();
     }
   };
 
@@ -128,6 +178,7 @@ export default function Doctors({navigation, route}) {
           />
         ) : null}
       </View>
+
       <FlatList
         data={doctors}
         keyExtractor={item => {
@@ -139,18 +190,12 @@ export default function Doctors({navigation, route}) {
               card={item}
               navigation={navigation}
               hospitalName={
-                fromHomepage || fromSearch
-                  ? item.hospitalName
-                  : isAllDoctors || doctorSeeMore
-                  ? item.doctorHospitalName
-                  : hospitalName
+                fromHospitalThenSpec ? hospitalName : item.doctorHospitalName
               }
               hospitalAddress={
-                fromHomepage || fromSearch
-                  ? item.hospitalAddress
-                  : isAllDoctors || doctorSeeMore
-                  ? item.doctorHospitalAddress
-                  : hospitalAddress
+                fromHospitalThenSpec
+                  ? hospitalAddress
+                  : item.doctorHospitalAddress
               }
             />
           );
