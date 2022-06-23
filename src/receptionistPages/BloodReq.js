@@ -220,7 +220,7 @@ export default function EventsView() {
                     }
                     }
                   >
-                    <Icon style={styles.newDay} name='save' />
+                    <Icon style={styles.newDay} name='check' />
                   </Pressable>
                   <Pressable
                     style={[styles.button, styles.buttonClose, { backgroundColor: "#f00" }]}
