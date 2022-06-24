@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import Svg, {Path} from 'react-native-svg';
+import React, { useEffect, useState } from 'react';
+import Svg, { Path } from 'react-native-svg';
 
 import {
   StyleSheet,
@@ -13,9 +13,10 @@ import {
 } from 'react-native';
 //import RadioButtonRN from 'radio-buttons-react-native';
 //import RadioGroup from 'react-native-radio-buttons-group';
-import {CommonActions, StackActions} from '@react-navigation/native';
-import {NavigationActions} from 'react-navigation';
+import { CommonActions, StackActions } from '@react-navigation/native';
+import { NavigationActions } from 'react-navigation';
 // require("dotenv").config();
+import messaging from '@react-native-firebase/messaging';
 
 import RadioGroup from 'react-native-radio-button-group';
 /*
@@ -36,13 +37,13 @@ and in circle.js replace by:
 */
 
 import FlashMessage from 'react-native-flash-message';
-import {showMessage, hideMessage} from 'react-native-flash-message';
+import { showMessage, hideMessage } from 'react-native-flash-message';
 
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {Server_URL, Token_Secret, Credintials_Secret} from '@env';
+import { Server_URL, Token_Secret, Credintials_Secret } from '@env';
 
-export default function Login({navigation, route}) {
+export default function Login({ navigation, route }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMeesage, setIsVisible] = useState(false);
@@ -64,6 +65,26 @@ export default function Login({navigation, route}) {
       //labelView: 'receptionist'
     },
   ];
+  const [fcmToken, setFcmToken] = useState("");
+  useEffect(() => {
+    createFcmtoken();
+  },[]);
+
+  const createFcmtoken = async () => {
+    const authStatus = await messaging().requestPermission();
+    const enabled =
+      authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+      authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+    if (enabled) {
+      await messaging()
+        .getToken()
+        .then((fcmTokenGenerated) => {
+          console.log('FCM Token -> ', fcmTokenGenerated);
+          setFcmToken(fcmTokenGenerated);
+        });
+    } else console.log('Not Authorization status:', authStatus);
+  }
 
   const SignIn = () => {
     //staff -> username -> search for keyword dr or recep or admin
@@ -73,13 +94,14 @@ export default function Login({navigation, route}) {
         .post(`${Server_URL}:3000/patient/login`, {
           email: email,
           password: password,
+          fcmToken: fcmToken,
         })
         .then(async function (response) {
-          const {verified, token} = response.data;
+          const { verified, token } = response.data;
           try {
             await EncryptedStorage.setItem(
               Token_Secret,
-              JSON.stringify({token: token}),
+              JSON.stringify({ token: token }),
             );
             await EncryptedStorage.setItem(
               Credintials_Secret,
@@ -91,16 +113,16 @@ export default function Login({navigation, route}) {
             );
           } catch (err) {
             Alert.alert('Error', err.code, [
-              {text: 'Exit', onPress: () => BackHandler.exitApp()},
+              { text: 'Exit', onPress: () => BackHandler.exitApp() },
             ]);
           }
           if (verified) {
             navigation.reset({
               index: 0,
-              routes: [{name: 'Patient'}],
+              routes: [{ name: 'Patient' }],
             });
           } else {
-            navigation.navigate('OTP', {isForgotten: false});
+            navigation.navigate('OTP', { isForgotten: false });
           }
         })
         .catch(function (error) {
@@ -147,7 +169,7 @@ export default function Login({navigation, route}) {
           try {
             await EncryptedStorage.setItem(
               Token_Secret,
-              JSON.stringify({token: token}),
+              JSON.stringify({ token: token }),
             );
             await EncryptedStorage.setItem(
               Credintials_Secret,
@@ -159,7 +181,7 @@ export default function Login({navigation, route}) {
             );
           } catch (err) {
             Alert.alert('Error', err.code, [
-              {text: 'Exit', onPress: () => BackHandler.exitApp()},
+              { text: 'Exit', onPress: () => BackHandler.exitApp() },
             ]);
           }
           if (selectedStaff.id == 'hospital') {
@@ -229,28 +251,28 @@ export default function Login({navigation, route}) {
 
             <Pressable
               onPress={() =>
-                navigation.navigate('ChangePassword', {changePassword: false})
+                navigation.navigate('ChangePassword', { changePassword: false })
               }>
               <Text style={styles.QuestionText}>Forgot password?</Text>
             </Pressable>
 
             {errorMeesage && (
-              <Text style={{color: '#f00'}}>Something is Wrong</Text>
+              <Text style={{ color: '#f00' }}>Something is Wrong</Text>
             )}
 
             <TouchableOpacity
               style={styles.RegisterButton}
               onPress={SignIn}>
-              <Text style={[styles.buttonText, {color: '#fff'}]}>Sign In</Text>
+              <Text style={[styles.buttonText, { color: '#fff' }]}>Sign In</Text>
             </TouchableOpacity>
             {!route.params.staff ? (
-              <View style={{flexDirection: 'row', margin: '5%'}}>
+              <View style={{ flexDirection: 'row', margin: '5%' }}>
                 <Text style={styles.QuestionText}>
                   Don't have an account yet?
                 </Text>
                 <Pressable onPress={() => navigation.navigate('SignUp')}>
                   <Text
-                    style={{color: '#1c1bad', textDecorationLine: 'underline'}}>
+                    style={{ color: '#1c1bad', textDecorationLine: 'underline' }}>
                     Sign Up
                   </Text>
                 </Pressable>
@@ -319,7 +341,7 @@ const styles = StyleSheet.create({
     margin: '3%',
     backgroundColor: '#fff',
     shadowColor: '#000000',
-    shadowOffset: {width: -1, height: 1},
+    shadowOffset: { width: -1, height: 1 },
     shadowOpacity: 0.2,
     shadowRadius: 1,
     elevation: 2,
