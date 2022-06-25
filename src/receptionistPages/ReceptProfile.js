@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useCallback} from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   StyleSheet,
   Text,
@@ -19,9 +19,9 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {Server_URL, Token_Secret, Credintials_Secret} from '@env';
+import { Server_URL, Token_Secret, Credintials_Secret } from '@env';
 
-export default function UserProfileView({navigation}) {
+export default function UserProfileView({ navigation }) {
   const [refreshing, setRefreshing] = useState(false);
   const [myData, setMyData] = useState({});
   const onRefresh = useCallback(() => {
@@ -58,11 +58,11 @@ export default function UserProfileView({navigation}) {
       await EncryptedStorage.removeItem(Credintials_Secret);
       navigation.reset({
         index: 0,
-        routes: [{name: 'WelcomePage'}],
+        routes: [{ name: 'WelcomePage' }],
       });
     } catch (err) {
       Alert.alert('Error', err.message, [
-        {text: 'Exit', onPress: () => BackHandler.exitApp()},
+        { text: 'Exit', onPress: () => BackHandler.exitApp() },
       ]);
     }
   };
@@ -90,7 +90,7 @@ export default function UserProfileView({navigation}) {
               borderColor: '#e2372a',
             }}
             onPress={onPressLogout}>
-            <Text style={{fontSize: 15, color: '#e2372a', fontWeight: 'bold'}}>
+            <Text style={{ fontSize: 15, color: '#e2372a', fontWeight: 'bold' }}>
               Logout
             </Text>
           </TouchableOpacity>
@@ -129,32 +129,56 @@ export default function UserProfileView({navigation}) {
           <FontAwesome name={'phone'} size={20} color={'#000'}></FontAwesome>
           <Text style={styles.mainText}>{myData.phoneNumber}</Text>
         </View>
-        <Text style={styles.mainText}> - Work hours: {}</Text>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            margin: 2,
+            justifyContent: 'center',
+          }}>
+          <Ionicons name={'key'} size={20} color={'#000'}></Ionicons>
+          <Pressable
+            onPress={() => {
+              navigation.navigate('ChangePassword', {
+                profileChangePassword: true,
+                type: 'receptionist'
+              });
+            }}>
+            <Text
+              style={
+                [styles.mainText,
+                { textDecorationLine: 'underline' }]
+              }>
+              Change Password
+            </Text>
+          </Pressable>
+        </View>
+        <Text style={styles.mainText}> - Work hours: { }</Text>
         {myData._id
           ? myData.workingDays.map((card, cardIndex) => {
-              return (
-                <Animated.View
-                  key={cardIndex.toString()}
-                  style={{
-                    margin: 5,
-                    flexDirection: 'row',
-                    borderRadius: 25,
-                    justifyContent: 'space-evenly',
-                    padding: 10,
-                    elevation: 3,
-                  }}>
-                  <Text style={{color: '#000', fontSize: 20}}>
-                    Day: {card.day}
-                  </Text>
-                  <Text style={{color: '#000', fontSize: 20}}>
-                    From: {card.from}
-                  </Text>
-                  <Text style={{color: '#000', fontSize: 20}}>
-                    To: {card.to}
-                  </Text>
-                </Animated.View>
-              );
-            })
+            return (
+              <Animated.View
+                key={cardIndex.toString()}
+                style={{
+                  margin: 5,
+                  flexDirection: 'row',
+                  borderRadius: 25,
+                  justifyContent: 'space-evenly',
+                  padding: 10,
+                  elevation: 3,
+                }}>
+                <Text style={{ color: '#000', fontSize: 20 }}>
+                  Day: {card.day}
+                </Text>
+                <Text style={{ color: '#000', fontSize: 20 }}>
+                  From: {card.from}
+                </Text>
+                <Text style={{ color: '#000', fontSize: 20 }}>
+                  To: {card.to}
+                </Text>
+              </Animated.View>
+            );
+          })
           : null}
       </View>
       {/* </View> */}

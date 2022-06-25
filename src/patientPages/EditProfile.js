@@ -295,6 +295,7 @@ export default function EditProfile({navigation, route}) {
             onPress={() => {
               navigation.navigate('ChangePassword', {
                 profileChangePassword: true,
+                type: 'patient'
               });
               // , setShowModal(false);
             }}>

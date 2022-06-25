@@ -100,6 +100,7 @@ export default function MyProfileHospitalPage({ route, navigation }) {
                 <Pressable style={styles.button} onPress={() => {
                     navigation.navigate('ChangePassword', {
                         profileChangePassword: true,
+                        type:'hospital'
                     });
                 }}>
                     <Text style={styles.buttonText}>Change password</Text>
