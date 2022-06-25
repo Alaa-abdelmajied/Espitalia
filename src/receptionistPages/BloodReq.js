@@ -1,4 +1,4 @@
-import React, {useState, useCallback} from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   StyleSheet,
   Text,
@@ -27,8 +27,8 @@ import SelectDropdown from 'react-native-select-dropdown';
 
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {Server_URL, Token_Secret, Credintials_Secret} from '@env';
-import {useEffect} from 'react';
+import { Server_URL, Token_Secret, Credintials_Secret } from '@env';
+import { useEffect } from 'react';
 
 const Day = [
   'Saterday',
@@ -52,7 +52,7 @@ const BloodTypes = [
 
 export default function EventsView() {
   const [selectedBloodType, setSelectedBloodType] = useState('');
-
+  const [error1, setError1] = useState('');
   const [bloodRequests, setBloodRequests] = useState([{}]);
   const [oldBloodRequests, setOldBloodRequests] = useState([{}]);
   const [showModal, setShowModal] = useState(false);
@@ -176,6 +176,7 @@ export default function EventsView() {
 
   const toggleModal = () => {
     setShowModal(!showModal);
+    setSelectedBloodType('');
   };
 
   return (
@@ -193,7 +194,7 @@ export default function EventsView() {
         }}>
         <TouchableOpacity style={styles.touchableOpacity} onPress={toggleModal}>
           <Icon style={styles.addButton} name="plus" />
-          <Text style={{fontSize: 18, color: '#fff', marginLeft: 10}}>
+          <Text style={{ fontSize: 18, color: '#fff', marginLeft: 10 }}>
             Make Blood Request
           </Text>
         </TouchableOpacity>
@@ -207,11 +208,11 @@ export default function EventsView() {
           <View style={styles.centeredView}>
             <View style={styles.modal}>
               <View style={styles.modalTitle}>
-                <Text style={{fontSize: 18, color: '#fff', fontWeight: 'bold'}}>
+                <Text style={{ fontSize: 18, color: '#fff', fontWeight: 'bold' }}>
                   Create New Blood Request
                 </Text>
               </View>
-              <View style={{alignItems: 'center'}}>
+              <View style={{ alignItems: 'center' }}>
                 <SelectDropdown
                   renderDropdownIcon={() => (
                     <Ionicons name={'chevron-down'} size={20} color={'#000'} />
@@ -220,7 +221,7 @@ export default function EventsView() {
                   dropdownOverlayColor="transparent"
                   buttonStyle={styles.bloodTypeInput}
                   defaultButtonText="BloodTypes"
-                  buttonTextStyle={{color: '#a1a1a1', fontSize: 16}}
+                  buttonTextStyle={{ color: '#a1a1a1', fontSize: 16 }}
                   data={BloodTypes}
                   onSelect={(selectedItem, index) => {
                     console.log(selectedItem, index);
@@ -234,12 +235,31 @@ export default function EventsView() {
                   }}
                 />
                 <View>
-                  <Button
-                    title="Save"
+                  <Text style={{ fontSize: 13, color: '#f00' }}>{error1}</Text>
+                </View>
+                <View style={{ flexDirection: 'row' }}>
+                  <Pressable
+                    style={[styles.button, styles.buttonClose]}
+                    onPress={() => {
+                      if (selectedBloodType !== '') {
+                        toggleModal();
+                        createBloodRequest();
+                      }else{
+                        setError1('Please select a blood type.');
+                      }
+                    }
+                    }
+                  >
+                    <Icon style={styles.newDay} name='check' />
+                  </Pressable>
+                  <Pressable
+                    style={[styles.button, styles.buttonClose, { backgroundColor: "#f00" }]}
                     onPress={() => {
                       toggleModal();
-                      createBloodRequest();
-                    }}></Button>
+                    }}
+                  >
+                    <Icon style={styles.newDay} name='close' />
+                  </Pressable>
                 </View>
               </View>
             </View>
@@ -251,61 +271,61 @@ export default function EventsView() {
         <Text style={styles.titleText}>Blood Requests</Text>
         {bloodRequests.length != 0
           ? bloodRequests.map((item, index) => {
-              return (
-                <View style={styles.bloodRequestCard} key={index}>
+            return (
+              <View style={styles.bloodRequestCard} key={index}>
+                <View
+                  style={[
+                    styles.bloodRequestView,
+                    { flexDirection: 'column' },
+                  ]}>
                   <View
-                    style={[
-                      styles.bloodRequestView,
-                      {flexDirection: 'column'},
-                    ]}>
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        marginBottom: 5,
-                      }}>
-                      <View>
-                        <Text style={styles.doctorText}>{item.date}</Text>
-                        <Text style={styles.doctorText}>{item.bloodType}</Text>
-                      </View>
-                      <View style={{marginRight: 5}}>
-                        {item.PatientIDs != null ? (
-                          <Text style={{fontSize: 25}}>
-                            {item.PatientIDs.length}
-                          </Text>
-                        ) : null}
-                      </View>
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      marginBottom: 5,
+                    }}>
+                    <View>
+                      <Text style={styles.doctorText}>{item.date}</Text>
+                      <Text style={styles.doctorText}>{item.bloodType}</Text>
                     </View>
-                    <View
-                      style={{flexDirection: 'row', justifyContent: 'center'}}>
-                      <Pressable
-                        style={[styles.button, styles.buttonClose]}
-                        onPress={() => {
-                          finalizeRequest(item._id);
-                          getBloodRequests();
-                          getOldBloodRequests();
-                        }}>
-                        <Icon style={styles.newDay} name="check-square-o" />
-                      </Pressable>
-                      <Pressable
-                        style={[
-                          styles.button,
-                          styles.buttonClose,
-                          {backgroundColor: '#f00'},
-                        ]}
-                        onPress={() => {
-                          deleteRequest(item._id);
-                          getBloodRequests();
-                          getOldBloodRequests();
-                        }}>
-                        <Icon style={styles.newDay} name="trash" />
-                      </Pressable>
+                    <View style={{ marginRight: 5 }}>
+                      {item.PatientIDs != null ? (
+                        <Text style={{ fontSize: 25 }}>
+                          {item.PatientIDs.length}
+                        </Text>
+                      ) : null}
                     </View>
                   </View>
+                  <View
+                    style={{ flexDirection: 'row', justifyContent: 'center' }}>
+                    <Pressable
+                      style={[styles.button, styles.buttonClose]}
+                      onPress={() => {
+                        finalizeRequest(item._id);
+                        getBloodRequests();
+                        getOldBloodRequests();
+                      }}>
+                      <Icon style={styles.newDay} name="check-square-o" />
+                    </Pressable>
+                    <Pressable
+                      style={[
+                        styles.button,
+                        styles.buttonClose,
+                        { backgroundColor: '#f00' },
+                      ]}
+                      onPress={() => {
+                        deleteRequest(item._id);
+                        getBloodRequests();
+                        getOldBloodRequests();
+                      }}>
+                      <Icon style={styles.newDay} name="trash" />
+                    </Pressable>
+                  </View>
                 </View>
-              );
-            })
+              </View>
+            );
+          })
           : null}
         <View style={styles.lineStyle} />
         <Text style={styles.titleText}>Old Blood Requests</Text>
@@ -313,7 +333,7 @@ export default function EventsView() {
           return (
             <View style={styles.bloodRequestCard} key={index}>
               <View
-                style={[styles.bloodRequestView, {flexDirection: 'column'}]}>
+                style={[styles.bloodRequestView, { flexDirection: 'column' }]}>
                 <View
                   style={{
                     flexDirection: 'row',
@@ -325,9 +345,9 @@ export default function EventsView() {
                     <Text style={styles.doctorText}>{item.date}</Text>
                     <Text style={styles.doctorText}>{item.bloodType}</Text>
                   </View>
-                  <View style={{marginRight: 5}}>
+                  <View style={{ marginRight: 5 }}>
                     {item.PatientIDs != null ? (
-                      <Text style={{fontSize: 25}}>
+                      <Text style={{ fontSize: 25 }}>
                         {item.PatientIDs.length}
                       </Text>
                     ) : null}
@@ -400,7 +420,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
 
-  titleText: {fontSize: 20, fontWeight: 'bold', color: '#000', margin: 5},
+  titleText: { fontSize: 20, fontWeight: 'bold', color: '#000', margin: 5 },
 
   bloodRequestView: {
     borderRadius: 10,
@@ -418,7 +438,7 @@ const styles = StyleSheet.create({
     borderColor: '#000',
     margin: 10,
     backgroundColor: '#000',
-    alignSelf:'center'
+    alignSelf: 'center'
   },
   icon: {
     color: 'black',
@@ -479,7 +499,7 @@ const styles = StyleSheet.create({
   bloodTypeInput: {
     width: 'auto',
     margin: 20,
-    marginBottom: 50,
+    marginBottom: 30,
     // marginLeft: 10,
     // marginRight: 10,
     borderRadius: 10,
@@ -488,7 +508,7 @@ const styles = StyleSheet.create({
     // margin: 5,
     backgroundColor: '#fff',
     shadowColor: '#000000',
-    shadowOffset: {width: -1, height: 1},
+    shadowOffset: { width: -1, height: 1 },
     shadowOpacity: 0.2,
     shadowRadius: 1,
     elevation: 2,
