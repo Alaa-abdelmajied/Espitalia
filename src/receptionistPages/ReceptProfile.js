@@ -13,6 +13,7 @@ import {
   Alert,
   BackHandler,
   ScrollView,
+  SafeAreaView,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -154,32 +155,35 @@ export default function UserProfileView({ navigation }) {
           </Pressable>
         </View>
         <Text style={styles.mainText}> - Work hours: { }</Text>
-        {myData._id
-          ? myData.workingDays.map((card, cardIndex) => {
-            return (
-              <Animated.View
-                key={cardIndex.toString()}
-                style={{
-                  margin: 5,
-                  flexDirection: 'row',
-                  borderRadius: 25,
-                  justifyContent: 'space-evenly',
-                  padding: 10,
-                  elevation: 3,
-                }}>
-                <Text style={{ color: '#000', fontSize: 20 }}>
-                  Day: {card.day}
-                </Text>
-                <Text style={{ color: '#000', fontSize: 20 }}>
-                  From: {card.from}
-                </Text>
-                <Text style={{ color: '#000', fontSize: 20 }}>
-                  To: {card.to}
-                </Text>
-              </Animated.View>
-            );
-          })
-          : null}
+        <View style={{marginBottom: 1000, height: 200}}>
+          {myData._id
+            ? myData.workingDays.map((card, cardIndex) => {
+              return (
+                <View
+                  key={cardIndex.toString()}
+                  style={{
+                    margin: 5,
+                    flexDirection: 'row',
+                    borderRadius: 25,
+                    justifyContent: 'space-evenly',
+                    padding: 10,
+                    elevation: 3,
+                  }}>
+                  <Text style={{ color: '#000', fontSize: 20 }}>
+                    Day: {card.day}
+                  </Text>
+                  <Text style={{ color: '#000', fontSize: 20 }}>
+                    From: {card.from}
+                  </Text>
+                  <Text style={{ color: '#000', fontSize: 20 }}>
+                    To: {card.to}
+                  </Text>
+                </View>
+              );
+            })
+            : null}
+        </View>
+        {/* <View style={{ height:100 }}><Text>yudtyfv</Text></View> */}
       </View>
       {/* </View> */}
     </ScrollView>
@@ -266,6 +270,7 @@ const styles = StyleSheet.create({
     padding: 10,
     height: 450,
     marginTop: 10,
+    marginBottom: 80,
   },
   cardTittle: {
     color: '#000000',

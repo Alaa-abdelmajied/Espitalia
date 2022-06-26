@@ -1,4 +1,4 @@
-import React, {useState, useCallback} from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   StyleSheet,
   Text,
@@ -22,13 +22,14 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Icon from 'react-native-vector-icons/dist/FontAwesome';
 import Icon5 from 'react-native-vector-icons/dist/FontAwesome5';
 import AntDesign from 'react-native-vector-icons/dist/AntDesign';
+import Dialog from 'react-native-dialog';
 
 import SelectDropdown from 'react-native-select-dropdown';
 
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {Server_URL, Token_Secret, Credintials_Secret} from '@env';
-import {useEffect} from 'react';
+import { Server_URL, Token_Secret, Credintials_Secret } from '@env';
+import { useEffect } from 'react';
 
 const Day = [
   'Saterday',
@@ -56,7 +57,9 @@ export default function EventsView() {
   const [bloodRequests, setBloodRequests] = useState([{}]);
   const [oldBloodRequests, setOldBloodRequests] = useState([{}]);
   const [showModal, setShowModal] = useState(false);
+  const [showModal2, setShowModal2] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [donors, setDonors] = useState([]);
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     getBloodRequests().then(getOldBloodRequests().then(setRefreshing(false)));
@@ -89,6 +92,27 @@ export default function EventsView() {
     getBloodRequests();
     getOldBloodRequests();
   }, []);
+
+  const getDonors = async (bloodReqID) => {
+    token = JSON.parse(await EncryptedStorage.getItem(Token_Secret)).token;
+    console.log(bloodReqID);
+    axios({
+      method: 'get',
+      url: `${Server_URL}:3000/receptionist/viewDonors/${bloodReqID}`,
+      headers: {
+        'x-auth-token': token,
+      },
+
+    })
+      .then(function (response) {
+        //console.log(response.data);
+        setDonors(response.data);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  };
+
 
   const getOldBloodRequests = async () => {
     token = JSON.parse(await EncryptedStorage.getItem(Token_Secret)).token;
@@ -178,6 +202,8 @@ export default function EventsView() {
     setShowModal(!showModal);
   };
 
+
+
   return (
     <ScrollView
       style={styles.container}
@@ -193,7 +219,7 @@ export default function EventsView() {
         }}>
         <TouchableOpacity style={styles.touchableOpacity} onPress={toggleModal}>
           <Icon style={styles.addButton} name="plus" />
-          <Text style={{fontSize: 18, color: '#fff', marginLeft: 10}}>
+          <Text style={{ fontSize: 18, color: '#fff', marginLeft: 10 }}>
             Make Blood Request
           </Text>
         </TouchableOpacity>
@@ -207,11 +233,11 @@ export default function EventsView() {
           <View style={styles.centeredView}>
             <View style={styles.modal}>
               <View style={styles.modalTitle}>
-                <Text style={{fontSize: 18, color: '#fff', fontWeight: 'bold'}}>
+                <Text style={{ fontSize: 18, color: '#fff', fontWeight: 'bold' }}>
                   Create New Blood Request
                 </Text>
               </View>
-              <View style={{alignItems: 'center'}}>
+              <View style={{ alignItems: 'center' }}>
                 <SelectDropdown
                   renderDropdownIcon={() => (
                     <Ionicons name={'chevron-down'} size={20} color={'#000'} />
@@ -220,7 +246,7 @@ export default function EventsView() {
                   dropdownOverlayColor="transparent"
                   buttonStyle={styles.bloodTypeInput}
                   defaultButtonText="BloodTypes"
-                  buttonTextStyle={{color: '#a1a1a1', fontSize: 16}}
+                  buttonTextStyle={{ color: '#a1a1a1', fontSize: 16 }}
                   data={BloodTypes}
                   onSelect={(selectedItem, index) => {
                     console.log(selectedItem, index);
@@ -251,61 +277,101 @@ export default function EventsView() {
         <Text style={styles.titleText}>Blood Requests</Text>
         {bloodRequests.length != 0
           ? bloodRequests.map((item, index) => {
-              return (
-                <View style={styles.bloodRequestCard} key={index}>
+            return (
+              <TouchableOpacity style={styles.bloodRequestCard} key={index}
+                onPress={() => {
+                  getDonors(item._id);
+                  setShowModal2(true)
+                }
+                }
+              >
+                <View
+                  style={[
+                    styles.bloodRequestView,
+                    { flexDirection: 'column' },
+                  ]}>
                   <View
-                    style={[
-                      styles.bloodRequestView,
-                      {flexDirection: 'column'},
-                    ]}>
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        marginBottom: 5,
-                      }}>
-                      <View>
-                        <Text style={styles.doctorText}>{item.date}</Text>
-                        <Text style={styles.doctorText}>{item.bloodType}</Text>
-                      </View>
-                      <View style={{marginRight: 5}}>
-                        {item.PatientIDs != null ? (
-                          <Text style={{fontSize: 25}}>
-                            {item.PatientIDs.length}
-                          </Text>
-                        ) : null}
-                      </View>
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      marginBottom: 5,
+                    }}>
+                    <View>
+                      <Text style={styles.doctorText}>{item.date}</Text>
+                      <Text style={styles.doctorText}>{item.bloodType}</Text>
                     </View>
-                    <View
-                      style={{flexDirection: 'row', justifyContent: 'center'}}>
-                      <Pressable
-                        style={[styles.button, styles.buttonClose]}
-                        onPress={() => {
-                          finalizeRequest(item._id);
-                          getBloodRequests();
-                          getOldBloodRequests();
-                        }}>
-                        <Icon style={styles.newDay} name="check-square-o" />
-                      </Pressable>
-                      <Pressable
-                        style={[
-                          styles.button,
-                          styles.buttonClose,
-                          {backgroundColor: '#f00'},
-                        ]}
-                        onPress={() => {
-                          deleteRequest(item._id);
-                          getBloodRequests();
-                          getOldBloodRequests();
-                        }}>
-                        <Icon style={styles.newDay} name="trash" />
-                      </Pressable>
+                    <View style={{ marginRight: 5 }}>
+                      {item.PatientIDs != null ? (
+                        <Text style={{ fontSize: 25 }}>
+                          {item.PatientIDs.length}
+                        </Text>
+                      ) : null}
                     </View>
                   </View>
+                  <View
+                    style={{ flexDirection: 'row', justifyContent: 'center' }}>
+                    <Pressable
+                      style={[styles.button, styles.buttonClose]}
+                      onPress={() => {
+                        finalizeRequest(item._id);
+                        getBloodRequests();
+                        getOldBloodRequests();
+                      }}>
+                      <Icon style={styles.newDay} name="check-square-o" />
+                    </Pressable>
+                    <Pressable
+                      style={[
+                        styles.button,
+                        styles.buttonClose,
+                        { backgroundColor: '#f00' },
+                      ]}
+                      onPress={() => {
+                        deleteRequest(item._id);
+                        getBloodRequests();
+                        getOldBloodRequests();
+                      }}>
+                      <Icon style={styles.newDay} name="trash" />
+                    </Pressable>
+                  </View>
                 </View>
-              );
-            })
+                <Dialog.Container contentStyle={styles.modal} visible={showModal2}>
+                  <View style={{ flexDirection: "row", alignItems: 'center', justifyContent: "space-between" }}>
+                    <Dialog.Title style={styles.modalText}>list of requests</Dialog.Title>
+                    <Dialog.Button
+                      label="Close"
+                      onPress={() => {
+                        setShowModal2(false)
+                        setDonors([]);
+                      }}
+                      style={{ color: '#ff0000', fontWeight: 'bold' }}
+                    />
+                  </View>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                    }}>
+                    <FlatList
+                      data={donors}
+                      keyExtractor={(item) => {
+                        return item.toString();
+                      }}
+
+                      renderItem={({ item }) => {
+                        return (
+                          <TouchableOpacity >
+                            <View >
+                              <Text style={styles.name}>{item.name}</Text>
+                              <Text style={styles.name}>{item.phoneNumber}</Text>
+                            </View>
+                          </TouchableOpacity>
+                        )
+                      }} />
+                  </View>
+                </Dialog.Container>
+              </TouchableOpacity>
+            );
+          })
           : null}
         <View style={styles.lineStyle} />
         <Text style={styles.titleText}>Old Blood Requests</Text>
@@ -313,7 +379,7 @@ export default function EventsView() {
           return (
             <View style={styles.bloodRequestCard} key={index}>
               <View
-                style={[styles.bloodRequestView, {flexDirection: 'column'}]}>
+                style={[styles.bloodRequestView, { flexDirection: 'column' }]}>
                 <View
                   style={{
                     flexDirection: 'row',
@@ -325,9 +391,9 @@ export default function EventsView() {
                     <Text style={styles.doctorText}>{item.date}</Text>
                     <Text style={styles.doctorText}>{item.bloodType}</Text>
                   </View>
-                  <View style={{marginRight: 5}}>
+                  <View style={{ marginRight: 5 }}>
                     {item.PatientIDs != null ? (
-                      <Text style={{fontSize: 25}}>
+                      <Text style={{ fontSize: 25 }}>
                         {item.PatientIDs.length}
                       </Text>
                     ) : null}
@@ -400,7 +466,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
 
-  titleText: {fontSize: 20, fontWeight: 'bold', color: '#000', margin: 5},
+  titleText: { fontSize: 20, fontWeight: 'bold', color: '#000', margin: 5 },
 
   bloodRequestView: {
     borderRadius: 10,
@@ -418,7 +484,7 @@ const styles = StyleSheet.create({
     borderColor: '#000',
     margin: 10,
     backgroundColor: '#000',
-    alignSelf:'center'
+    alignSelf: 'center'
   },
   icon: {
     color: 'black',
@@ -488,7 +554,7 @@ const styles = StyleSheet.create({
     // margin: 5,
     backgroundColor: '#fff',
     shadowColor: '#000000',
-    shadowOffset: {width: -1, height: 1},
+    shadowOffset: { width: -1, height: 1 },
     shadowOpacity: 0.2,
     shadowRadius: 1,
     elevation: 2,
