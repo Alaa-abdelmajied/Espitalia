@@ -175,8 +175,8 @@ export default function EventsView() {
   };
 
   const toggleModal = () => {
-    setShowModal(!showModal);
     setSelectedBloodType('');
+    setShowModal(!showModal);
   };
 
   return (
