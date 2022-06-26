@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useRef} from 'react';
 import Svg, {Path} from 'react-native-svg';
 
 import {
@@ -47,6 +47,9 @@ export default function Login({navigation, route}) {
   const [password, setPassword] = useState('');
   const [errorMeesage, setIsVisible] = useState(false);
   const [selectedStaff, setSelectedStaff] = useState({});
+
+  const passwordRef = useRef();
+
   var whoIsLogingIn = [
     {
       id: 'hospital',
@@ -220,33 +223,41 @@ export default function Login({navigation, route}) {
               style={styles.Input}
               placeholder="Enter your email"
               keyboardType={'email-address'}
+              returnKeyType="next"
+              onSubmitEditing={() => {
+                passwordRef.current.focus();
+                // text => setEmail(text.trim());
+              }}
+              blurOnSubmit={false}
               onChangeText={text => setEmail(text.trim())}></TextInput>
             <TextInput
               secureTextEntry={true}
               style={styles.Input}
               placeholder="Enter your password"
+              ref={passwordRef}
+              // onSubmitEditing={() => {
+              //   text => setPassword(text);
+              // }}
+              // blurOnSubmit={false}
               onChangeText={text => setPassword(text)}></TextInput>
 
+            {errorMeesage && (
+              <Text style={{color: '#f00'}}>Something is Wrong</Text>
+            )}
+
+            <TouchableOpacity style={styles.RegisterButton} onPress={SignIn}>
+              <Text style={[styles.buttonText, {color: '#fff'}]}>Sign In</Text>
+            </TouchableOpacity>
             <Pressable
               onPress={() =>
                 navigation.navigate('ChangePassword', {changePassword: false})
               }>
               <Text style={styles.QuestionText}>Forgot password?</Text>
             </Pressable>
-
-            {errorMeesage && (
-              <Text style={{color: '#f00'}}>Something is Wrong</Text>
-            )}
-
-            <TouchableOpacity
-              style={styles.RegisterButton}
-              onPress={SignIn}>
-              <Text style={[styles.buttonText, {color: '#fff'}]}>Sign In</Text>
-            </TouchableOpacity>
             {!route.params.staff ? (
               <View style={{flexDirection: 'row', margin: '5%'}}>
                 <Text style={styles.QuestionText}>
-                  Don't have an account yet?
+                  Don't have an account yet? {'\b'}
                 </Text>
                 <Pressable onPress={() => navigation.navigate('SignUp')}>
                   <Text

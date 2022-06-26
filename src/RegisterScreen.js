@@ -16,6 +16,10 @@ import {showMessage} from 'react-native-flash-message';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import SelectDropdown from 'react-native-select-dropdown';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { LogBox } from 'react-native';
+ 
+LogBox.ignoreLogs(['Warning: ...']); 
+LogBox.ignoreAllLogs();
 
 export default function SignUp({navigation}) {
   const today = new Date();

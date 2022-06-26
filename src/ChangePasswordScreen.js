@@ -14,8 +14,8 @@ import {
 
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import FlashMessage from 'react-native-flash-message';
-import {showMessage} from 'react-native-flash-message';
+import FlashMessage, {showMessage} from 'react-native-flash-message';
+import AwesomeAlert from 'react-native-awesome-alerts';
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {Server_URL, Token_Secret, Credintials_Secret} from '@env';
@@ -28,6 +28,14 @@ export default function ChangePassword({navigation, route}) {
   const [currentPassword, setCurrentPassword] = useState('');
   const [isVisible, setIsVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [alert, setAlert] = useState(false);
+
+  showAlert = () => {
+    setAlert(true);
+  };
+  hideAlert = () => {
+    setAlert(false);
+  };
 
   const verifyEmail = () => {
     axios
@@ -157,9 +165,11 @@ export default function ChangePassword({navigation, route}) {
                 type: 'patient',
               }),
             );
+            hideAlert();
             navigation.navigate('PatientProfile');
           })
           .catch(function (error) {
+            hideAlert();
             const err = error.response.data;
             console.log(err);
             setIsVisible(true);
@@ -277,13 +287,23 @@ export default function ChangePassword({navigation, route}) {
               ) : null}
               <Pressable
                 style={styles.RegisterButton}
-                onPress={profilePasswordChange}>
+                onPress={() => {
+                  showAlert();
+                  profilePasswordChange();
+                }}>
                 <Text style={[styles.buttonText, {color: '#fff'}]}>Done</Text>
               </Pressable>
             </View>
           </View>
         )}
       </View>
+      <AwesomeAlert
+        show={alert}
+        showProgress={true}
+        title="Saving changes"
+        closeOnTouchOutside={true}
+        closeOnHardwareBackPress={false}
+      />
       <FlashMessage position="top" icon="auto" />
     </View>
   );
