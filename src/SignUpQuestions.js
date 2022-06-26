@@ -15,7 +15,6 @@ import { ScrollView } from 'react-native-gesture-handler';
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { Server_URL, Token_Secret, Credintials_Secret } from '@env';
-import notifee from '@notifee/react-native';
 import messaging from '@react-native-firebase/messaging';
 
 export default function Questions({ navigation, route }) {
