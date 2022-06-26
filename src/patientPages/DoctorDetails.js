@@ -16,8 +16,8 @@ import {
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import FlashMessage from 'react-native-flash-message';
-import {showMessage} from 'react-native-flash-message';
+import FlashMessage, {showMessage} from 'react-native-flash-message';
+import AwesomeAlert from 'react-native-awesome-alerts';
 import {Rating} from 'react-native-ratings';
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
@@ -40,7 +40,15 @@ export default function ProfileScreen({navigation, route}) {
   const [comments, setComments] = useState([]);
   const [schedule, setSchedule] = useState([]);
   const [loadData, setLoadData] = useState(true);
+  const [alert, setAlert] = useState(false);
   const isFocused = useIsFocused();
+
+  showAlert = () => {
+    setAlert(true);
+  };
+  hideAlert = () => {
+    setAlert(false);
+  };
 
   useEffect(() => {
     if (isFocused) {
@@ -90,28 +98,39 @@ export default function ProfileScreen({navigation, route}) {
         )
         .then(function (response) {
           console.log('done');
+          hideAlert();
           showMessage({
             message: 'Appointment successfully booked',
             type: 'success',
+            duration: 3500,
           });
         })
         .catch(function (error) {
           const err = error.response.data;
           if (err.includes('same doctor')) {
+            hideAlert();
+            // Alert.alert('Booking failed', err);
             showMessage({
               message: err,
               type: 'danger',
+              duration: 4500,
             });
           } else if (err.includes('same time')) {
+            hideAlert();
             showMessage({
               message: err,
               type: 'danger',
+              duration: 4500,
             });
+            // Alert.alert('Booking failed', err);
           } else {
+            hideAlert();
             showMessage({
               message: 'Something went wrong',
               type: 'danger',
+              duration: 4000,
             });
+            // Alert.alert('Booking failed', err);
           }
           console.log(err);
         });
@@ -143,7 +162,9 @@ export default function ProfileScreen({navigation, route}) {
           </View>
           <Image
             style={styles.avatar}
-            source={{uri: 'https://bootdey.com/img/Content/avatar/avatar6.png'}}
+            source={require('../../images/doctor_logo.png')}
+
+            // source={{uri: 'https://bootdey.com/img/Content/avatar/avatar6.png'}}
           />
           {/* <View style={styles.body}> */}
           {/* <View style={styles.bodyContent}> */}
@@ -220,6 +241,7 @@ export default function ProfileScreen({navigation, route}) {
             </View>
           )}
         </View>
+        <FlashMessage position="top" icon="auto" />
       </View>
       <View style={styles.appointmentsContainer}>
         <ScrollView
@@ -251,9 +273,10 @@ export default function ProfileScreen({navigation, route}) {
                   </View>
                   <TouchableOpacity
                     style={styles.bookButton}
-                    onPress={() =>
-                      bookAppointment(card.date, card.from, card.to)
-                    }>
+                    onPress={() => {
+                      showAlert();
+                      bookAppointment(card.date, card.from, card.to);
+                    }}>
                     <Text style={{color: '#fff'}}>Book</Text>
                   </TouchableOpacity>
                 </View>
@@ -319,7 +342,14 @@ export default function ProfileScreen({navigation, route}) {
           );
         })}
       </View>
-      <FlashMessage position="top" icon="auto" />
+      <AwesomeAlert
+        show={alert}
+        showProgress={true}
+        title="Booking appointment"
+        closeOnTouchOutside={true}
+        closeOnHardwareBackPress={false}
+      />
+      {/* <FlashMessage position="top" icon="auto" /> */}
     </ScrollView>
   );
 }
@@ -356,6 +386,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     position: 'absolute',
     marginTop: 80,
+    backgroundColor: '#fff',
   },
 
   body: {

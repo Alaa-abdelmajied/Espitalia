@@ -12,16 +12,24 @@ import {
   Image,
   Alert,
   FlatList,
-  BackHandler
+  BackHandler,
 } from 'react-native';
 import PatientAccordion from '../../utils/PatientsAccordion';
+import AwesomeAlert from 'react-native-awesome-alerts';
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {Server_URL, Token_Secret, Credintials_Secret} from '@env';
 
 export default function DoctorHome({navigation}) {
-
   const [currentAppointments, setCurrentAppointment] = useState([]);
+  const [alert, setAlert] = useState(false);
+
+  showAlert = () => {
+    setAlert(true);
+  };
+  hideAlert = () => {
+    setAlert(false);
+  };
 
   useEffect(() => {
     const getCurrentAppointments = async () => {
@@ -37,6 +45,7 @@ export default function DoctorHome({navigation}) {
           })
           .then(response => {
             setCurrentAppointment(response.data);
+            console.log(response.data);
           })
           .catch(function (error) {
             console.log(error.message);
@@ -63,10 +72,32 @@ export default function DoctorHome({navigation}) {
         keyExtractor={(item, index) => index.toString()}
         renderItem={item => (
           <View>
-            <PatientAccordion item={item.item} navigation={navigation}/>
+            <PatientAccordion
+              item={item.item}
+              navigation={navigation}
+              entered={item.item.entered}
+            />
           </View>
         )}
+        ListEmptyComponent={
+          <Text
+            style={{
+              fontSize: 20,
+              alignSelf: 'center',
+              color: '#000',
+              margin: '10%',
+            }}>
+            No appointments for today :)
+          </Text>
+        }
       />
+      {/* <AwesomeAlert
+        show={alert}
+        showProgress={true}
+        title="Saving report"
+        closeOnTouchOutside={true}
+        closeOnHardwareBackPress={false}
+      /> */}
     </View>
   );
 }

@@ -12,10 +12,8 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
-import FlashMessage from 'react-native-flash-message';
-import {showMessage, hideMessage} from 'react-native-flash-message';
+import FlashMessage, {showMessage} from 'react-native-flash-message';
 import AwesomeAlert from 'react-native-awesome-alerts';
-
 import EncryptedStorage from 'react-native-encrypted-storage';
 import axios from 'axios';
 import {Server_URL, Token_Secret} from '@env';
@@ -23,8 +21,16 @@ import {useIsFocused} from '@react-navigation/native';
 
 export default function Reservation({}) {
   const [upcomingAppointments, setUpcomingAppointments] = useState([]);
+  const [alert, setAlert] = useState(false);
   const [loadData, setLoadData] = useState(true);
   const isFocused = useIsFocused();
+
+  showAlert = () => {
+    setAlert(true);
+  };
+  hideAlert = () => {
+    setAlert(false);
+  };
 
   const getUpcomingAppointments = async () => {
     const token = JSON.parse(
@@ -68,9 +74,11 @@ export default function Reservation({}) {
           <View style={styles.loadingIcon}>
             <ActivityIndicator size="large" color="#0451cc" />
           </View>;
+          hideAlert();
           showMessage({
             message: 'Appointment cancelled successfully',
             type: 'success',
+            duration: 3500,
           });
           // Alert.alert('Appointment cancelled successfully');
           getUpcomingAppointments();
@@ -79,6 +87,7 @@ export default function Reservation({}) {
           const err = error.response.data;
           console.log(err);
           if (err == 'Error cancelling appointment') {
+            hideAlert();
             showMessage({
               message: err,
               type: 'warning',
@@ -92,9 +101,6 @@ export default function Reservation({}) {
     }
   };
 
-  const alert = () => {
-    setShowAlert(true);
-  };
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -144,7 +150,10 @@ export default function Reservation({}) {
               </View>
               <TouchableOpacity
                 style={styles.button}
-                onPress={() => cancelAppointment(item.appointmentID)}>
+                onPress={() => {
+                  showAlert();
+                  cancelAppointment(item.appointmentID);
+                }}>
                 {/* <View style={styles.loadingIcon}>
                   <ActivityIndicator size="large" color="#0451cc" />
                 </View> */}
@@ -170,6 +179,13 @@ export default function Reservation({}) {
             </Text>
           )
         }
+      />
+      <AwesomeAlert
+        show={alert}
+        showProgress={true}
+        title="Cancelling appointment"
+        closeOnTouchOutside={true}
+        closeOnHardwareBackPress={false}
       />
       <FlashMessage position="top" icon="auto" />
     </View>

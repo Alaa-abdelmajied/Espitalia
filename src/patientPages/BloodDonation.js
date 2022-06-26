@@ -1,20 +1,31 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, FlatList, Pressable, ActivityIndicator } from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {
+  StyleSheet,
+  Text,
+  View,
+  FlatList,
+  Pressable,
+  ActivityIndicator,
+  TouchableOpacity,
+  Modal,
+} from 'react-native';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
-import { Server_URL } from '@env';
+import {Server_URL} from '@env';
 import Item from '../../utils/ItemCard';
-import { useIsFocused } from '@react-navigation/native';
+import {useIsFocused} from '@react-navigation/native';
 
-
-export default function DonateBlood({ navigation }) {
+export default function DonateBlood({navigation}) {
   const [bloodRequests, setBloodRequests] = useState([]);
   const [skipNumber, setSkipNumber] = useState(0);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [refreshing, setRefreshing] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const [loadData, setLoadData] = useState(true);
   const isFocused = useIsFocused();
 
-  //first time the page is opened 
+  //first time the page is opened
   //and when the page is closed
   useEffect(() => {
     setLoadData(true);
@@ -39,17 +50,20 @@ export default function DonateBlood({ navigation }) {
     if (isFocused && refreshing) {
       getRequests(0);
     }
-  }, [refreshing])
+  }, [refreshing]);
 
-  const getRequests = async (skipNumber) => {
-    console.log("skip Number:", skipNumber);
+  const getRequests = async skipNumber => {
+    console.log('skip Number:', skipNumber);
     await axios
       .get(`${Server_URL}:3000/patient/getBloodRequests/${skipNumber}`)
-      .then((response) => {
+      .then(response => {
         if (skipNumber == 0) {
           setBloodRequests(response.data);
         } else {
-          setBloodRequests(bloodRequests => [...bloodRequests, ...response.data]);
+          setBloodRequests(bloodRequests => [
+            ...bloodRequests,
+            ...response.data,
+          ]);
         }
         setRefreshing(false);
         setLoadData(false);
@@ -64,28 +78,54 @@ export default function DonateBlood({ navigation }) {
   const checkForUpdates = async () => {
     await axios
       .get(`${Server_URL}:3000/patient/isBloodReqUpdated/${currentDate}`)
-      .then((response) => {
+      .then(response => {
         setCurrentDate(new Date());
         setSkipNumber(response.data.newEntries + bloodRequests.length);
       })
       .catch(function (error) {
         console.log(error.message);
       });
-  }
+  };
 
   const onEndReachedHandler = () => {
     // setLoadMore(true);
     checkForUpdates();
     console.log(currentDate);
-  }
+  };
 
   const onRefreshing = () => {
     setCurrentDate(new Date());
     setRefreshing(true);
-  }
+  };
 
   return (
     <View style={styles.container}>
+      {/* <Modal visible={showModal} animationType="fade" transparent={true}>
+        <View style={styles.modal}>
+          <FontAwesome
+            name={'close'}
+            size={20}
+            color={'#1c1bad'}
+            onPress={() => setShowModal(false)}
+            style={{alignSelf: 'flex-start', margin: 5}}></FontAwesome>
+          <View>
+            <TouchableOpacity>
+              <Text>EXIT</Text>
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Text
+                oPress={() => {
+                  Linking.openURL('tel:8777111223');
+                }}>
+                8777111223
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Text>ACCEPT</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal> */}
       <FlatList
         data={bloodRequests}
         keyExtractor={item => {
@@ -95,15 +135,15 @@ export default function DonateBlood({ navigation }) {
         refreshing={refreshing}
         onEndReached={onEndReachedHandler}
         onEndReachedThreshold={0.1}
-        renderItem={({ item }) => (
-          <Item
-            item={item}
-          />
+        renderItem={({item}) => (
+          <Item item={item}/>
         )}
         ListEmptyComponent={
-          loadData ? <View>
-            <ActivityIndicator size="large" color="#0451cc" />
-          </View> :
+          loadData ? (
+            <View>
+              <ActivityIndicator size="large" color="#0451cc" />
+            </View>
+          ) : (
             <Text
               style={{
                 fontSize: 20,
@@ -113,6 +153,7 @@ export default function DonateBlood({ navigation }) {
               }}>
               No blood donation requests :)
             </Text>
+          )
         }
       />
     </View>
@@ -183,4 +224,50 @@ const styles = StyleSheet.create({
     width: 160,
     color: '#fff',
   },
+
+  // modal: {
+  //   height: 350,
+  //   backgroundColor: '#f0f0f0',
+  //   borderRadius: 15,
+  //   width: '80%',
+  //   marginTop: '30%',
+  //   // margin: 300,
+  //   alignSelf: 'center',
+  //   justifyContent: 'center',
+  //   alignItems: 'center',
+  //   shadowColor: '#1c1bad',
+  //   shadowOpacity: 1,
+  //   shadowOffset: {
+  //     width: 10,
+  //     height: 15,
+  //   },
+  //   elevation: 10,
+  //   overflow: 'hidden',
+  //   padding: 5,
+  // },
+
+  // modalButton: {
+  //   backgroundColor: '#1c1bad',
+  //   borderRadius: 5,
+  //   width: 150,
+  //   height: 50,
+  //   justifyContent: 'center',
+  //   alignSelf: 'center',
+  //   // marginBottom: 20,
+  // },
+
+  // modalInput: {
+  //   height: '50%',
+  //   width: '95%',
+  //   justifyContent: 'center',
+  //   alignItems: 'center',
+  //   backgroundColor: '#fff',
+  //   borderRadius: 15,
+  // },
+
+  // modalText: {
+  //   fontSize: 15,
+  //   color: '#fff',
+  //   textAlign: 'center',
+  // },
 });

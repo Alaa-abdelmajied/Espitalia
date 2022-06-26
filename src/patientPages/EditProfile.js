@@ -8,9 +8,10 @@ import {
   Pressable,
   TextInput,
   Alert,
+  TouchableOpacity,
 } from 'react-native';
-import FlashMessage from 'react-native-flash-message';
-import {showMessage} from 'react-native-flash-message';
+import FlashMessage, {showMessage} from 'react-native-flash-message';
+import AwesomeAlert from 'react-native-awesome-alerts';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -37,13 +38,21 @@ export default function EditProfile({navigation, route}) {
   const [newPhoneNumber, setNewPhoneNumber] = useState(phoneNumber);
   const [text, setText] = useState(birthdate);
   const [show, setShow] = useState(false);
+  const [alert, setAlert] = useState(false);
   const [newDate, setNewData] = useState(new Date(date));
-  const [updateColor, setUpdateColor] = useState(false);
+  // const [updateColor, setUpdateColor] = useState(false);
   const [newBloodType, setNewBloodType] = useState(bloodType);
   const [newDiabetic, setNewDiabetic] = useState(diabetic);
   const [newBloodPressure, setNewBloodPressure] = useState(bloodPressure);
   const [newAllergic, setNewAllergic] = useState(allergic);
   const [newAllergies, setNewAllergies] = useState(allergies);
+
+  showAlert = () => {
+    setAlert(true);
+  };
+  hideAlert = () => {
+    setAlert(false);
+  };
 
   const OpenDateWindow = () => {
     setShow(true);
@@ -61,7 +70,7 @@ export default function EditProfile({navigation, route}) {
       '-' +
       tmpDate.getFullYear();
     setText(fullDate);
-    setUpdateColor(true);
+    // setUpdateColor(true);
   };
 
   const editProfile = async () => {
@@ -97,14 +106,16 @@ export default function EditProfile({navigation, route}) {
           },
         )
         .then(async function (response) {
-          console.log('done');
-          // navigation.navigate('PatientProfile');
+          // console.log('done');
+          hideAlert(); // navigation.navigate('PatientProfile');
           showMessage({
             message: 'Info updated successfully',
             type: 'success',
+            duration: 3500,
           });
         })
         .catch(function (error) {
+          hideAlert();
           const err = error.response.data;
           console.log(err);
         });
@@ -118,11 +129,11 @@ export default function EditProfile({navigation, route}) {
   return (
     <ScrollView>
       <View style={styles.header}>
-        <Pressable
+        <TouchableOpacity
           style={{flex: 1, alignSelf: 'center', marginLeft: 5}}
           onPress={() => navigation.goBack()}>
           <Ionicons name={'arrow-back'} size={30} color="#fff"></Ionicons>
-        </Pressable>
+        </TouchableOpacity>
         <View
           style={{flex: 12, flexDirection: 'row', justifyContent: 'center'}}>
           <Image
@@ -183,7 +194,7 @@ export default function EditProfile({navigation, route}) {
             <Text style={styles.mainText}>Birthdate</Text>
           </View>
           <View style={styles.pickerContainer}>
-            <Pressable onPress={OpenDateWindow} style={styles.dateInput}>
+            <TouchableOpacity onPress={OpenDateWindow} style={styles.dateInput}>
               <Text
                 style={
                   {textAlign: 'center', color: '#000'}
@@ -204,7 +215,7 @@ export default function EditProfile({navigation, route}) {
                   display="spinner"
                 />
               )}
-            </Pressable>
+            </TouchableOpacity>
           </View>
           {/* <TextInput style={styles.input} placeholder={birthdate}></TextInput> */}
         </View>
@@ -291,7 +302,7 @@ export default function EditProfile({navigation, route}) {
             margin: 15,
           }}>
           <Ionicons name={'key'} size={20} color={'#000'}></Ionicons>
-          <Pressable
+          <TouchableOpacity
             onPress={() => {
               navigation.navigate('ChangePassword', {
                 profileChangePassword: true,
@@ -309,12 +320,24 @@ export default function EditProfile({navigation, route}) {
               }}>
               Change Password
             </Text>
-          </Pressable>
+          </TouchableOpacity>
         </View>
-        <Pressable style={styles.button} onPress={editProfile}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => {
+            showAlert();
+            editProfile();
+          }}>
           <Text style={styles.buttonText}>Save Changes</Text>
-        </Pressable>
+        </TouchableOpacity>
       </View>
+      <AwesomeAlert
+        show={alert}
+        showProgress={true}
+        title="Saving changes"
+        closeOnTouchOutside={true}
+        closeOnHardwareBackPress={false}
+      />
       <FlashMessage position="bottom" icon="auto" />
     </ScrollView>
   );
