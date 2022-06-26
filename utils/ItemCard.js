@@ -10,33 +10,98 @@ import {
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Dialog from 'react-native-dialog';
+import FlashMessage, {showMessage} from 'react-native-flash-message';
+import AwesomeAlert from 'react-native-awesome-alerts';
+import axios from 'axios';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import {Server_URL, Token_Secret} from '@env';
 
 const Item = props => {
   const [showModal, setShowModal] = useState(false);
-  const [accept, setAccept] = useState(false);
+  const [accept, setAccept] = useState(props.item.accepted);
+  const [alert, setAlert] = useState(false);
+
+  const showAlert = () => {
+    setAlert(true);
+  };
+  const hideAlert = () => {
+    setAlert(false);
+  };
+
   const date = new Date(props.item.date);
+
+  const acceptRequest = async () => {
+    console.log(props.item.id);
+    setShowModal(false);
+    showAlert();
+    // setDial(true);
+    setAccept(true);
+    const token = JSON.parse(
+      await EncryptedStorage.getItem(Token_Secret),
+    ).token;
+    console.log(token);
+    await axios
+      .post(`${Server_URL}:3000/patient/accept/${props.item.id}`, null, {
+        headers: {
+          'x-auth-token': token,
+        },
+      })
+      .then(response => {
+        console.log('accepted');
+        hideAlert();
+        showMessage({
+          message: 'Blood request accepted successfully',
+          type: 'success',
+          duration: 4000,
+        });
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  };
+
   return (
     <TouchableOpacity
       style={styles.card}
-      disabled={accept}
-      onPress={() => setShowModal(true)}>
+      onPress={() => {
+        if (accept) {
+          showMessage({
+            message: 'You already accepted this request',
+            type: 'warning',
+            duration: 4000,
+          });
+        } else {
+          setShowModal(true);
+        }
+      }}>
       <View style={styles.infoView}>
         <Text style={styles.infoText}>
           Hospital Name: {props.item.hospital_Name}
         </Text>
         <Text style={styles.infoText}>Blood Type: {props.item.bloodType} </Text>
-        <Text style={styles.infoText}>Date : {date.toDateString()} </Text>
-        <Text style={styles.infoText}>Time : {date.toLocaleTimeString()} </Text>
+        <Text style={styles.infoText}>Date: {date.toDateString()} </Text>
+        <Text style={styles.infoText}>Time: {date.toLocaleTimeString()} </Text>
         {accept ? (
-          <View style={{flexDirection: 'row', alignSelf: 'center'}}>
+          <View style={{flexDirection: 'column', alignSelf: 'center'}}>
+            <View style={{flexDirection: 'row'}}>
+              <FontAwesome
+                name={'phone'}
+                size={20}
+                color={'#4BB543'}
+                style={{marginVertical: 10}}></FontAwesome>
+              <Text style={styles.infoText}>01223109302</Text>
+            </View>
+
             <FontAwesome
-              name={'phone'}
-              size={20}
+              name={'check-circle'}
+              size={30}
               color={'#4BB543'}
-              style={{marginVertical: 10}}></FontAwesome>
-            <Text style={styles.infoText}>
-              01223109302 - donate within 2 hours
-            </Text>
+              onPress={() => setShowModal(false)}
+              style={{
+                alignSelf: 'flex-start',
+                marginBottom: 10,
+                alignSelf: 'center',
+              }}></FontAwesome>
           </View>
         ) : null}
       </View>
@@ -49,9 +114,7 @@ const Item = props => {
           <Dialog.Button
             label="Accept"
             onPress={() => {
-              setShowModal(false);
-              // setDial(true);
-              setAccept(true);
+              acceptRequest();
             }}
             style={{color: '#4BB543', fontWeight: 'bold'}}
           />
@@ -62,6 +125,14 @@ const Item = props => {
           />
         </View>
       </Dialog.Container>
+      <AwesomeAlert
+        show={alert}
+        showProgress={true}
+        title="Saving changes"
+        closeOnTouchOutside={true}
+        closeOnHardwareBackPress={false}
+      />
+      {/* <FlashMessage position="top" icon="auto" /> */}
     </TouchableOpacity>
   );
 };
@@ -94,7 +165,7 @@ const styles = StyleSheet.create({
     // marginTop:'2%',
     // marginBottom: '5%',
     justifyContent: 'center',
-    margin: '1%',
+    margin: 5,
   },
   infoText: {
     color: '#000',
