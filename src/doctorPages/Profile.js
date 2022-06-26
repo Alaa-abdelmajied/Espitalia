@@ -76,11 +76,18 @@ export default function UserProfileView({ navigation }) {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity style={{ margin: 5, alignSelf: 'flex-end' }}>
-          <Pressable onPress={onPressLogout}>
-            <Text style={{ fontSize: 15, color: '#fff', margin: 5 }}>Logout</Text>
-          </Pressable>
-        </TouchableOpacity>
+        <View
+          style={{position: 'absolute', alignSelf: 'flex-end', marginTop: 15}}>
+          <TouchableOpacity style={styles.logoutButton} onPress={onPressLogout}>
+            <Text style={{fontSize: 15, color: '#000'}}>Logout</Text>
+          </TouchableOpacity>
+        </View>
+
+//         <TouchableOpacity style={{ margin: 5, alignSelf: 'flex-end' }}>
+//           <Pressable onPress={onPressLogout}>
+//             <Text style={{ fontSize: 15, color: '#fff', margin: 5 }}>Logout</Text>
+//           </Pressable>
+//         </TouchableOpacity>
         <View style={styles.headerContent}>
           <Image
             style={styles.avatar}
@@ -364,5 +371,16 @@ const styles = StyleSheet.create({
     width: 200,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  logoutButton: {
+    margin: 5,
+    alignSelf: 'flex-end',
+    backgroundColor: '#fff',
+    padding: 10,
+    position: 'absolute',
+    right: 10,
+    top: 10,
+    borderRadius: 20,
+    borderWidth: 1,
   },
 });
