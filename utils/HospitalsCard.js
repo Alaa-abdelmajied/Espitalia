@@ -25,11 +25,11 @@ const HospitalsCard = ({card, navigation}) => {
         </View>
       </View>
       <View style={styles.hospital_content}>
-        <View style={styles.image}>
+        {/* <View style={styles.image}>
           <Image
             style={styles.hospitalImg}
             source={require('../images/royalhospital.png')}></Image>
-        </View>
+        </View> */}
         <View style={styles.cardInfo}>
           <Ionicons
             name={'md-location-sharp'}

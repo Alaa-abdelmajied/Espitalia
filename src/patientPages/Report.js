@@ -12,8 +12,8 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
-import FlashMessage from 'react-native-flash-message';
-import {showMessage, hideMessage} from 'react-native-flash-message';
+import FlashMessage, {showMessage} from 'react-native-flash-message';
+import AwesomeAlert from 'react-native-awesome-alerts';
 import {Rating} from 'react-native-ratings';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -24,10 +24,17 @@ import {useIsFocused} from '@react-navigation/native';
 
 export default function Report({navigation, route}) {
   const {appointmentID, reviewed} = route.params;
-
+  const [alert, setAlert] = useState(false);
   const [report, setReport] = useState({});
   const [loadData, setLoadData] = useState(true);
   const isFocused = useIsFocused();
+
+  showAlert = () => {
+    setAlert(true);
+  };
+  hideAlert = () => {
+    setAlert(false);
+  };
 
   useEffect(() => {
     if (isFocused) {
@@ -71,6 +78,7 @@ export default function Report({navigation, route}) {
         },
       )
       .then(response => {
+        hideAlert();
         showMessage({
           message: 'Review done',
           type: 'success',
@@ -78,6 +86,7 @@ export default function Report({navigation, route}) {
         console.log(response.data);
       })
       .catch(function (error) {
+        hideAlert();
         console.log(error.message);
       });
   };
@@ -85,6 +94,7 @@ export default function Report({navigation, route}) {
   const [showModal, setShowModal] = useState(false);
 
   const onPressSave = () => {
+    showAlert();
     saveReview();
     setShowModal(false);
     console.log(rate);
@@ -95,6 +105,7 @@ export default function Report({navigation, route}) {
       showMessage({
         message: 'This appointment has already been reviewed',
         type: 'warning',
+        duration: 3500,
       });
     } else {
       setShowModal(true);
@@ -189,12 +200,37 @@ export default function Report({navigation, route}) {
           <Text style={styles.infoText}>{report.prescription}</Text>
         </ScrollView>
       </View>
+      <AwesomeAlert
+        show={alert}
+        showProgress={true}
+        title="Saving review"
+        closeOnTouchOutside={true}
+        closeOnHardwareBackPress={false}
+      />
       <FlashMessage position="top" icon="auto" />
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  reportCard: {
+    flexDirection: 'column',
+    width: '95%',
+    height: 180,
+    borderRadius: 15,
+    backgroundColor: '#fff',
+    alignSelf: 'center',
+    margin: 10,
+    shadowColor: '#000',
+    shadowOpacity: 1,
+    shadowOffset: {
+      width: 3,
+      height: 3,
+    },
+    elevation: 2,
+    overflow: 'hidden',
+  },
+
   modal: {
     height: 350,
     backgroundColor: '#f0f0f0',
@@ -214,24 +250,6 @@ const styles = StyleSheet.create({
     elevation: 10,
     overflow: 'hidden',
     padding: 5,
-  },
-
-  reportCard: {
-    flexDirection: 'column',
-    width: '95%',
-    height: 180,
-    borderRadius: 15,
-    backgroundColor: '#fff',
-    alignSelf: 'center',
-    margin: 10,
-    shadowColor: '#000',
-    shadowOpacity: 1,
-    shadowOffset: {
-      width: 3,
-      height: 3,
-    },
-    elevation: 2,
-    overflow: 'hidden',
   },
 
   modalButton: {

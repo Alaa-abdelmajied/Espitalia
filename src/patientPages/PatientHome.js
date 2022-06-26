@@ -137,7 +137,7 @@ export default function PatientHome({navigation}) {
     </View>
   ) : (
     <ScrollView
-      stickyHeaderIndices={[0]}
+
       vertical={true}
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefreshing} />
@@ -440,7 +440,7 @@ const styles = StyleSheet.create({
     color: '#000',
     fontSize: 15,
     margin: 5,
-    flex: 1,
+    // flex: 1,
   },
 
   customRatingBar: {

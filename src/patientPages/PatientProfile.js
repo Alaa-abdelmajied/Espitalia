@@ -28,6 +28,9 @@ export default function Profile({navigation}) {
   const [oldAppointments, setOldAppointments] = useState([]);
   const [loadData, setLoadData] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [empty, setEmpty] = useState(false);
+  const [noAppointments, setNoAppointments] = useState('');
+
   const isFocused = useIsFocused();
   const [gender, setGender] = useState('');
   const femaleAvatar = require('../../images/female.jpg');
@@ -75,6 +78,8 @@ export default function Profile({navigation}) {
           console.log(response.data);
         })
         .catch(function (error) {
+          setEmpty(true);
+          setNoAppointments('No old appointments');
           console.log(error.message);
         });
     } catch (err) {
@@ -187,20 +192,18 @@ export default function Profile({navigation}) {
       }>
       {/*FIXME: avatar depending on gender*/}
       <View style={styles.header}></View>
-      {personalData.gender == 'female' ? (
-        <Image
-          style={styles.avatar}
-          source={femaleAvatar}
 
-          // source={{uri: 'https://www.pedigreecatworld.co.uk/wp-content/uploads/2019/05/customers-icon-3.png'}}
-        />
-      ) : (
-        <Image style={styles.avatar} source={maleAvatar} />
-      )}
+      {/* source={{uri: 'https://www.pedigreecatworld.co.uk/wp-content/uploads/2019/05/customers-icon-3.png'}} */}
+
+      <Image
+        style={styles.avatar}
+        source={require('../../images/user_avatar.png')}
+      />
+
       <View
         style={{position: 'absolute', alignSelf: 'flex-end', marginTop: 15}}>
-        <TouchableOpacity style={{margin: 5}} onPress={onPressLogout}>
-          <Text style={{fontSize: 15, color: '#fff'}}>Logout</Text>
+        <TouchableOpacity style={styles.logoutButton} onPress={onPressLogout}>
+          <Text style={{fontSize: 15, color: '#000'}}>Logout</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.body}>
@@ -350,7 +353,8 @@ export default function Profile({navigation}) {
                       </Text>
                     ) : (
                       <Text style={styles.mainText}>
-                        Allergic: {personalData.allergic} - Allergies:
+                        Allergic: {personalData.allergic}
+                        {'\n'}Allergies:
                         {personalData.allergies}
                       </Text>
                     )}
@@ -360,26 +364,34 @@ export default function Profile({navigation}) {
             </View>
           </View>
           <View style={styles.lineStyle} />
-          <Text style={styles.subtitle}>OLD RESERVATIONS</Text>
-          {oldAppointments.map(item => {
-            return (
-              <TouchableOpacity
-                style={styles.appointmentsCard}
-                key={item.appointmentID}
-                onPress={() =>
-                  onPressReport(item.appointmentID, item.reviewed)
-                }>
-                <Text style={styles.infoText}>Doctor: {item.drName} </Text>
-                <Text style={styles.infoText}>
-                  Specialization: {item.specialization}
-                </Text>
-                <Text style={styles.infoText}>
-                  Hospital: {item.hospitalName}
-                </Text>
-                <Text style={styles.infoText}>Date: {item.date} </Text>
-              </TouchableOpacity>
-            );
-          })}
+          <Text style={styles.subtitle}>OLD APPOINTMENTS</Text>
+          {empty ? (
+            <Text style={{color: '#000', fontSize: 18, margin: 10}}>
+              "{noAppointments}"
+            </Text>
+          ) : (
+            <View>
+              {oldAppointments.map(item => {
+                return (
+                  <TouchableOpacity
+                    style={styles.appointmentsCard}
+                    key={item.appointmentID}
+                    onPress={() =>
+                      onPressReport(item.appointmentID, item.reviewed)
+                    }>
+                    <Text style={styles.infoText}>Doctor: {item.drName} </Text>
+                    <Text style={styles.infoText}>
+                      Specialization: {item.specialization}
+                    </Text>
+                    <Text style={styles.infoText}>
+                      Hospital: {item.hospitalName}
+                    </Text>
+                    <Text style={styles.infoText}>Date: {item.date} </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          )}
         </View>
       </View>
     </ScrollView>
@@ -519,5 +531,17 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'center',
+  },
+
+  logoutButton: {
+    margin: 5,
+    alignSelf: 'flex-end',
+    backgroundColor: '#fff',
+    padding: 10,
+    position: 'absolute',
+    right: 10,
+    top: 10,
+    borderRadius: 20,
+    borderWidth: 1,
   },
 });
