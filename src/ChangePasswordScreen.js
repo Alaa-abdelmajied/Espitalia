@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import Svg, {Path} from 'react-native-svg';
+import React, { useState } from 'react';
+import Svg, { Path } from 'react-native-svg';
 
 import {
   StyleSheet,
@@ -18,10 +18,10 @@ import FlashMessage, {showMessage} from 'react-native-flash-message';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {Server_URL, Token_Secret, Credintials_Secret} from '@env';
+import { Server_URL, Token_Secret, Credintials_Secret } from '@env';
 
-export default function ChangePassword({navigation, route}) {
-  const {changePassword, profileChangePassword} = route.params;
+export default function ChangePassword({ navigation, route }) {
+  const { changePassword, profileChangePassword, type } = route.params;
   const [email, setEmail] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
@@ -38,23 +38,24 @@ export default function ChangePassword({navigation, route}) {
   };
 
   const verifyEmail = () => {
+    console.log(type);
     axios
-      .post(`${Server_URL}:3000/patient/forgotPassword`, {
+      .post(`${Server_URL}:3000/${type}/forgotPassword`, {
         email: email,
       })
       .then(async function (response) {
-        const {token} = response.data;
+        const { token } = response.data;
         try {
           await EncryptedStorage.setItem(
             Token_Secret,
-            JSON.stringify({token: token}),
+            JSON.stringify({ token: token }),
           );
         } catch (err) {
           Alert.alert('Error', err.code, [
-            {text: 'Exit', onPress: () => BackHandler.exitApp()},
+            { text: 'Exit', onPress: () => BackHandler.exitApp() },
           ]);
         }
-        navigation.navigate('OTP', {isForgotten: true});
+        navigation.navigate('OTP', { isForgotten: true, type: type });
       })
       .catch(function (error) {
         const err = error.response.data;
@@ -91,7 +92,7 @@ export default function ChangePassword({navigation, route}) {
         console.log('token', token);
         axios
           .post(
-            `${Server_URL}:3000/patient/forgotPasswordChange`,
+            `${Server_URL}:3000/${type}/forgotPasswordChange`,
             {
               newPassword: newPassword,
             },
@@ -102,7 +103,10 @@ export default function ChangePassword({navigation, route}) {
             },
           )
           .then(async function (response) {
-            navigation.navigate('Login', {staff: false});
+            if (type == 'patient')
+              navigation.navigate('Login', { staff: false });
+            else
+              navigation.navigate('Login', { staff: true });
           })
           .catch(function (error) {
             const err = error.response.data;
@@ -110,16 +114,18 @@ export default function ChangePassword({navigation, route}) {
           });
       } catch (err) {
         Alert.alert('Error', err.code, [
-          {text: 'Exit', onPress: () => BackHandler.exitApp()},
+          { text: 'Exit', onPress: () => BackHandler.exitApp() },
         ]);
       }
+      // break;
 
       // Alert.alert("Passwords don't match");
+      // }
     }
   };
 
   const profilePasswordChange = async () => {
-    const {email, password} = JSON.parse(
+    const { email, password } = JSON.parse(
       await EncryptedStorage.getItem(Credintials_Secret),
     );
     console.log(password);
@@ -145,7 +151,7 @@ export default function ChangePassword({navigation, route}) {
         console.log('token', token);
         axios
           .post(
-            `${Server_URL}:3000/patient/changePassword`,
+            `${Server_URL}:3000/${type}/changePassword`,
             {
               oldPassword: currentPassword,
               newPassword: newPassword,
@@ -162,11 +168,27 @@ export default function ChangePassword({navigation, route}) {
               JSON.stringify({
                 email: email,
                 password: newPassword,
-                type: 'patient',
+                type: type,
               }),
             );
             hideAlert();
-            navigation.navigate('PatientProfile');
+            switch (type) {
+              case 'patient':
+                navigation.navigate('PatientProfile');
+                break;
+              case 'doctor':
+                console.log('Its a doctor');
+                navigation.navigate('Profile');
+                break;
+              case 'receptionist':
+                console.log('Its a recep');
+                navigation.navigate('Profile');
+                break;
+              case 'hospital':
+                console.log('Its a hospital');
+                navigation.navigate('Profile');
+                break;
+            }
           })
           .catch(function (error) {
             hideAlert();
@@ -177,7 +199,7 @@ export default function ChangePassword({navigation, route}) {
           });
       } catch (err) {
         Alert.alert('Error', err.code, [
-          {text: 'Exit', onPress: () => BackHandler.exitApp()},
+          { text: 'Exit', onPress: () => BackHandler.exitApp() },
         ]);
       }
     }
@@ -188,12 +210,12 @@ export default function ChangePassword({navigation, route}) {
       {profileChangePassword ? (
         <View style={styles.header}>
           <Pressable
-            style={{flex: 1, alignSelf: 'center', marginLeft: 5}}
+            style={{ flex: 1, alignSelf: 'center', marginLeft: 5 }}
             onPress={() => navigation.goBack()}>
             <Ionicons name={'arrow-back'} size={30} color="#fff"></Ionicons>
           </Pressable>
           <View
-            style={{flex: 12, flexDirection: 'row', justifyContent: 'center'}}>
+            style={{ flex: 12, flexDirection: 'row', justifyContent: 'center' }}>
             <Image
               style={styles.image}
               source={require('../images/app_logo-removebg-preview.png')}></Image>
@@ -221,13 +243,14 @@ export default function ChangePassword({navigation, route}) {
                 <View style={styles.InputsRegion}>
                   <TextInput
                     style={styles.Input}
+                    autoCapitalize={'none'}
                     placeholder="Enter your email"
                     keyboardType={'email-address'}
                     onChangeText={text => setEmail(text)}></TextInput>
                   <Pressable
                     style={styles.RegisterButton}
                     onPress={verifyEmail}>
-                    <Text style={[styles.buttonText, {color: '#fff'}]}>
+                    <Text style={[styles.buttonText, { color: '#fff' }]}>
                       Verify
                     </Text>
                   </Pressable>
@@ -239,11 +262,13 @@ export default function ChangePassword({navigation, route}) {
                 <View style={styles.InputsRegion}>
                   <TextInput
                     secureTextEntry={true}
+                    autoCapitalize={'none'}
                     style={styles.Input}
                     placeholder="Enter your new password"
                     onChangeText={text => setNewPassword(text)}></TextInput>
                   <TextInput
                     secureTextEntry={true}
+                    autoCapitalize={'none'}
                     style={styles.Input}
                     placeholder="Confirm your new password"
                     onChangeText={text =>
@@ -255,7 +280,7 @@ export default function ChangePassword({navigation, route}) {
                   <Pressable
                     style={styles.RegisterButton}
                     onPress={forgottenPasswordChange}>
-                    <Text style={[styles.buttonText, {color: '#fff'}]}>
+                    <Text style={[styles.buttonText, { color: '#fff' }]}>
                       Done
                     </Text>
                   </Pressable>
@@ -269,16 +294,19 @@ export default function ChangePassword({navigation, route}) {
             <View style={styles.InputsRegion}>
               <TextInput
                 secureTextEntry={true}
+                autoCapitalize={'none'}
                 style={styles.Input}
                 placeholder="Enter your current password"
                 onChangeText={text => setCurrentPassword(text)}></TextInput>
               <TextInput
                 secureTextEntry={true}
+                autoCapitalize={'none'}
                 style={styles.Input}
                 placeholder="Enter your new password"
                 onChangeText={text => setNewPassword(text)}></TextInput>
               <TextInput
                 secureTextEntry={true}
+                autoCapitalize={'none'}
                 style={styles.Input}
                 placeholder="Confirm your new password"
                 onChangeText={text => setConfirmNewPassword(text)}></TextInput>
@@ -374,7 +402,7 @@ const styles = StyleSheet.create({
     margin: '3%',
     backgroundColor: '#fff',
     shadowColor: '#000000',
-    shadowOffset: {width: -1, height: 1},
+    shadowOffset: { width: -1, height: 1 },
     shadowOpacity: 0.2,
     shadowRadius: 1,
     elevation: 2,

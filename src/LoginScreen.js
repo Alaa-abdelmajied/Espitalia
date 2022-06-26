@@ -1,6 +1,7 @@
 import React, {useState, useRef} from 'react';
 import Svg, {Path} from 'react-native-svg';
 
+
 import {
   StyleSheet,
   Text,
@@ -13,8 +14,8 @@ import {
 } from 'react-native';
 //import RadioButtonRN from 'radio-buttons-react-native';
 //import RadioGroup from 'react-native-radio-buttons-group';
-import {CommonActions, StackActions} from '@react-navigation/native';
-import {NavigationActions} from 'react-navigation';
+import { CommonActions, StackActions } from '@react-navigation/native';
+import { NavigationActions } from 'react-navigation';
 // require("dotenv").config();
 
 import RadioGroup from 'react-native-radio-button-group';
@@ -36,13 +37,13 @@ and in circle.js replace by:
 */
 
 import FlashMessage from 'react-native-flash-message';
-import {showMessage, hideMessage} from 'react-native-flash-message';
+import { showMessage, hideMessage } from 'react-native-flash-message';
 
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {Server_URL, Token_Secret, Credintials_Secret} from '@env';
+import { Server_URL, Token_Secret, Credintials_Secret } from '@env';
 
-export default function Login({navigation, route}) {
+export default function Login({ navigation, route }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMeesage, setIsVisible] = useState(false);
@@ -78,11 +79,11 @@ export default function Login({navigation, route}) {
           password: password,
         })
         .then(async function (response) {
-          const {verified, token} = response.data;
+          const { verified, token } = response.data;
           try {
             await EncryptedStorage.setItem(
               Token_Secret,
-              JSON.stringify({token: token}),
+              JSON.stringify({ token: token }),
             );
             await EncryptedStorage.setItem(
               Credintials_Secret,
@@ -94,16 +95,16 @@ export default function Login({navigation, route}) {
             );
           } catch (err) {
             Alert.alert('Error', err.code, [
-              {text: 'Exit', onPress: () => BackHandler.exitApp()},
+              { text: 'Exit', onPress: () => BackHandler.exitApp() },
             ]);
           }
           if (verified) {
             navigation.reset({
               index: 0,
-              routes: [{name: 'Patient'}],
+              routes: [{ name: 'Patient' }],
             });
           } else {
-            navigation.navigate('OTP', {isForgotten: false});
+            navigation.navigate('OTP', { isForgotten: false });
           }
         })
         .catch(function (error) {
@@ -150,7 +151,7 @@ export default function Login({navigation, route}) {
           try {
             await EncryptedStorage.setItem(
               Token_Secret,
-              JSON.stringify({token: token}),
+              JSON.stringify({ token: token }),
             );
             await EncryptedStorage.setItem(
               Credintials_Secret,
@@ -162,7 +163,7 @@ export default function Login({navigation, route}) {
             );
           } catch (err) {
             Alert.alert('Error', err.code, [
-              {text: 'Exit', onPress: () => BackHandler.exitApp()},
+              { text: 'Exit', onPress: () => BackHandler.exitApp() },
             ]);
           }
           if (selectedStaff.id == 'hospital') {
@@ -229,9 +230,11 @@ export default function Login({navigation, route}) {
                 // text => setEmail(text.trim());
               }}
               blurOnSubmit={false}
+              autoCapitalize={'none'}
               onChangeText={text => setEmail(text.trim())}></TextInput>
             <TextInput
               secureTextEntry={true}
+              autoCapitalize={'none'}
               style={styles.Input}
               placeholder="Enter your password"
               ref={passwordRef}
@@ -241,8 +244,27 @@ export default function Login({navigation, route}) {
               // blurOnSubmit={false}
               onChangeText={text => setPassword(text)}></TextInput>
 
+            <Pressable
+              onPress={() => {
+                if (!route.params.staff) {
+                  navigation.navigate('ChangePassword', { changePassword: false, type: 'patient' })
+                } else {
+                  if (selectedStaff.id !== undefined)
+                    navigation.navigate('ChangePassword', { changePassword: false, type: selectedStaff.id })
+                  else
+                    showMessage({
+                      message: 'Please select staff type first',
+                      duration: 5000,
+                      type: 'warning',
+                    });
+                }
+              }
+              }>
+              <Text style={styles.QuestionText}>Forgot password?</Text>
+            </Pressable>
+
             {errorMeesage && (
-              <Text style={{color: '#f00'}}>Something is Wrong</Text>
+              <Text style={{ color: '#f00' }}>Something is Wrong</Text>
             )}
 
             <TouchableOpacity style={styles.RegisterButton} onPress={SignIn}>
@@ -255,13 +277,13 @@ export default function Login({navigation, route}) {
               <Text style={styles.QuestionText}>Forgot password?</Text>
             </Pressable>
             {!route.params.staff ? (
-              <View style={{flexDirection: 'row', margin: '5%'}}>
+              <View style={{ flexDirection: 'row', margin: '5%' }}>
                 <Text style={styles.QuestionText}>
                   Don't have an account yet? {'\b'}
                 </Text>
                 <Pressable onPress={() => navigation.navigate('SignUp')}>
                   <Text
-                    style={{color: '#1c1bad', textDecorationLine: 'underline'}}>
+                    style={{ color: '#1c1bad', textDecorationLine: 'underline' }}>
                     Sign Up
                   </Text>
                 </Pressable>
@@ -330,7 +352,7 @@ const styles = StyleSheet.create({
     margin: '3%',
     backgroundColor: '#fff',
     shadowColor: '#000000',
-    shadowOffset: {width: -1, height: 1},
+    shadowOffset: { width: -1, height: 1 },
     shadowOpacity: 0.2,
     shadowRadius: 1,
     elevation: 2,

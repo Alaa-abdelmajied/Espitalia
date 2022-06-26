@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import Svg, {Path} from 'react-native-svg';
+import React, { useState } from 'react';
+import Svg, { Path } from 'react-native-svg';
 
 import {
   StyleSheet,
@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 
 import FlashMessage from 'react-native-flash-message';
-import {showMessage} from 'react-native-flash-message';
+import { showMessage } from 'react-native-flash-message';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import SelectDropdown from 'react-native-select-dropdown';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -21,7 +21,7 @@ import { LogBox } from 'react-native';
 LogBox.ignoreLogs(['Warning: ...']); 
 LogBox.ignoreAllLogs();
 
-export default function SignUp({navigation}) {
+export default function SignUp({ navigation }) {
   const today = new Date();
   const [text, setText] = useState('📅 Date of Birth');
   const [show, setShow] = useState(false);
@@ -115,7 +115,7 @@ export default function SignUp({navigation}) {
           <Text style={styles.TitleText}>Sign Up</Text>
           <View style={styles.InputsRegion}>
             {isVisible ? (
-              <View style={{height: 30}}>
+              <View style={{ height: 30 }}>
                 <Text style={styles.validationText}>
                   {errorMessage}
                   {/* All fields are required */}
@@ -125,6 +125,7 @@ export default function SignUp({navigation}) {
             <TextInput
               style={styles.Input}
               placeholder="Enter your email"
+              autoCapitalize={'none'}
               keyboardType={'email-address'}
               onChangeText={text => setEmail(text)}></TextInput>
             {/* {!validEmail ? (
@@ -145,6 +146,7 @@ export default function SignUp({navigation}) {
               secureTextEntry={true}
               style={styles.Input}
               placeholder="Enter your password"
+              autoCapitalize={'none'}
               onChangeText={text => setPassword(text)}></TextInput>
             {/* {!minLength ? (
               <View style={{height: 30}}>
@@ -157,6 +159,7 @@ export default function SignUp({navigation}) {
               secureTextEntry={true}
               style={styles.Input}
               placeholder="Confirm your password"
+              autoCapitalize={'none'}
               onChangeText={text => setConfirmPassword(text)}></TextInput>
             {/* {!passwordsMatch ? (
               <View style={{height: 30}}>
@@ -164,9 +167,9 @@ export default function SignUp({navigation}) {
               </View>
             ) : null} */}
             <View style={styles.view}>
-              <View style={{flex: 1, alignItems: 'flex-start'}}>
+              <View style={{ flex: 1, alignItems: 'flex-start' }}>
                 <Pressable onPress={OpenDateWindow} style={styles.dateInput}>
-                  <Text style={{textAlign: 'center', color: '#000'}}>
+                  <Text style={{ textAlign: 'center', color: '#000' }}>
                     {text}
                   </Text>
                   {show && (
@@ -182,7 +185,7 @@ export default function SignUp({navigation}) {
                   )}
                 </Pressable>
               </View>
-              <View style={{flex: 1, alignItems: 'flex-end'}}>
+              <View style={{ flex: 1, alignItems: 'flex-end' }}>
                 <SelectDropdown
                   renderDropdownIcon={() => (
                     <Ionicons name={'chevron-down'} size={20} color={'#000'} />
@@ -191,7 +194,7 @@ export default function SignUp({navigation}) {
                   dropdownOverlayColor="transparent"
                   buttonStyle={styles.dateInput}
                   defaultButtonText="Gender"
-                  buttonTextStyle={{fontSize: 15}}
+                  buttonTextStyle={{ fontSize: 15 }}
                   data={gender}
                   onSelect={(selectedItem, index) => {
                     setSelectedGender(selectedItem);
@@ -210,7 +213,7 @@ export default function SignUp({navigation}) {
             <TouchableOpacity
               style={styles.nextButton}
               onPress={() => onPressNextHandler()}>
-              <Text style={{color: '#fff'}}>Next</Text>
+              <Text style={{ color: '#fff' }}>Next</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -275,7 +278,7 @@ const styles = StyleSheet.create({
     margin: 10,
     backgroundColor: '#fff',
     shadowColor: '#000000',
-    shadowOffset: {width: -1, height: 1},
+    shadowOffset: { width: -1, height: 1 },
     shadowOpacity: 0.2,
     shadowRadius: 1,
     elevation: 2,
@@ -293,7 +296,7 @@ const styles = StyleSheet.create({
     // margin: 10,
     backgroundColor: '#fff',
     shadowColor: '#000000',
-    shadowOffset: {width: -1, height: 1},
+    shadowOffset: { width: -1, height: 1 },
     shadowOpacity: 0.2,
     shadowRadius: 1,
     elevation: 2,
