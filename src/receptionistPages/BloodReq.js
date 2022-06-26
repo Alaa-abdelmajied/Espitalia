@@ -53,7 +53,7 @@ const BloodTypes = [
 
 export default function EventsView() {
   const [selectedBloodType, setSelectedBloodType] = useState('');
-
+  const [error1, setError1] = useState('');
   const [bloodRequests, setBloodRequests] = useState([{}]);
   const [oldBloodRequests, setOldBloodRequests] = useState([{}]);
   const [showModal, setShowModal] = useState(false);
@@ -200,6 +200,7 @@ export default function EventsView() {
 
   const toggleModal = () => {
     setShowModal(!showModal);
+    setSelectedBloodType('');
   };
 
 
@@ -260,12 +261,31 @@ export default function EventsView() {
                   }}
                 />
                 <View>
-                  <Button
-                    title="Save"
+                  <Text style={{ fontSize: 13, color: '#f00' }}>{error1}</Text>
+                </View>
+                <View style={{ flexDirection: 'row' }}>
+                  <Pressable
+                    style={[styles.button, styles.buttonClose]}
+                    onPress={() => {
+                      if (selectedBloodType !== '') {
+                        toggleModal();
+                        createBloodRequest();
+                      }else{
+                        setError1('Please select a blood type.');
+                      }
+                    }
+                    }
+                  >
+                    <Icon style={styles.newDay} name='check' />
+                  </Pressable>
+                  <Pressable
+                    style={[styles.button, styles.buttonClose, { backgroundColor: "#f00" }]}
                     onPress={() => {
                       toggleModal();
-                      createBloodRequest();
-                    }}></Button>
+                    }}
+                  >
+                    <Icon style={styles.newDay} name='close' />
+                  </Pressable>
                 </View>
               </View>
             </View>
@@ -545,7 +565,7 @@ const styles = StyleSheet.create({
   bloodTypeInput: {
     width: 'auto',
     margin: 20,
-    marginBottom: 50,
+    marginBottom: 30,
     // marginLeft: 10,
     // marginRight: 10,
     borderRadius: 10,
