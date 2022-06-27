@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import Svg, {Path} from 'react-native-svg';
 
 
@@ -19,6 +19,8 @@ import { NavigationActions } from 'react-navigation';
 // require("dotenv").config();
 
 import RadioGroup from 'react-native-radio-button-group';
+
+import messaging from '@react-native-firebase/messaging';
 /*
 TODO: 
 add this line in react-native-radio-button-group/RadioGroup.js in line 15
@@ -48,8 +50,27 @@ export default function Login({ navigation, route }) {
   const [password, setPassword] = useState('');
   const [errorMeesage, setIsVisible] = useState(false);
   const [selectedStaff, setSelectedStaff] = useState({});
-
+  const [fcmToken, setFcmToken] = useState('');
   const passwordRef = useRef();
+
+  useEffect(() => {
+    createFcmtoken();
+  }, []);
+  const createFcmtoken = async () => {
+    const authStatus = await messaging().requestPermission();
+    const enabled =
+      authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+      authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+    if (enabled) {
+      await messaging()
+        .getToken()
+        .then((fcmTokenGenerated) => {
+          console.log('FCM Token -> ', fcmTokenGenerated);
+          setFcmToken(fcmTokenGenerated);
+        });
+    } else console.log('Not Authorization status:', authStatus);
+  }
 
   var whoIsLogingIn = [
     {
@@ -77,6 +98,7 @@ export default function Login({ navigation, route }) {
         .post(`${Server_URL}:3000/patient/login`, {
           email: email,
           password: password,
+          fcmToken: fcmToken,
         })
         .then(async function (response) {
           const { verified, token } = response.data;
