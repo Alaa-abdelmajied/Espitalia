@@ -46,7 +46,7 @@ import DoctorsListPage from './receptionistPages/DoctorsListPage';
 import DoctorPage from './receptionistPages/DoctorPage';
 import AppointmentsList from './receptionistPages/AppointmentsList';
 import ReceptProfile from './receptionistPages/ReceptProfile';
-import ReceptNotification from './receptionistPages/Notifications';
+// import ReceptNotification from './receptionistPages/Notifications';
 import ReceptBloodReq from './receptionistPages/BloodReq';
 import ReceptDoctorDetails from './receptionistPages/ReceptDoctorDetails';
 
@@ -314,11 +314,7 @@ function ReceptNavBar() {
             iconName = 'blood-drop';
             size = focused ? 30 : 25;
             color = focused ? 'red' : '#555';
-          } else if (route.name === 'Notifications') {
-            iconName = 'bell';
-            size = focused ? 30 : 25;
-            color = focused ? '#f2c52e' : '#555';
-          }
+          } 
           return iconName === 'blood-drop' ? (
             <Fontisto name={iconName} size={size} color={color} />
           ) : (
@@ -345,11 +341,6 @@ function ReceptNavBar() {
       />
       <Tab.Screen name="Profile" component={ReceptProfile} />
       <Tab.Screen name="Blood Requests" component={ReceptBloodReq} />
-      <Tab.Screen
-        name="Notifications"
-        component={ReceptNotification}
-        options={{tabBarBadge: 3}}
-      />
     </Tab.Navigator>
   );
 }
