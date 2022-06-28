@@ -99,7 +99,7 @@ export default function UserProfileView({ navigation }) {
             <Image
               style={[styles.avatar]}
               // source={require('../../images/Recept_black.png')}
-              source={require('../../images/receptionist.png')}
+              source={require('../../images/Recept_black.png')}
             />
           </View>
 
