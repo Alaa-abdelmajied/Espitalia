@@ -21,7 +21,7 @@ export default function Questions({navigation, route}) {
   const [bloodType, setBloodType] = useState('Unknown');
   const [bloodPressure, setBloodPressure] = useState('Unknown');
   const [allergic, setAllergic] = useState('Unknown');
-  const [allergies, setAllergies] = useState("");
+  const [allergies, setAllergies] = useState('');
 
   const {email, name, password, phoneNumber, date, selectedGender} =
     route.params;
@@ -35,11 +35,11 @@ export default function Questions({navigation, route}) {
         phoneNumber: phoneNumber,
         dateOfBirth: date,
         gender: selectedGender,
-        diabetic:diabetic,
-        bloodType:bloodType,
-        bloodPressure:bloodPressure,
-        allergic:allergic,
-        allergies:allergies
+        diabetic: diabetic,
+        bloodType: bloodType,
+        bloodPressure: bloodPressure,
+        allergic: allergic,
+        allergies: allergies,
       })
       .then(async function (response) {
         const {token} = response.data;
@@ -61,7 +61,7 @@ export default function Questions({navigation, route}) {
             {text: 'Exit', onPress: () => BackHandler.exitApp()},
           ]);
         }
-        navigation.navigate('OTP', {isForgotten: false});
+        navigation.navigate('OTP', {isForgotten: false, type: 'patient'});
       })
       .catch(function (error) {
         const err = error.response.data;

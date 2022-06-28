@@ -137,13 +137,12 @@ export default function PatientHome({navigation}) {
     </View>
   ) : (
     <ScrollView
-
       vertical={true}
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefreshing} />
       }>
       <View style={styles.header}>
-        <View style={{flexDirection:'row',justifyContent:'center'}}>
+        <View style={{flexDirection: 'row', justifyContent: 'center'}}>
           <Image
             style={styles.Image}
             source={require('../../images/app_logo-removebg-preview.png')}></Image>
