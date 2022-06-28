@@ -1,19 +1,21 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import React, {useState} from 'react';
+import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import OTPTextInput from 'react-native-otp-textinput';
-import Svg, { Path, stop, defs, linearGradient } from 'react-native-svg';
-import Ioinicons from 'react-native-vector-icons/Ionicons';
+import Svg, {Path, stop, defs, linearGradient} from 'react-native-svg';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import FlashMessage from 'react-native-flash-message';
-import { showMessage } from 'react-native-flash-message';
+import {showMessage} from 'react-native-flash-message';
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { Server_URL, Token_Secret } from '@env';
+import {Server_URL, Token_Secret} from '@env';
 
-export default function OTP({ navigation, route }) {
+export default function OTP({navigation, route}) {
   const [OTP, setOTP] = useState('');
-  const { isForgotten, type } = route.params;
+  const {isForgotten, type} = route.params;
 
   const verify = async () => {
+    console.log('pressed');
+    console.log(type);
     axios
       .post(
         `${Server_URL}:3000/${type}/verify`,
@@ -33,10 +35,13 @@ export default function OTP({ navigation, route }) {
         if (!isForgotten) {
           navigation.reset({
             index: 0,
-            routes: [{ name: 'Patient' }],
+            routes: [{name: 'Patient'}],
           });
         } else {
-          navigation.navigate('ChangePassword', { changePassword: true, type: type });
+          navigation.navigate('ChangePassword', {
+            changePassword: true,
+            type: type,
+          });
         }
       })
       .catch(function (error) {
@@ -53,6 +58,7 @@ export default function OTP({ navigation, route }) {
   };
 
   const resendOTP = async () => {
+    console.log('pressed');
     axios
       .post(`${Server_URL}:3000/${type}/resendOTP`, null, {
         headers: {
@@ -87,19 +93,20 @@ export default function OTP({ navigation, route }) {
           />
         </Svg>
       </View>
-      <View style={{ marginTop: '30%' }}>
+      <View style={{marginTop: '30%'}}>
         <Text style={styles.text}> Enter the code sent to your email</Text>
         <OTPTextInput
-          textInputStyle={{ borderWidth: 2, borderRadius: 251 }}
+          textInputStyle={{borderWidth: 2, borderRadius: 251}}
           inputCount={5}
           tintColor="#1c1bad"
           handleTextChange={text => setOTP(text)}></OTPTextInput>
-        <Ioinicons
-          name="checkmark-circle"
-          size={55}
-          color={'#1c1bad'}
-          style={{ alignSelf: 'center', margin: 10 }}
-          onPress={verify}></Ioinicons>
+        <TouchableOpacity onPress={verify}>
+          <Ionicons
+            name="checkmark-circle"
+            size={55}
+            color={'#1c1bad'}
+            style={{alignSelf: 'center', margin: 10}}></Ionicons>
+        </TouchableOpacity>
         {/* TODO: connect with backend */}
         <TouchableOpacity onPress={resendOTP}>
           <Text

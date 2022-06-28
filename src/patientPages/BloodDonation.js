@@ -12,9 +12,10 @@ import {
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
-import {Server_URL} from '@env';
+import {Server_URL, Token_Secret} from '@env';
 import Item from '../../utils/ItemCard';
 import {useIsFocused} from '@react-navigation/native';
+import EncryptedStorage from 'react-native-encrypted-storage';
 
 export default function DonateBlood({navigation}) {
   const [bloodRequests, setBloodRequests] = useState([]);
@@ -54,10 +55,18 @@ export default function DonateBlood({navigation}) {
 
   const getRequests = async skipNumber => {
     console.log('skip Number:', skipNumber);
+    const token = JSON.parse(
+      await EncryptedStorage.getItem(Token_Secret),
+    ).token;
     await axios
-      .get(`${Server_URL}:3000/patient/getBloodRequests/${skipNumber}`)
+      .get(`${Server_URL}:3000/patient/getBloodRequests/${skipNumber}`, {
+        headers: {
+          'x-auth-token': token,
+        },
+      })
       .then(response => {
         if (skipNumber == 0) {
+          console.log(response.data);
           setBloodRequests(response.data);
         } else {
           setBloodRequests(bloodRequests => [
