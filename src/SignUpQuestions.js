@@ -22,13 +22,14 @@ export default function Questions({ navigation, route }) {
   const [bloodType, setBloodType] = useState('Unknown');
   const [bloodPressure, setBloodPressure] = useState('Unknown');
   const [allergic, setAllergic] = useState('Unknown');
-  const [allergies, setAllergies] = useState("");
+  const [allergies, setAllergies] = useState('');
+
+  const { email, name, password, phoneNumber, date, selectedGender } = route.params;
   const [fcmToken, setFcmToken] = useState("");
   useEffect(() => {
     createFcmtoken();
   },[]);
-  const { email, name, password, phoneNumber, date, selectedGender } =
-    route.params;
+
 
   const createFcmtoken = async () => {
     const authStatus = await messaging().requestPermission();
@@ -83,7 +84,7 @@ export default function Questions({ navigation, route }) {
             { text: 'Exit', onPress: () => BackHandler.exitApp() },
           ]);
         }
-        navigation.navigate('OTP', { isForgotten: false });
+        navigation.navigate('OTP', {isForgotten: false, type: 'patient'});
       })
       .catch(function (error) {
         const err = error.response.data;

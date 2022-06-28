@@ -292,12 +292,12 @@ export default function Login({ navigation, route }) {
             <TouchableOpacity style={styles.RegisterButton} onPress={SignIn}>
               <Text style={[styles.buttonText, {color: '#fff'}]}>Sign In</Text>
             </TouchableOpacity>
-            <Pressable
+            {/* <Pressable
               onPress={() =>
                 navigation.navigate('ChangePassword', {changePassword: false})
               }>
               <Text style={styles.QuestionText}>Forgot password?</Text>
-            </Pressable>
+            </Pressable> */}
             {!route.params.staff ? (
               <View style={{ flexDirection: 'row', margin: '5%' }}>
                 <Text style={styles.QuestionText}>
