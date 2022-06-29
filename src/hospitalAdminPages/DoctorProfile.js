@@ -538,11 +538,11 @@ export default function ProfileScreen({navigation, route}) {
                   <View
                     style={{height: 150, width: '97%', alignSelf: 'center'}}
                     key={reviewCard.key}>
-                    <View style={{flexDirection: 'row'}}>
+                    <View style={{flexDirection: 'column'}}>
+                      <Text style={styles.name}>{reviewCard.name}</Text>
                       <Text style={styles.name}>
-                        {reviewCard.reviewer_name}
+                        {reviewCard.date.split('T', 1)[0]}
                       </Text>
-                      <Text style={styles.name}>{reviewCard.date}</Text>
                     </View>
                     <View
                       style={{
