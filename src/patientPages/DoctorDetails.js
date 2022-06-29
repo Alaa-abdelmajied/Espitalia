@@ -43,10 +43,10 @@ export default function ProfileScreen({navigation, route}) {
   const [alert, setAlert] = useState(false);
   const isFocused = useIsFocused();
 
-  showAlert = () => {
+  const showAlert = () => {
     setAlert(true);
   };
-  hideAlert = () => {
+  const hideAlert = () => {
     setAlert(false);
   };
 
@@ -57,6 +57,7 @@ export default function ProfileScreen({navigation, route}) {
         await axios
           .get(`${Server_URL}:3000/patient/doctor/${drID}`)
           .then(response => {
+            console.log(response.data.scheduleDetails);
             setData(response.data.doctorData);
             setComments(response.data.reviewDetails);
             setSchedule(response.data.scheduleDetails);
@@ -76,6 +77,8 @@ export default function ProfileScreen({navigation, route}) {
   }, [isFocused]);
 
   const bookAppointment = async (date, from, to) => {
+    showAlert();
+    console.log(date, from, to);
     console.log('pressed');
     try {
       const token = JSON.parse(
@@ -273,10 +276,9 @@ export default function ProfileScreen({navigation, route}) {
                   </View>
                   <TouchableOpacity
                     style={styles.bookButton}
-                    onPress={() => {
-                      showAlert();
-                      bookAppointment(card.date, card.from, card.to);
-                    }}>
+                    onPress={() =>
+                      bookAppointment(card.date, card.from, card.to)
+                    }>
                     <Text style={{color: '#fff'}}>Book</Text>
                   </TouchableOpacity>
                 </View>

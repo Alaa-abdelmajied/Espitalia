@@ -47,10 +47,10 @@ export default function EditProfile({navigation, route}) {
   const [newAllergic, setNewAllergic] = useState(allergic);
   const [newAllergies, setNewAllergies] = useState(allergies);
 
-  showAlert = () => {
+  const showAlert = () => {
     setAlert(true);
   };
-  hideAlert = () => {
+  const hideAlert = () => {
     setAlert(false);
   };
 
@@ -306,7 +306,7 @@ export default function EditProfile({navigation, route}) {
             onPress={() => {
               navigation.navigate('ChangePassword', {
                 profileChangePassword: true,
-                type: 'patient'
+                type: 'patient',
               });
               // , setShowModal(false);
             }}>

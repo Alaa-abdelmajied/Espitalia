@@ -25,10 +25,10 @@ export default function Reservation({}) {
   const [loadData, setLoadData] = useState(true);
   const isFocused = useIsFocused();
 
-  showAlert = () => {
+  const showAlert = () => {
     setAlert(true);
   };
-  hideAlert = () => {
+  const hideAlert = () => {
     setAlert(false);
   };
 

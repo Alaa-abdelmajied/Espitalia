@@ -104,11 +104,7 @@ export default function ProfileScreen({navigation, route}) {
       });
   };
 
-  const [defaultRating, setDefaultRating] = useState(2);
-  const [maxRating, setMaxRating] = useState([1, 2, 3, 4, 5]);
-
   const scrollX = useRef(new Animated.Value(0)).current;
-
   let {width: windowWidth, height: windowHeight} = useWindowDimensions();
   windowHeight = windowHeight - 300;
 
@@ -208,7 +204,7 @@ export default function ProfileScreen({navigation, route}) {
                   style={[
                     styles.normalDots,
                     {width: 2},
-                    {backgroundColor: card.color},
+                    {backgroundColor: '#1c1bad'},
                   ]}
                   key={cardIndex.toString()}
                 />

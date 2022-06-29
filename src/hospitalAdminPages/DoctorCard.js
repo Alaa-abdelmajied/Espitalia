@@ -13,7 +13,6 @@ const DoctorCard = ({item, navigation}) => {
                 <Text style={styles.doctorText}>{item.specialization}</Text>
             </View>
             <Icon name='angle-double-right' style={styles.icon}/>
-
         </View>
     </TouchableOpacity>
   );

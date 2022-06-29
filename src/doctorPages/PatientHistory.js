@@ -10,14 +10,17 @@ import {
   FlatList,
   ActivityIndicator,
 } from 'react-native';
-import axios from 'axios';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {Server_URL, Token_Secret, Credintials_Secret} from '@env';
 
 export default function PatientHistory({navigation, route}) {
   const {patientId, patientName} = route.params;
   const [history, setHistory] = useState([]);
+  const [health, setHealth] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -28,7 +31,10 @@ export default function PatientHistory({navigation, route}) {
     await axios
       .get(`${Server_URL}:3000/doctor/getPatientHistory/${patientId}`)
       .then(response => {
-        setHistory(response.data);
+        setHistory(response.data.patientHistory);
+        setHealth(response.data.patientHealth[0]);
+        console.log(response.data.patientHealth[0]);
+
         setLoading(false);
       })
       .catch(function (error) {
@@ -42,11 +48,6 @@ export default function PatientHistory({navigation, route}) {
     </View>
   ) : (
     <View style={{flex: 1}}>
-      {/* <View style={styles.header_}>
-        <Image
-          style={styles.Image}
-          source={require('../../images/app_logo-removebg-preview.png')}></Image>
-      </View> */}
       <View style={styles.header}>
         <TouchableOpacity
           style={{flex: 1, alignSelf: 'center', marginLeft: 5}}
@@ -63,6 +64,65 @@ export default function PatientHistory({navigation, route}) {
         </View>
       </View>
       <Text style={styles.title}>Medical History of {patientName}</Text>
+      <View style={{padding: 20}}>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            margin: 2,
+          }}>
+          <FontAwesome5
+            name={'book-medical'}
+            size={20}
+            color={'#000'}></FontAwesome5>
+          <Text style={styles.text}>Blood Type: {health.bloodType} </Text>
+        </View>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            margin: 2,
+          }}>
+          <FontAwesome5
+            name={'book-medical'}
+            size={20}
+            color={'#000'}></FontAwesome5>
+          <Text style={styles.text}>Diabetic: {health.diabetic}</Text>
+        </View>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            margin: 2,
+          }}>
+          <FontAwesome5
+            name={'book-medical'}
+            size={20}
+            color={'#000'}></FontAwesome5>
+          <Text style={styles.text}>
+            Blood Pressure: {health.bloodPressure}
+          </Text>
+        </View>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            margin: 2,
+          }}>
+          <FontAwesome5
+            name={'book-medical'}
+            size={20}
+            color={'#000'}></FontAwesome5>
+          {health.allergic == 'No' || health.allergic == 'Unknown' ? (
+            <Text style={styles.text}>Allergic: {health.allergic}</Text>
+          ) : (
+            <Text style={styles.text}>
+              Allergic: {health.allergic}
+              {'\n'}Allergies: {health.allergies}
+            </Text>
+          )}
+        </View>
+      </View>
       <FlatList
         keyExtractor={(item, index) => index.toString()}
         data={history}
@@ -117,9 +177,9 @@ const styles = StyleSheet.create({
   },
   text: {
     color: '#000',
-    fontSize: 20,
+    fontSize: 17,
     // fontStyle: 'italic',
-    margin: 10,
+    margin: 5,
   },
   title: {
     textAlign: 'center',
@@ -151,4 +211,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
   },
+
+  // text: {
+  //   margin: 3,
+  //   color: '#000',
+  //   fontSize: 18,
+  //   marginLeft: 10,
+  // },
 });

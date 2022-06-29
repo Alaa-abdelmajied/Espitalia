@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import {
   StyleSheet,
   Text,
@@ -15,12 +15,12 @@ import {
 
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { Rating } from 'react-native-ratings';
+import {Rating} from 'react-native-ratings';
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { Server_URL, Token_Secret, Credintials_Secret } from '@env';
+import {Server_URL, Token_Secret, Credintials_Secret} from '@env';
 
-export default function UserProfileView({ navigation }) {
+export default function UserProfileView({navigation}) {
   const [personalData, setPersonalData] = useState({});
   const [workingDays, setWorkingDays] = useState([]);
 
@@ -47,7 +47,7 @@ export default function UserProfileView({ navigation }) {
           });
       } catch (err) {
         Alert.alert('Error', err.code, [
-          { text: 'Exit', onPress: () => BackHandler.exitApp() },
+          {text: 'Exit', onPress: () => BackHandler.exitApp()},
         ]);
       }
     };
@@ -60,17 +60,17 @@ export default function UserProfileView({ navigation }) {
       await EncryptedStorage.removeItem(Credintials_Secret);
       navigation.reset({
         index: 0,
-        routes: [{ name: 'WelcomePage' }],
+        routes: [{name: 'WelcomePage'}],
       });
     } catch (err) {
       Alert.alert('Error', err.message, [
-        { text: 'Exit', onPress: () => BackHandler.exitApp() },
+        {text: 'Exit', onPress: () => BackHandler.exitApp()},
       ]);
     }
   };
 
   const scrollX = useRef(new Animated.Value(0)).current;
-  let { width: windowWidth, height: windowHeight } = useWindowDimensions();
+  let {width: windowWidth, height: windowHeight} = useWindowDimensions();
   windowHeight = windowHeight - 300;
 
   return (
@@ -83,17 +83,12 @@ export default function UserProfileView({ navigation }) {
           </TouchableOpacity>
         </View>
 
-//         <TouchableOpacity style={{ margin: 5, alignSelf: 'flex-end' }}>
-//           <Pressable onPress={onPressLogout}>
-//             <Text style={{ fontSize: 15, color: '#fff', margin: 5 }}>Logout</Text>
-//           </Pressable>
-//         </TouchableOpacity>
         <View style={styles.headerContent}>
           <Image
             style={styles.avatar}
             source={require('../../images/doctor_logo.png')}
 
-          // source={{uri: 'https://bootdey.com/img/Content/avatar/avatar6.png'}}
+            // source={{uri: 'https://bootdey.com/img/Content/avatar/avatar6.png'}}
           />
           <Text style={styles.name}>{personalData.drName}</Text>
           <Text style={styles.userInfo}>
@@ -114,7 +109,7 @@ export default function UserProfileView({ navigation }) {
                 backgroundColor: 'transparent',
                 fontSize: 15,
               }}></Rating>
-            <Text style={{ color: '#fff', fontSize: 15, alignSelf: 'center' }}>
+            <Text style={{color: '#fff', fontSize: 15, alignSelf: 'center'}}>
               {personalData.averageRating}/5
             </Text>
           </View>
@@ -154,14 +149,10 @@ export default function UserProfileView({ navigation }) {
             onPress={() => {
               navigation.navigate('ChangePassword', {
                 profileChangePassword: true,
-                type: 'doctor'
+                type: 'doctor',
               });
             }}>
-            <Text
-              style={
-                [styles.mainText,
-                { textDecorationLine: 'underline' }]
-              }>
+            <Text style={[styles.mainText, {textDecorationLine: 'underline'}]}>
               Change Password
             </Text>
           </Pressable>
@@ -175,24 +166,24 @@ export default function UserProfileView({ navigation }) {
           pagingEnabled
           showsHorizontalScrollIndicator={false}
           onScroll={Animated.event(
-            [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-            { useNativeDriver: false },
+            [{nativeEvent: {contentOffset: {x: scrollX}}}],
+            {useNativeDriver: false},
           )}
           scrollEventThrottle={16}>
           {workingDays.map((card, cardIndex) => {
             return (
-              <Animated.View style={{ width: windowWidth }} key={cardIndex}>
+              <Animated.View style={{width: windowWidth}} key={cardIndex}>
                 <View style={styles.scheduleCard}>
                   <View style={styles.dateHeader}>
-                    <Text style={{ color: '#fff', fontSize: 20 }}>
+                    <Text style={{color: '#fff', fontSize: 20}}>
                       {card.day}
                     </Text>
                   </View>
-                  <View style={{ margin: 30, alignItems: 'center' }}>
-                    <Text style={{ color: '#000', fontSize: 20 }}>
+                  <View style={{margin: 30, alignItems: 'center'}}>
+                    <Text style={{color: '#000', fontSize: 20}}>
                       From: {card.from}
                     </Text>
-                    <Text style={{ color: '#000', fontSize: 20 }}>
+                    <Text style={{color: '#000', fontSize: 20}}>
                       To: {card.to}
                     </Text>
                   </View>
@@ -217,8 +208,8 @@ export default function UserProfileView({ navigation }) {
               <Animated.View
                 style={[
                   styles.normalDots,
-                  { width },
-                  { backgroundColor: '#1c1bad' },
+                  {width},
+                  {backgroundColor: '#1c1bad'},
                 ]}
                 key={cardIndex}
               />
@@ -359,7 +350,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 35,
     shadowColor: '#000000',
-    shadowOffset: { width: -2, height: 2 },
+    shadowOffset: {width: -2, height: 2},
     shadowOpacity: 0.2,
     shadowRadius: 3,
     elevation: 2,
