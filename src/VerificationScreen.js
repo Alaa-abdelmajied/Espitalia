@@ -15,13 +15,13 @@ export default function OTP({navigation, route}) {
 
   const verify = async () => {
     console.log('pressed');
-    console.log(type);
+    console.log(isForgotten, type);
     axios
       .post(
         `${Server_URL}:3000/${type}/verify`,
         {
           otp: OTP,
-          forgot: false,
+          forgot: isForgotten,
         },
         {
           headers: {
