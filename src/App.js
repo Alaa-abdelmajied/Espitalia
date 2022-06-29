@@ -296,15 +296,14 @@ function ReceptNavBar() {
       screenOptions={({route}) => ({
         tabBarIcon: ({focused, size, color}) => {
           let iconName;
-
           if (route.name === 'Home') {
             iconName = 'hospital';
-            size = focused ? 30 : 25;
+            size = focused ? 25 : 23;
             // color = focused ? '#1c1bad' : '#555';
           } else if (route.name === 'Profile') {
             iconName = 'user-circle';
-            size = focused ? 30 : 25;
-            color = focused ? 'green' : '#555';
+            size = focused ? 25 : 23;
+            // color = focused ? 'green' : '#555';
           }
           // else if(route.name=='Blood Requests'){
           //   <Icon.Button
@@ -312,28 +311,33 @@ function ReceptNavBar() {
           // }
           else if (route.name === 'Blood Requests') {
             iconName = 'blood-drop';
-            size = focused ? 30 : 25;
-            color = focused ? 'red' : '#555';
-          } 
+            size = focused ? 25 : 23;
+            // color = focused ? 'red' : '#555';
+          }
           return iconName === 'blood-drop' ? (
             <Fontisto name={iconName} size={size} color={color} />
           ) : (
             <FontAwesome5 name={iconName} size={size} color={color} />
           );
         },
+        tabBarActiveTintColor: '#1c1bad',
+        tabBarInactiveTintColor: '#000',
+        // activeTintColor: '#1c1bad',
+        // // inactiveTintColor: '#555',
+        // inactiveColor: '#000',
+        // activeBackgroundColor: '#fff',
+        // inactiveBackgroundColor: '#fff',
+        // showLabel: false,
+        // labelStyle: {fontSize: 14},
+        // showIcon: true,
       })}
-      tabBarOptions={{
-        activeTintColor: '#1c1bad',
-        inactiveTintColor: '#555',
-        activeBackgroundColor: '#fff',
-        inactiveBackgroundColor: '#fff',
-        showLabel: false,
-        labelStyle: {fontSize: 14},
-        showIcon: true,
-      }}
-      activeColor="#f0edf6"
-      inactiveColor="#ffffff"
-      barStyle={{backgroundColor: '#1c1bad'}}>
+      activeColor="#1c1bad"
+      inactiveColor="#000"
+      barStyle={{backgroundColor: '#fff'}}
+      // activeColor="#f0edf6"
+      // inactiveColor="#ffffff"
+      // barStyle={{backgroundColor: '#1c1bad'}}
+    >
       <Tab.Screen
         name="Home"
         component={ReceptStackView}
