@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { SafeAreaView, View, StyleSheet, Text, Input, TextInput, FlatList, TouchableOpacity, Image } from 'react-native';
+import React, { useEffect, useState, useCallback } from 'react';
+import { SafeAreaView, RefreshControl, View, StyleSheet, Text, Input, TextInput, FlatList, TouchableOpacity, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/dist/FontAwesome';
 import Ionicons from 'react-native-vector-icons/dist/Ionicons';
 import AntDesign from 'react-native-vector-icons/dist/AntDesign';
@@ -11,6 +11,11 @@ import { Server_URL, Token_Secret, Credintials_Secret } from '@env';
 
 const Receptionistpage = ({ navigation, route }) => {
     const [recepitionists, setRecepitionists] = useState();
+    const [refreshing, setRefreshing] = useState(false);
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        getReceptionists().then(setRefreshing(false));
+    })
 
     const getReceptionists = async () => {
         const token = JSON.parse(await EncryptedStorage.getItem(Token_Secret)).token;
@@ -70,6 +75,9 @@ const Receptionistpage = ({ navigation, route }) => {
                 </View>
                 <FlatList
                     data={recepitionists}
+                    refreshControl={
+                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                    }
                     renderItem={({ item }) =>
                         <TouchableOpacity style={styles.doctorCard} onPress={() => navigation.navigate('ReceptionistProfile', item)}>
                             <View style={styles.doctorView}>

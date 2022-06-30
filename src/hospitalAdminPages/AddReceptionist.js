@@ -80,12 +80,9 @@ const AddReceptionist = ({ navigation, route }) => {
     const handelWorkingDay = (d, f, t) => {
         const workingDay = {
             day: d,
-            // from: f.getHours() + ':' + f.getMinutes(),
-            // to: t.getHours() + ':' + t.getMinutes()
             from: from,
             to: to
         };
-        // console.log(checkWorkingDays(workingDay, workingDays));
         console.log(d);
         if (d == '') {
             setErrorMessage('Select a Day');
@@ -100,7 +97,6 @@ const AddReceptionist = ({ navigation, route }) => {
             setErrorMessage('Working day is already exists');
         }
         else {
-            // console.log('handel Working Days');
             console.log(workingDay);
             setWorkingDays([...workingDays, workingDay]);
             setErrorMessage('');
@@ -153,13 +149,11 @@ const AddReceptionist = ({ navigation, route }) => {
                 to: workingDays[i].to.getHours() + ':' + workingDays[i].to.getMinutes()
             });
         }
-        // console.log("helloooo", newWorkingDays);
         return newWorkingDays;
     }
     const AddNewReceptionist = async () => {
         if (name == '') setErrorMessage2('Enter Name');
         else if (emailError != '') setErrorMessage2('Enter a valid Email');
-        // else if (email == '') setErrorMessage2('Enter Email');
         else if (phoneNumber == '') setErrorMessage2('Enter phone number');
         else if (date === today) setErrorMessage2('select a proper date');
         else if (workingDays.length == 0) setErrorMessage2('Add at least one working day');
@@ -171,12 +165,8 @@ const AddReceptionist = ({ navigation, route }) => {
                 url: `${Server_URL}:3000/hospital/addReceptionist`,
                 data: {
                     name: name,
-                    username: name,
                     email: email,
-                    password: '123456789',
-                    phoneNumber: '012 1111 1111',
-                    education: 'ma3had sarf se77y',
-                    from: 'el 3atareen',
+                    phoneNumber: phoneNumber,
                     workingDays: makeValidWorkingDays()
                 },
                 headers: {
@@ -191,22 +181,6 @@ const AddReceptionist = ({ navigation, route }) => {
                 });
         }
         console.log(errorMessage2, date, today);
-    }
-    const genPasword = () => {
-        var result = '';
-        var alpha = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-        var nums = '0123456789';
-        var symbols = '~`!@#$%^&*()_-+={[}]|\\:;"\'<,>.?/';
-        for (var i = 0; i < 5; i++) {
-            result += alpha.charAt(Math.floor(Math.random() * alpha.length));
-        }
-        for (var i = 0; i < 2; i++) {
-            result += nums.charAt(Math.floor(Math.random() * nums.length));
-        }
-        for (var i = 0; i < 1; i++) {
-            result += symbols.charAt(Math.floor(Math.random() * symbols.length));
-        }
-        return result;
     }
 
     return (

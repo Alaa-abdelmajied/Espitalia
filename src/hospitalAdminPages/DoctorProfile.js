@@ -1,5 +1,5 @@
 import React, {useRef} from 'react';
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useCallback} from 'react';
 
 import {
   ScrollView,
@@ -10,6 +10,7 @@ import {
   Image,
   Text,
   Pressable,
+  RefreshControl,
   TouchableOpacity,
   FlatList,
   Modal,
@@ -34,7 +35,11 @@ n8RPhN
 */
 
 export default function ProfileScreen({navigation, route}) {
-  // const [doctor, setDoctor] = useState(route.params);
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    getDoctor().then(setRefreshing(false));
+  }, []);
   const Day = [
     'Saterday',
     'Sunday',
@@ -310,7 +315,10 @@ export default function ProfileScreen({navigation, route}) {
   windowHeight = windowHeight - 300;
 
   return (
-    <ScrollView>
+    <ScrollView
+    refreshControl={
+      <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+    >
       <View style={styles.container}>
         <View style={styles.headerContainer}>
           <View style={styles.header}></View>

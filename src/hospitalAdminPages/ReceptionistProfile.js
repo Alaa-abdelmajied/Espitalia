@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useCallback } from 'react';
 import { useState, useEffect } from 'react';
 
 import {
@@ -6,6 +6,7 @@ import {
   StyleSheet,
   View,
   Animated,
+  RefreshControl,
   useWindowDimensions,
   Image,
   Text,
@@ -34,7 +35,11 @@ n8RPhN
 */
 
 export default function ProfileScreen({ navigation, route }) {
-  
+  const [refreshing, setRefreshing] = useState(false);
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        getReceptionist().then(setRefreshing(false));
+    }, []);
   const Day = ['Saterday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
   const [recepitionist, setRecepitionist] = useState(route.params);
@@ -283,7 +288,11 @@ export default function ProfileScreen({ navigation, route }) {
   windowHeight = windowHeight - 300;
 
   return (
-    <ScrollView>
+    <ScrollView
+    refreshControl={
+      <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+    }
+    >
       <View style={styles.container}>
         <View style={styles.headerContainer}>
           <View style={styles.header}></View>

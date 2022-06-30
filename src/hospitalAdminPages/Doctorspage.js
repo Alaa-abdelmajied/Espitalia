@@ -1,7 +1,7 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import React, { useState, useEffect } from 'react';
-import { SafeAreaView, View, StyleSheet, Text, Input, Image, TextInput, FlatList, TouchableOpacity, VirtualizedList } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { SafeAreaView, RefreshControl, View, StyleSheet, Text, Input, Image, TextInput, FlatList, TouchableOpacity, VirtualizedList } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import DoctorCard from './DoctorCard';
 import Icon from 'react-native-vector-icons/dist/FontAwesome';
@@ -12,6 +12,11 @@ import { Server_URL, Token_Secret, Credintials_Secret } from '@env';
 
 
 const Doctorspage = ({ navigation, route }) => {
+    const [refreshing, setRefreshing] = useState(false);
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        getDoctors().then(setRefreshing(false));
+    }, []);
     const [doctors, setDoctors] = useState();
     // const [search, setSearch] = useState('');
 
@@ -69,13 +74,17 @@ const Doctorspage = ({ navigation, route }) => {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView 
+        style={styles.container}
+        >
             <View style={styles.container}>
                 <View style={styles.titleStyle}>
                     <TextInput placeholder='🔍Search' style={styles.input} onChangeText={value => updateSearch(value)} />
                 </View>
                 <FlatList
                     data={doctors}
+                    refreshControl={ 
+                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} /> }
                     renderItem={({ item }) =>
                         <TouchableOpacity style={styles.doctorCard} onPress={() => navigation.navigate('DoctorProfile', item)}>
                             <View style={styles.doctorView}>

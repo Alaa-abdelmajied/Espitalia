@@ -26,7 +26,6 @@ n8RPhN
 const Day = ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
 const AddDoctorPage = ({ navigation, route }) => {
-    // const [specializationsObj, setSpecializationsObj] = useState([]);
     const [specializations, setSpecializations] = useState([]);
     const [selectedSpecialization, setSelectedSpecialization] = useState('');
     useEffect(() => {
@@ -50,7 +49,6 @@ const AddDoctorPage = ({ navigation, route }) => {
         }
         getSpecialization();
     }, []);
-    // const [nameError, setNameError] = useState('');
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [emailError, setEmailError] = useState('');
@@ -205,10 +203,8 @@ const AddDoctorPage = ({ navigation, route }) => {
                 url: `${Server_URL}:3000/hospital/addDoctor`,
                 data: {
                     name: name,
-                    userName: name,
                     specialization: selectedSpecialization,
                     email: email,
-                    password: '123456789',
                     workingDays: makeValidWorkingDays()
                 },
                 headers: {
@@ -216,34 +212,17 @@ const AddDoctorPage = ({ navigation, route }) => {
                 }
             })
                 .then(function (response) {
-                    // console.log(response.data);
                     navigation.goBack();
-                    // navigation.navigate("Doctors") 
-                    // navigation.navigate("HosptialAdminHomePage") 
-                    // navigation.dispatch(StackActions.popToTop());
-                    // navigation.dispatch(
-                    //     StackActions.replace('HosptialAdminHomePage', { screen: 'Home' })
-                    // );
                 })
                 .catch(function (error) {
-                    console.log(error);
+                    if(error.response.status == 409){
+                        setErrorMessage2('Email is already exists');
+                    }
+                    console.log(Server_URL);
+                    console.log(error.response.status);
                 });
         }
     }
-
-    /*
-    Create a function that create a compontent every time the plus button being pressed:
-    Component : day - From - To
-    this component return an object(workingday = {
-                                                    day,
-                                                    from,
-                                                    to
-                                                }
-    )
-    then we have a [workingDays, setWorkingDays] = useState([]) store all working days in array to save it in database
-    
-    
-    */
 
     return (
         <View style={styles.container}>
