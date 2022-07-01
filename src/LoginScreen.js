@@ -38,7 +38,7 @@ and in circle.js replace by:
 */
 
 import FlashMessage from 'react-native-flash-message';
-import {showMessage, hideMessage} from 'react-native-flash-message';
+import {showMessage} from 'react-native-flash-message';
 
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';

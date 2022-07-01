@@ -187,7 +187,7 @@ export default function ProfileScreen({navigation, route}) {
               <View
                 style={{
                   flexDirection: 'row',
-                  width: '98%',
+                  width: '95%',
                   justifyContent: 'center',
                 }}>
                 <Ionicons
@@ -541,6 +541,13 @@ const styles = StyleSheet.create({
     color: 'bold',
     color: '#000',
     margin: 10,
+    alignSelf:'center'
+  },
+    subtitle: {
+    fontSize: 16,
+    color: '#1c1bad',
+    margin: 5,
+    fontWeight: 'bold',
   },
 
   reviewsArea: {
