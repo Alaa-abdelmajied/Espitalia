@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 
 import {
   StyleSheet,
@@ -8,31 +8,31 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
+  Modal,
   Alert,
 } from 'react-native';
 
-import {Picker} from '@react-native-picker/picker';
-import Svg, {Path} from 'react-native-svg';
+import { Picker } from '@react-native-picker/picker';
+import Svg, { Path } from 'react-native-svg';
 import CheckBox from '@react-native-community/checkbox';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import FlashMessage from 'react-native-flash-message';
-import {showMessage} from 'react-native-flash-message';
-
-// import {ScrollView} from 'react-native-gesture-handler';
+import { showMessage } from 'react-native-flash-message';
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {Server_URL, Token_Secret, Credintials_Secret} from '@env';
+import { Server_URL, Token_Secret, Credintials_Secret } from '@env';
 import messaging from '@react-native-firebase/messaging';
 
-export default function Questions({navigation, route}) {
+export default function Questions({ navigation, route }) {
   const [diabetic, setDiabetic] = useState('Unknown');
   const [bloodType, setBloodType] = useState('Unknown');
   const [bloodPressure, setBloodPressure] = useState('Unknown');
   const [allergic, setAllergic] = useState('Unknown');
   const [allergies, setAllergies] = useState('');
-
   const [toggleCheckBox, setToggleCheckBox] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
-  const {email, name, password, phoneNumber, date, selectedGender} =
+  const { email, name, password, phoneNumber, date, selectedGender } =
     route.params;
   const [fcmToken, setFcmToken] = useState('');
   useEffect(() => {
@@ -57,59 +57,79 @@ export default function Questions({navigation, route}) {
 
   const onPressHandler = async () => {
     console.log('front', fcmToken);
-    axios
-      .post(`${Server_URL}:3000/patient/signup`, {
-        email: email,
-        password: password,
-        name: name,
-        phoneNumber: phoneNumber,
-        dateOfBirth: date,
-        gender: selectedGender,
-        diabetic: diabetic,
-        bloodType: bloodType,
-        bloodPressure: bloodPressure,
-        allergic: allergic,
-        allergies: allergies,
-        fcmToken: fcmToken,
-      })
-      .then(async function (response) {
-        const {token} = response.data;
-        try {
-          await EncryptedStorage.setItem(
-            Token_Secret,
-            JSON.stringify({token: token}),
-          );
-          await EncryptedStorage.setItem(
-            Credintials_Secret,
-            JSON.stringify({
-              email: email,
-              password: password,
-              type: 'patient',
-            }),
-          );
-        } catch (err) {
-          Alert.alert('Error', err.code, [
-            {text: 'Exit', onPress: () => BackHandler.exitApp()},
-          ]);
-        }
-        if (!toggleCheckBox) {
-          showMessage({
-            message: 'You need to accept our terms and conditions first',
-            type: 'warning',
-          });
-        } else {
-          navigation.navigate('OTP', {isForgotten: false, type: 'patient'});
-        }
-      })
-      .catch(function (error) {
-        const err = error.response.data;
-        //alert signup issue
-        console.log('alert');
+    if (!toggleCheckBox) {
+      console.log('not toggled')
+      showMessage({
+        message: 'You need to accept our terms and conditions first',
+        duration: 5000,
+        type: 'warning',
       });
+    } else {
+      axios
+        .post(`${Server_URL}:3000/patient/signup`, {
+          email: email,
+          password: password,
+          name: name,
+          phoneNumber: phoneNumber,
+          dateOfBirth: date,
+          gender: selectedGender,
+          diabetic: diabetic,
+          bloodType: bloodType,
+          bloodPressure: bloodPressure,
+          allergic: allergic,
+          allergies: allergies,
+          fcmToken: fcmToken,
+        })
+        .then(async function (response) {
+          const { token } = response.data;
+          try {
+            await EncryptedStorage.setItem(
+              Token_Secret,
+              JSON.stringify({ token: token }),
+            );
+            await EncryptedStorage.setItem(
+              Credintials_Secret,
+              JSON.stringify({
+                email: email,
+                password: password,
+                type: 'patient',
+              }),
+            );
+          } catch (err) {
+            Alert.alert('Error', err.code, [
+              { text: 'Exit', onPress: () => BackHandler.exitApp() },
+            ]);
+          }
+          navigation.navigate('OTP', { isForgotten: false, type: 'patient' });
+        })
+        .catch(function (error) {
+          const err = error.response.data;
+          if (err.includes('E11000 duplicate key'))
+            showMessage({
+              message: 'This email already exists',
+              duration: 5000,
+              type: 'warning',
+            });
+          console.log('This email already exists');
+        });
+    }
   };
 
   return (
     <ScrollView>
+      <Modal visible={showModal} animationType="fade" transparent={true}>
+        <View style={styles.modal}>
+          <FontAwesome
+            name={'close'}
+            size={20}
+            color={'#1c1bad'}
+            onPress={() => setShowModal(false)}
+            style={{ alignSelf: 'flex-start', margin: 5 }}></FontAwesome>
+          <View style={styles.modalText}>
+            <Text>Hello</Text>
+          </View>
+        </View>
+      </Modal>
       <View style={styles.WaveHeader}>
         <Svg>
           <Path
@@ -199,26 +219,27 @@ export default function Questions({navigation, route}) {
               ) : null}
             </View>
           </View>
-          <View style={{flexDirection: 'row', justifyContent: 'center'}}>
+          <View style={{ flexDirection: 'row', justifyContent: 'center', margin: '5%' }}>
             <CheckBox
               disabled={false}
               value={toggleCheckBox}
               onValueChange={newValue => setToggleCheckBox(newValue)}
-              // onPress={() => navigation.navigate('SignUp')}
+            // onPress={() => navigation.navigate('SignUp')}
             />
-            <Text
-              style={{
-                color: '#1c1bad',
-                textDecorationLine: 'underline',
-                alignSelf: 'center',
-              }}>
-              Agree to terms and conditions
+            <Text style={styles.QuestionText}>
+              Agree to{'\b'}
             </Text>
+            <Pressable onPress={() => setShowModal(true)}>
+              <Text
+                style={{ marginTop: 5, color: '#1c1bad', textDecorationLine: 'underline' }}>
+                terms and conditions
+              </Text>
+            </Pressable>
           </View>
           <TouchableOpacity
             style={styles.RegisterButton}
             onPress={() => onPressHandler()}>
-            <Text style={{color: '#fff'}}>Sign up</Text>
+            <Text style={{ color: '#fff' }}>Sign up</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -232,6 +253,42 @@ const styles = StyleSheet.create({
     // flex: 1,
     height: 200,
     width: '100%',
+  },
+
+  modal: {
+    height: 350,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 15,
+    width: '80%',
+    marginTop: '30%',
+    // margin: 300,
+    alignSelf: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#1c1bad',
+    shadowOpacity: 1,
+    shadowOffset: {
+      width: 10,
+      height: 15,
+    },
+    elevation: 10,
+    overflow: 'hidden',
+    padding: 5,
+  },
+
+  modalButton: {
+    backgroundColor: '#1c1bad',
+    borderRadius: 5,
+    width: 150,
+    height: 50,
+    justifyContent: 'center',
+    alignSelf: 'center',
+    // marginBottom: 20,
+  },
+  modalText: {
+    fontSize: 15,
+    color: '#fff',
+    textAlign: 'center',
   },
 
   RegisterRegion: {
@@ -275,7 +332,7 @@ const styles = StyleSheet.create({
     height: 50,
     width: 200,
     shadowColor: '#000000',
-    shadowOffset: {width: -2, height: 2},
+    shadowOffset: { width: -2, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 3,
     elevation: 2,
@@ -293,7 +350,7 @@ const styles = StyleSheet.create({
 
   QuestionText: {
     color: '#000',
-    margin: 10,
+    marginTop: 5,
     // fontSize:15,
   },
 
