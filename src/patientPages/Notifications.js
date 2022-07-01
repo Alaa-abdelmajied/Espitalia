@@ -89,12 +89,11 @@ export default function Notification({ navigation }) {
           ) : (
             <Text
               style={{
-                fontSize: 20,
+                fontSize: 18,
                 alignSelf: 'center',
-                color: '#000',
-                margin: '10%',
+                margin: 20,
               }}>
-              No Notifications :)
+              No notifications
             </Text>
           )
         }

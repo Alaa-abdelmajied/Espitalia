@@ -366,8 +366,8 @@ export default function Profile({navigation}) {
           <View style={styles.lineStyle} />
           <Text style={styles.subtitle}>OLD APPOINTMENTS</Text>
           {empty ? (
-            <Text style={{color: '#000', fontSize: 18, margin: 10}}>
-              "{noAppointments}"
+            <Text style={{alignSelf: 'center', fontSize: 15}}>
+              No old appointments found
             </Text>
           ) : (
             <View>
