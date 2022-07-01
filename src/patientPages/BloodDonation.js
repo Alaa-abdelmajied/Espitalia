@@ -1,23 +1,20 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
   View,
   FlatList,
-  Pressable,
+  Image,
   ActivityIndicator,
   TouchableOpacity,
-  Modal,
 } from 'react-native';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
-import {Server_URL, Token_Secret} from '@env';
+import { Server_URL, Token_Secret } from '@env';
 import Item from '../../utils/ItemCard';
-import {useIsFocused} from '@react-navigation/native';
+import { useIsFocused } from '@react-navigation/native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 
-export default function DonateBlood({navigation}) {
+export default function DonateBlood({ navigation }) {
   const [bloodRequests, setBloodRequests] = useState([]);
   const [skipNumber, setSkipNumber] = useState(0);
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -107,9 +104,20 @@ export default function DonateBlood({navigation}) {
     setRefreshing(true);
   };
 
+  const onPressAccepted = () => {
+    navigation.navigate('AcceptedBloodReq');
+  }
+
   return (
     <View style={styles.container}>
+      <View style={styles.header}>
+        <Image
+          style={styles.Image}
+          source={require('../../images/app_logo-removebg-preview.png')}></Image>
+        <Text style={styles.headerText}>espitalia</Text>
+      </View>
       <TouchableOpacity
+        onPress={onPressAccepted}
         style={{
           alignSelf: 'center',
           borderRadius: 15,
@@ -117,7 +125,7 @@ export default function DonateBlood({navigation}) {
           padding: 5,
           margin: 10,
         }}>
-        <Text style={{fontSize: 18, color: '#fff'}}>Accepted requests</Text>
+        <Text style={{ fontSize: 18, color: '#fff' }}>Accepted requests</Text>
       </TouchableOpacity>
       <FlatList
         data={bloodRequests}
@@ -128,7 +136,7 @@ export default function DonateBlood({navigation}) {
         refreshing={refreshing}
         onEndReached={onEndReachedHandler}
         onEndReachedThreshold={0.1}
-        renderItem={({item}) => <Item item={item} />}
+        renderItem={({ item }) => <Item item={item} />}
         ListEmptyComponent={
           loadData ? (
             <View>
@@ -155,7 +163,23 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-
+  header: {
+    flexDirection: 'row',
+    height: 50,
+    backgroundColor: '#1c1bad',
+    justifyContent: 'center',
+  },
+  headerText: {
+    fontSize: 20,
+    color: '#fff',
+    fontWeight: 'bold',
+    alignSelf: 'center',
+  },
+  Image: {
+    width: 50,
+    height: 50,
+    alignSelf: 'center',
+  },
   appointmentsCard: {
     flexDirection: 'column',
     width: '95%',
@@ -190,12 +214,6 @@ const styles = StyleSheet.create({
     margin: 10,
     fontSize: 15,
   },
-  header: {
-    height: '8%',
-    backgroundColor: '#1c1bad',
-    justifyContent: 'center',
-  },
-
   buttonView: {
     alignItems: 'center',
     justifyContent: 'center',

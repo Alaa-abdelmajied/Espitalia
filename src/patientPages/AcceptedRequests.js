@@ -1,43 +1,82 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
   View,
   FlatList,
-  Pressable,
   ActivityIndicator,
   TouchableOpacity,
-  Modal,
+  Image,
+  BackHandler
 } from 'react-native';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
-import {Server_URL, Token_Secret} from '@env';
+import { Server_URL, Token_Secret } from '@env';
 import Item from '../../utils/ItemCard';
-import {useIsFocused} from '@react-navigation/native';
+import { useIsFocused } from '@react-navigation/native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 
-export default function DonateBlood({navigation}) {
+export default function AcceptedRequests({ navigation }) {
   const [bloodRequests, setBloodRequests] = useState([]);
-  const [skipNumber, setSkipNumber] = useState(0);
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const [refreshing, setRefreshing] = useState(false);
-  const [showModal, setShowModal] = useState(false);
   const [loadData, setLoadData] = useState(true);
   const isFocused = useIsFocused();
 
+
+  useEffect(() => {
+    setLoadData(true);
+    if (isFocused) {
+      getRequests();
+    } else {
+      setBloodRequests([]);
+    }
+  }, [isFocused]);
+
+  const getRequests = async () => {
+    try {
+      const token = JSON.parse(
+        await EncryptedStorage.getItem(Token_Secret),
+      ).token;
+      await axios
+        .get(`${Server_URL}:3000/patient/acceptedBloodRequests`, {
+          headers: {
+            'x-auth-token': token,
+          },
+        })
+        .then(response => {
+          setBloodRequests(response.data);
+          setLoadData(false);
+        })
+        .catch(function (error) {
+          console.log(error.message);
+          setLoadData(false);
+        });
+    } catch (err) {
+      Alert.alert('Error', err.code, [
+        { text: 'Exit', onPress: () => BackHandler.exitApp() },
+      ]);
+    }
+  }
+
   return (
     <View style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity
+          style={{ flex: 1, alignSelf: 'center', marginLeft: 5 }}
+          onPress={() => navigation.goBack()}>
+          <Ionicons name={'arrow-back'} size={30} color="#fff"></Ionicons>
+        </TouchableOpacity>
+        <View
+          style={{ flex: 12, flexDirection: 'row', justifyContent: 'center' }}>
+          <Image
+            style={styles.image}
+            source={require('../../images/app_logo-removebg-preview.png')}></Image>
+          <Text style={styles.headerText}>espitalia</Text>
+        </View>
+      </View>
       <FlatList
         data={bloodRequests}
-        keyExtractor={item => {
-          return item.id;
-        }}
-        // onRefresh={onRefreshing}
-        refreshing={refreshing}
-        // onEndReached={onEndReachedHandler}
-        onEndReachedThreshold={0.1}
-        renderItem={({item}) => <Item item={item} />}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={({ item }) => <Item item={item} />}
         ListEmptyComponent={
           loadData ? (
             <View>
@@ -63,6 +102,24 @@ export default function DonateBlood({navigation}) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  header: {
+    flexDirection: 'row',
+    height: 50,
+    backgroundColor: '#1c1bad',
+    justifyContent: 'center',
+  },
+  headerText: {
+    fontSize: 20,
+    color: '#fff',
+    fontWeight: 'bold',
+    alignSelf: 'center',
+  },
+
+  image: {
+    width: 50,
+    height: 50,
+    alignSelf: 'center',
   },
 
   appointmentsCard: {
@@ -98,11 +155,6 @@ const styles = StyleSheet.create({
     color: '#000',
     margin: 10,
     fontSize: 15,
-  },
-  header: {
-    height: '8%',
-    backgroundColor: '#1c1bad',
-    justifyContent: 'center',
   },
 
   buttonView: {

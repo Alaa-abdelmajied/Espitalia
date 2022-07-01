@@ -1,28 +1,22 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
   View,
-  Button,
-  Linking,
-  SectionList,
-  RefreshControl,
+  Image,
   FlatList,
   TouchableOpacity,
   ActivityIndicator,
   BackHandler,
   Alert,
 } from 'react-native';
-import Dialog from 'react-native-dialog';
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {Server_URL, Token_Secret} from '@env';
-import {useIsFocused} from '@react-navigation/native';
+import { Server_URL, Token_Secret } from '@env';
+import { useIsFocused } from '@react-navigation/native';
 
-export default function Notification({navigation}) {
+export default function Notification({ navigation }) {
   const [notifications, setNotifications] = useState([]);
-  const [skipNumber, setSkipNumber] = useState(0);
-  const [currentDate, setCurrentDate] = useState(new Date());
   const [refreshing, setRefreshing] = useState(false);
   const [loadData, setLoadData] = useState(true);
   const isFocused = useIsFocused();
@@ -50,7 +44,7 @@ export default function Notification({navigation}) {
         });
     } catch (err) {
       Alert.alert('Error', err.code, [
-        {text: 'Exit', onPress: () => BackHandler.exitApp()},
+        { text: 'Exit', onPress: () => BackHandler.exitApp() },
       ]);
     }
   };
@@ -77,6 +71,12 @@ export default function Notification({navigation}) {
 
   return (
     <View style={styles.container}>
+      <View style={styles.header}>
+        <Image
+          style={styles.Image}
+          source={require('../../images/app_logo-removebg-preview.png')}></Image>
+        <Text style={styles.headerText}>espitalia</Text>
+      </View>
       <FlatList
         data={notifications}
         onRefresh={onRefreshing}
@@ -98,7 +98,7 @@ export default function Notification({navigation}) {
             </Text>
           )
         }
-        renderItem={({item}) => (
+        renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.notificationsCard}
           >
@@ -110,19 +110,19 @@ export default function Notification({navigation}) {
                 margin: 5,
               }}>
               <Text
-                style={{color: '#1c1bad', fontSize: 17, textAlign: 'center'}}>
+                style={{ color: '#1c1bad', fontSize: 17, textAlign: 'center' }}>
                 {item.title}
               </Text>
-              <Text style={{color: '#000', fontSize: 13, textAlign: 'center'}}>
+              <Text style={{ color: '#000', fontSize: 13, textAlign: 'center' }}>
                 {/* {new Date(item.date).toLocaleDateString() +
                   ' ' +
                   new Date(item.date).toLocaleTimeString()} */}
-                  {new Date(item.date).toLocaleString()}
+                {new Date(item.date).toLocaleString()}
               </Text>
             </View>
             <View
-              style={{flex: 2, justifyContent: 'center', alignItems: 'center'}}>
-              <Text style={{color: '#000', fontSize: 17, textAlign: 'center'}}>
+              style={{ flex: 2, justifyContent: 'center', alignItems: 'center' }}>
+              <Text style={{ color: '#000', fontSize: 17, textAlign: 'center' }}>
                 {item.body}
               </Text>
             </View>
@@ -136,12 +136,24 @@ export default function Notification({navigation}) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // width: '100%',
-    // height: '100%',
-    // padding: 15,
-    // backgroundColor: 'white',
-    // flexDirection: 'row',
-    // alignItems: 'center',
+  },
+  header: {
+    flexDirection: 'row',
+    height: 50,
+    backgroundColor: '#1c1bad',
+    justifyContent: 'center',
+  },
+  headerText: {
+    fontSize: 20,
+    color: '#fff',
+    fontWeight: 'bold',
+    alignSelf: 'center',
+  },
+
+  Image: {
+    width: 50,
+    height: 50,
+    alignSelf: 'center',
   },
   notificationsCard: {
     // alignItems: 'center',
