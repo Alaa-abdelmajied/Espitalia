@@ -76,9 +76,9 @@ export default function ProfileScreen({navigation, route}) {
     }
   }, [isFocused]);
 
-  const bookAppointment = async (date, from, to) => {
+  const bookAppointment = async (scheduleID, date, from, to) => {
     showAlert();
-    console.log(date, from, to);
+    console.log(date, from, to,'==id>',scheduleID);
     console.log('pressed');
     try {
       const token = JSON.parse(
@@ -88,6 +88,7 @@ export default function ProfileScreen({navigation, route}) {
         .post(
           `${Server_URL}:3000/patient/book`,
           {
+            scheduleID: scheduleID,
             drId: drID,
             appDate: date,
             appFrom: from,
@@ -277,7 +278,12 @@ export default function ProfileScreen({navigation, route}) {
                   <TouchableOpacity
                     style={styles.bookButton}
                     onPress={() =>
-                      bookAppointment(card.date, card.from, card.to)
+                      bookAppointment(
+                        card.scheduleID,
+                        card.date,
+                        card.from,
+                        card.to,
+                      )
                     }>
                     <Text style={{color: '#fff'}}>Book</Text>
                   </TouchableOpacity>

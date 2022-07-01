@@ -26,107 +26,16 @@ export default function DonateBlood({navigation}) {
   const [loadData, setLoadData] = useState(true);
   const isFocused = useIsFocused();
 
-  //first time the page is opened
-  //and when the page is closed
-  useEffect(() => {
-    setLoadData(true);
-    if (isFocused) {
-      getRequests(skipNumber);
-    } else {
-      setSkipNumber(0);
-      setBloodRequests([]);
-      setRefreshing(false);
-    }
-  }, [isFocused]);
-
-  //load more when bottom is reached
-  useEffect(() => {
-    if (isFocused) {
-      getRequests(skipNumber);
-    }
-  }, [skipNumber]);
-
-  //refreshing
-  useEffect(() => {
-    if (isFocused && refreshing) {
-      getRequests(0);
-    }
-  }, [refreshing]);
-
-  const getRequests = async skipNumber => {
-    console.log('skip Number:', skipNumber);
-    const token = JSON.parse(
-      await EncryptedStorage.getItem(Token_Secret),
-    ).token;
-    await axios
-      .get(`${Server_URL}:3000/patient/getBloodRequests/${skipNumber}`, {
-        headers: {
-          'x-auth-token': token,
-        },
-      })
-      .then(response => {
-        if (skipNumber == 0) {
-          console.log(response.data);
-          setBloodRequests(response.data);
-        } else {
-          setBloodRequests(bloodRequests => [
-            ...bloodRequests,
-            ...response.data,
-          ]);
-        }
-        setRefreshing(false);
-        setLoadData(false);
-      })
-      .catch(function (error) {
-        console.log(error.message);
-        setRefreshing(false);
-        setLoadData(false);
-      });
-  };
-
-  const checkForUpdates = async () => {
-    await axios
-      .get(`${Server_URL}:3000/patient/isBloodReqUpdated/${currentDate}`)
-      .then(response => {
-        setCurrentDate(new Date());
-        setSkipNumber(response.data.newEntries + bloodRequests.length);
-      })
-      .catch(function (error) {
-        console.log(error.message);
-      });
-  };
-
-  const onEndReachedHandler = () => {
-    // setLoadMore(true);
-    checkForUpdates();
-    console.log(currentDate);
-  };
-
-  const onRefreshing = () => {
-    setCurrentDate(new Date());
-    setRefreshing(true);
-  };
-
   return (
     <View style={styles.container}>
-      <TouchableOpacity
-        style={{
-          alignSelf: 'center',
-          borderRadius: 15,
-          backgroundColor: '#1c1bad',
-          padding: 5,
-          margin: 10,
-        }}>
-        <Text style={{fontSize: 18, color: '#fff'}}>Accepted requests</Text>
-      </TouchableOpacity>
       <FlatList
         data={bloodRequests}
         keyExtractor={item => {
           return item.id;
         }}
-        onRefresh={onRefreshing}
+        // onRefresh={onRefreshing}
         refreshing={refreshing}
-        onEndReached={onEndReachedHandler}
+        // onEndReached={onEndReachedHandler}
         onEndReachedThreshold={0.1}
         renderItem={({item}) => <Item item={item} />}
         ListEmptyComponent={
@@ -142,7 +51,7 @@ export default function DonateBlood({navigation}) {
                 color: '#000',
                 margin: '10%',
               }}>
-              No blood donation requests :)
+              No blood requests accepted :)
             </Text>
           )
         }

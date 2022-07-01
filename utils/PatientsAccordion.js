@@ -118,6 +118,46 @@ const patientAccordion = ({item, navigation, entered}) => {
     }
   };
 
+  const onPressCancel = async () => {
+    try {
+      const token = JSON.parse(
+        await EncryptedStorage.getItem(Token_Secret),
+      ).token;
+      console.log(data[0].patients[activeSections[0]].appointmentID);
+      await axios
+        .post(
+          `${Server_URL}:3000/doctor/didNotShow`,
+          {
+            patientId: data[0].patients[activeSections[0]].patientID,
+            appointmentId: data[0].patients[activeSections[0]].appointmentID,
+            // scheduleId: data[0].patients[activeSections[0]].scheduleID,
+          },
+          {
+            headers: {
+              'x-auth-token': token,
+            },
+          },
+        )
+        .then(response => {
+          console.log('here');
+          data[0].patients.splice(activeSections[0], 1);
+          setActiveSections([]);
+          showMessage({
+            message: 'Appointment cancelled',
+            type: 'success',
+          });
+          console.log(response.data);
+        })
+        .catch(function (error) {
+          console.log(error.response.data);
+        });
+    } catch (err) {
+      Alert.alert('Error', err.code, [
+        {text: 'Exit', onPress: () => BackHandler.exitApp()},
+      ]);
+    }
+  };
+
   const setSections = sections => {
     setActiveSections(sections.includes(undefined) ? [] : sections);
   };
@@ -167,12 +207,26 @@ const patientAccordion = ({item, navigation, entered}) => {
             </TouchableOpacity>
           </View>
         ) : (
-          <View style={{width: 70, alignSelf: 'center'}}>
-            <TouchableOpacity
-              style={styles.accordionButton}
-              onPress={onPressEntered}>
-              <Text style={{color: '#fff'}}>Entered</Text>
-            </TouchableOpacity>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'center',
+              // alignSelf: 'center',
+            }}>
+            <View style={{width: 70, alignSelf: 'center', marginHorizontal: 5}}>
+              <TouchableOpacity
+                style={styles.accordionButton}
+                onPress={onPressEntered}>
+                <Text style={{color: '#fff'}}>Entered</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={{width: 70, alignSelf: 'center', marginHorizontal: 5}}>
+              <TouchableOpacity
+                style={styles.accordionButton}
+                onPress={onPressCancel}>
+                <Text style={{color: '#fff'}}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         )}
       </Animatable.View>

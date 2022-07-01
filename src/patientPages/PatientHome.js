@@ -216,9 +216,8 @@ export default function PatientHome({navigation}) {
                 <View style={styles.imageView}>
                   <Image
                     style={styles.doctorImg}
-                    source={{
-                      uri: 'https://bootdey.com/img/Content/avatar/avatar6.png',
-                    }}></Image>
+                    source={require('../../images/doctor_logo.png')}
+                    ></Image>
                 </View>
                 <View style={styles.textView}>
                   <Text style={styles.name}>Dr. {card.name} </Text>
@@ -392,6 +391,7 @@ const styles = StyleSheet.create({
     borderRadius: 60,
     borderWidth: 2,
     borderColor: '#fff',
+    backgroundColor:'#fff'
     // margin: '2%',
   },
 
