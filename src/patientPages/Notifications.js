@@ -89,19 +89,16 @@ export default function Notification({navigation}) {
           ) : (
             <Text
               style={{
-                fontSize: 20,
+                fontSize: 18,
                 alignSelf: 'center',
-                color: '#000',
-                margin: '10%',
+                margin: 20,
               }}>
-              No Notifications :)
+              No notifications
             </Text>
           )
         }
         renderItem={({item}) => (
-          <TouchableOpacity
-            style={styles.notificationsCard}
-          >
+          <TouchableOpacity style={styles.notificationsCard}>
             <View
               style={{
                 flex: 1,
@@ -117,7 +114,7 @@ export default function Notification({navigation}) {
                 {/* {new Date(item.date).toLocaleDateString() +
                   ' ' +
                   new Date(item.date).toLocaleTimeString()} */}
-                  {new Date(item.date).toLocaleString()}
+                {new Date(item.date).toLocaleString()}
               </Text>
             </View>
             <View

@@ -78,8 +78,9 @@ const Item = props => {
         <Text style={styles.infoText}>
           Hospital Name: {props.item.hospital_Name}
         </Text>
-        <Text style={styles.infoText}>Hospital Address: {props.item.hospitalAddress}</Text>
-
+        <Text style={styles.infoText}>
+          Hospital Address: {props.item.hospitalAddress}
+        </Text>
         <Text style={styles.infoText}>Blood Type: {props.item.bloodType} </Text>
         <Text style={styles.infoText}>Date: {date.toDateString()} </Text>
         <Text style={styles.infoText}>Time: {date.toLocaleTimeString()} </Text>

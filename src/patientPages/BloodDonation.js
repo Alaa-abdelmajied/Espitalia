@@ -136,14 +136,13 @@ export default function DonateBlood({navigation}) {
             </View>
           ) : (
             <Text
-              style={{
-                fontSize: 20,
-                alignSelf: 'center',
-                color: '#000',
-                margin: '10%',
-              }}>
-              No blood donation requests :)
-            </Text>
+            style={{
+              fontSize: 18,
+              alignSelf: 'center',
+              margin: 20,
+            }}>
+            No blood donation requests
+          </Text>
           )
         }
       />

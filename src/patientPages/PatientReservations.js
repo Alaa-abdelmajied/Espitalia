@@ -170,12 +170,11 @@ export default function Reservation({}) {
           ) : (
             <Text
               style={{
-                fontSize: 20,
+                fontSize: 18,
                 alignSelf: 'center',
-                color: '#000',
                 margin: '10%',
               }}>
-              No upcoming reservations :)
+              No upcoming reservations 
             </Text>
           )
         }
