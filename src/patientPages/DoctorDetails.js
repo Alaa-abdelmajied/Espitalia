@@ -78,8 +78,6 @@ export default function ProfileScreen({navigation, route}) {
 
   const bookAppointment = async (scheduleID, date, from, to) => {
     showAlert();
-    console.log(date, from, to, '==id>', scheduleID);
-    console.log('pressed');
     try {
       const token = JSON.parse(
         await EncryptedStorage.getItem(Token_Secret),
@@ -101,7 +99,6 @@ export default function ProfileScreen({navigation, route}) {
           },
         )
         .then(function (response) {
-          console.log('done');
           hideAlert();
           showMessage({
             message: 'Appointment successfully booked',
@@ -113,7 +110,6 @@ export default function ProfileScreen({navigation, route}) {
           const err = error.response.data;
           if (err.includes('same doctor')) {
             hideAlert();
-            // Alert.alert('Booking failed', err);
             showMessage({
               message: err,
               type: 'danger',
@@ -126,7 +122,6 @@ export default function ProfileScreen({navigation, route}) {
               type: 'danger',
               duration: 4500,
             });
-            // Alert.alert('Booking failed', err);
           } else {
             hideAlert();
             showMessage({
@@ -134,7 +129,6 @@ export default function ProfileScreen({navigation, route}) {
               type: 'danger',
               duration: 4000,
             });
-            // Alert.alert('Booking failed', err);
           }
           console.log(err);
         });
