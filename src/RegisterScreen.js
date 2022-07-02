@@ -77,20 +77,16 @@ export default function SignUp({navigation}) {
     ) {
       setIsVisible(true);
       setErrorMessage('All fields are required');
-      // setEmptyField(true);
     } else if (!re.test(email)) {
       setIsVisible(true);
       setErrorMessage('Invalid email');
-      // setValidEmail(false);
     } else if (password.length < 8) {
       setIsVisible(true);
       setErrorMessage('Passwords must be at least 8 characters in length');
-      // setMinLength(false);
     } else if (password != confirmPassword) {
       setIsVisible(true);
       setErrorMessage(`Passwords don't match`);
       console.log('dont match');
-      // setPasswordsMatch(false);
     } else {
       navigation.navigate('SignUpQuestions', {
         email: email,
@@ -137,12 +133,7 @@ export default function SignUp({navigation}) {
                 // text => setEmail(text.trim());
               }}
               blurOnSubmit={false}
-              onChangeText={text => setEmail(text)}></TextInput>
-            {/* {!validEmail ? (
-              <View style={{height: 30}}>
-                <Text style={styles.validationText}>Email is not valid</Text>
-              </View>
-            ) : null} */}
+              onChangeText={text => setEmail(text.trim())}></TextInput>
             <TextInput
               style={styles.Input}
               placeholder="Enter your name"

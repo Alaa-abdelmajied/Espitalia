@@ -259,10 +259,6 @@ export default function Login({navigation, route}) {
               style={styles.Input}
               placeholder="Enter your password"
               ref={passwordRef}
-              // onSubmitEditing={() => {
-              //   text => setPassword(text);
-              // }}
-              // blurOnSubmit={false}
               onChangeText={text => setPassword(text)}></TextInput>
 
             <Pressable
@@ -296,12 +292,6 @@ export default function Login({navigation, route}) {
             <TouchableOpacity style={styles.RegisterButton} onPress={SignIn}>
               <Text style={[styles.buttonText, {color: '#fff'}]}>Sign In</Text>
             </TouchableOpacity>
-            {/* <Pressable
-              onPress={() =>
-                navigation.navigate('ChangePassword', {changePassword: false})
-              }>
-              <Text style={styles.QuestionText}>Forgot password?</Text>
-            </Pressable> */}
             {!route.params.staff ? (
               <View style={{flexDirection: 'row', margin: '5%'}}>
                 <Text style={styles.QuestionText}>
