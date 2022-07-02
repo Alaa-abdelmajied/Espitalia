@@ -12,7 +12,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
-import FlashMessage, {showMessage} from 'react-native-flash-message';
+import {showMessage} from 'react-native-flash-message';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import axios from 'axios';
@@ -186,7 +186,6 @@ export default function Reservation({}) {
         closeOnTouchOutside={true}
         closeOnHardwareBackPress={false}
       />
-      <FlashMessage position="top" icon="auto" />
     </View>
   );
 }

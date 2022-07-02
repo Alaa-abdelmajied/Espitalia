@@ -11,8 +11,6 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
-import FlashMessage from 'react-native-flash-message';
-import {showMessage} from 'react-native-flash-message';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import SelectDropdown from 'react-native-select-dropdown';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -253,7 +251,6 @@ export default function SignUp({navigation}) {
           </View>
         </View>
       </View>
-      <FlashMessage position="top" icon="auto" />
     </ScrollView>
   );
 }

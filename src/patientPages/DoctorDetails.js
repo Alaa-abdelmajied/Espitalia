@@ -16,7 +16,7 @@ import {
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import FlashMessage, {showMessage} from 'react-native-flash-message';
+import {showMessage} from 'react-native-flash-message';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import {Rating} from 'react-native-ratings';
 import axios from 'axios';
@@ -245,7 +245,6 @@ export default function ProfileScreen({navigation, route}) {
             </View>
           )}
         </View>
-        <FlashMessage position="top" icon="auto" />
       </View>
       <Text style={styles.title}>Schedule</Text>
       {schedule.length != 0 ? (
@@ -370,7 +369,6 @@ export default function ProfileScreen({navigation, route}) {
         closeOnTouchOutside={true}
         closeOnHardwareBackPress={false}
       />
-      {/* <FlashMessage position="top" icon="auto" /> */}
     </ScrollView>
   );
 }

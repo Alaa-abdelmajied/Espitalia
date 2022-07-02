@@ -13,8 +13,7 @@ import {
 import * as Animatable from 'react-native-animatable';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import FlashMessage from 'react-native-flash-message';
-import {showMessage, hideMessage} from 'react-native-flash-message';
+import {showMessage} from 'react-native-flash-message';
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {Server_URL, Token_Secret, Credintials_Secret} from '@env';
@@ -326,7 +325,6 @@ const patientAccordion = ({item, navigation, entered}) => {
         onChange={setSections}
         renderAsFlatList={false}
       />
-      <FlashMessage position="top" icon="auto" />
     </View>
   );
 };

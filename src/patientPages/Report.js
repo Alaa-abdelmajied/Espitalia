@@ -12,7 +12,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
-import FlashMessage, {showMessage} from 'react-native-flash-message';
+import {showMessage} from 'react-native-flash-message';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import {Rating} from 'react-native-ratings';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -207,7 +207,6 @@ export default function Report({navigation, route}) {
         closeOnTouchOutside={true}
         closeOnHardwareBackPress={false}
       />
-      <FlashMessage position="top" icon="auto" />
     </ScrollView>
   );
 }

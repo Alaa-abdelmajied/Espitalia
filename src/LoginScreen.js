@@ -37,7 +37,6 @@ and in circle.js replace by:
   />
 */
 
-import FlashMessage from 'react-native-flash-message';
 import {showMessage} from 'react-native-flash-message';
 
 import axios from 'axios';
@@ -323,7 +322,6 @@ export default function Login({navigation, route}) {
           </View>
         </View>
       </View>
-      <FlashMessage position="bottom" icon="auto" />
     </View>
   );
 }

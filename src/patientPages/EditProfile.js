@@ -10,7 +10,7 @@ import {
   Alert,
   TouchableOpacity,
 } from 'react-native';
-import FlashMessage, {showMessage} from 'react-native-flash-message';
+import {showMessage} from 'react-native-flash-message';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -338,7 +338,6 @@ export default function EditProfile({navigation, route}) {
         closeOnTouchOutside={true}
         closeOnHardwareBackPress={false}
       />
-      <FlashMessage position="bottom" icon="auto" />
     </ScrollView>
   );
 }

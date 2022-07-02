@@ -14,7 +14,7 @@ import {
 
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import FlashMessage, {showMessage} from 'react-native-flash-message';
+import {showMessage} from 'react-native-flash-message';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
@@ -332,7 +332,6 @@ export default function ChangePassword({ navigation, route }) {
         closeOnTouchOutside={true}
         closeOnHardwareBackPress={false}
       />
-      <FlashMessage position="top" icon="auto" />
     </View>
   );
 }

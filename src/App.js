@@ -1,4 +1,5 @@
 import React, { useLayoutEffect } from 'react';
+import FlashMessage from 'react-native-flash-message';
 import {
   getFocusedRouteNameFromRoute,
   NavigationContainer,
@@ -58,6 +59,7 @@ import HospitalAdminHomePage from './hospitalAdminPages/Homepage';
 import HospitalDoctorProfile from './hospitalAdminPages/DoctorProfile';
 import HospitalReceptionistProfile from './hospitalAdminPages/ReceptionistProfile';
 import MyProfileHospitalPage from './hospitalAdminPages/MyProfileHospitalPage';
+import { View } from 'react-native';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -389,6 +391,7 @@ export default function App() {
           component={HosptialAdminStackView}
         />
       </Stack.Navigator>
+      <FlashMessage postion="top" icon="auto" />
     </NavigationContainer>
   );
 }

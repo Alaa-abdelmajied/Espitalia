@@ -10,7 +10,7 @@ import {
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Dialog from 'react-native-dialog';
-import FlashMessage, {showMessage} from 'react-native-flash-message';
+import {showMessage} from 'react-native-flash-message';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
@@ -126,7 +126,6 @@ const Item = props => {
         closeOnTouchOutside={true}
         closeOnHardwareBackPress={false}
       />
-      {/* <FlashMessage position="top" icon="auto" /> */}
     </TouchableOpacity>
   );
 };

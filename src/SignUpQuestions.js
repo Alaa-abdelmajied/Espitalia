@@ -16,7 +16,6 @@ import { Picker } from '@react-native-picker/picker';
 import Svg, { Path } from 'react-native-svg';
 import CheckBox from '@react-native-community/checkbox';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import FlashMessage from 'react-native-flash-message';
 import { showMessage } from 'react-native-flash-message';
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
@@ -126,7 +125,23 @@ export default function Questions({ navigation, route }) {
             onPress={() => setShowModal(false)}
             style={{ alignSelf: 'flex-start', margin: 5 }}></FontAwesome>
           <View style={styles.modalText}>
-            <Text>Hello</Text>
+            <Text>
+              1. Espitalia bans your account for 30 days in case of not showing
+              up in five appointments without cancelling in advance.
+            </Text>
+            <Text>
+              2. Espitalia saves your medical report and prescription for each
+              appointment and can only be viewed by you and the doctors whom you
+              book an appointment with.
+            </Text>
+            <Text>
+              3. Accepting a blood request allows the receptionist of a hospital
+              to see your name and phone number.
+            </Text>
+            <Text>
+              4. Espitalia is for personal use, it is not supposed to be used to
+              book an appointment for anyone except the user himself.
+            </Text>
           </View>
         </View>
       </Modal>
@@ -219,7 +234,7 @@ export default function Questions({ navigation, route }) {
               ) : null}
             </View>
           </View>
-          <View style={{ flexDirection: 'row', justifyContent: 'center', margin: '5%' }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: '5%' }}>
             <CheckBox
               disabled={false}
               value={toggleCheckBox}
@@ -243,7 +258,6 @@ export default function Questions({ navigation, route }) {
           </TouchableOpacity>
         </View>
       </View>
-      <FlashMessage position="bottom" icon="auto" />
     </ScrollView>
   );
 }
