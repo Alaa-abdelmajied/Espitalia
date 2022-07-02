@@ -77,15 +77,10 @@ export default function EditProfile({navigation, route}) {
     if (newAllergic == 'No' || newAllergic == 'Unknown') {
       setNewAllergies('');
     }
-    console.log('new', newAllergic, newAllergies);
-    console.log(newName, newPhoneNumber, newDate);
-    console.log(birthdate, name, phoneNumber);
-    console.log('pressed');
     try {
       const token = JSON.parse(
         await EncryptedStorage.getItem(Token_Secret),
       ).token;
-      console.log(token);
       axios
         .put(
           `${Server_URL}:3000/patient/editProfile`,
@@ -106,8 +101,7 @@ export default function EditProfile({navigation, route}) {
           },
         )
         .then(async function (response) {
-          // console.log('done');
-          hideAlert(); // navigation.navigate('PatientProfile');
+          hideAlert();
           showMessage({
             message: 'Info updated successfully',
             type: 'success',

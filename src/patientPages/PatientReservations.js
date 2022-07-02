@@ -63,14 +63,10 @@ export default function Reservation({}) {
   }, [isFocused]);
 
   const cancelAppointment = appointmentID => {
-    // setRefreshFlatList(!refreshFlatlist);
-    console.log(appointmentID);
-    console.log('pressed');
     try {
       axios
         .delete(`${Server_URL}:3000/patient/cancel/${appointmentID}`)
         .then(function (response) {
-          console.log(appointmentID);
           <View style={styles.loadingIcon}>
             <ActivityIndicator size="large" color="#0451cc" />
           </View>;
@@ -80,12 +76,10 @@ export default function Reservation({}) {
             type: 'success',
             duration: 3500,
           });
-          // Alert.alert('Appointment cancelled successfully');
           getUpcomingAppointments();
         })
         .catch(function (error) {
           const err = error.response.data;
-          console.log(err);
           if (err == 'Error cancelling appointment') {
             hideAlert();
             showMessage({

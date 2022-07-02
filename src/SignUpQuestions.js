@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 
 import {
   StyleSheet,
@@ -12,17 +12,17 @@ import {
   Alert,
 } from 'react-native';
 
-import { Picker } from '@react-native-picker/picker';
-import Svg, { Path } from 'react-native-svg';
+import {Picker} from '@react-native-picker/picker';
+import Svg, {Path} from 'react-native-svg';
 import CheckBox from '@react-native-community/checkbox';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { showMessage } from 'react-native-flash-message';
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { Server_URL, Token_Secret, Credintials_Secret } from '@env';
+import {Server_URL, Token_Secret, Credintials_Secret} from '@env';
 import messaging from '@react-native-firebase/messaging';
 
-export default function Questions({ navigation, route }) {
+export default function Questions({navigation, route}) {
   const [diabetic, setDiabetic] = useState('Unknown');
   const [bloodType, setBloodType] = useState('Unknown');
   const [bloodPressure, setBloodPressure] = useState('Unknown');
@@ -31,7 +31,7 @@ export default function Questions({ navigation, route }) {
   const [toggleCheckBox, setToggleCheckBox] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
-  const { email, name, password, phoneNumber, date, selectedGender } =
+  const {email, name, password, phoneNumber, date, selectedGender} =
     route.params;
   const [fcmToken, setFcmToken] = useState('');
   useEffect(() => {
@@ -57,7 +57,7 @@ export default function Questions({ navigation, route }) {
   const onPressHandler = async () => {
     console.log('front', fcmToken);
     if (!toggleCheckBox) {
-      console.log('not toggled')
+      console.log('not toggled');
       showMessage({
         message: 'You need to accept our terms and conditions first',
         duration: 5000,
@@ -80,11 +80,11 @@ export default function Questions({ navigation, route }) {
           fcmToken: fcmToken,
         })
         .then(async function (response) {
-          const { token } = response.data;
+          const {token} = response.data;
           try {
             await EncryptedStorage.setItem(
               Token_Secret,
-              JSON.stringify({ token: token }),
+              JSON.stringify({token: token}),
             );
             await EncryptedStorage.setItem(
               Credintials_Secret,
@@ -96,10 +96,10 @@ export default function Questions({ navigation, route }) {
             );
           } catch (err) {
             Alert.alert('Error', err.code, [
-              { text: 'Exit', onPress: () => BackHandler.exitApp() },
+              {text: 'Exit', onPress: () => BackHandler.exitApp()},
             ]);
           }
-          navigation.navigate('OTP', { isForgotten: false, type: 'patient' });
+          navigation.navigate('OTP', {isForgotten: false, type: 'patient'});
         })
         .catch(function (error) {
           const err = error.response.data;
@@ -120,10 +120,10 @@ export default function Questions({ navigation, route }) {
         <View style={styles.modal}>
           <FontAwesome
             name={'close'}
-            size={20}
+            size={28}
             color={'#1c1bad'}
             onPress={() => setShowModal(false)}
-            style={{ alignSelf: 'flex-start', margin: 5 }}></FontAwesome>
+            style={{ margin: 5}}></FontAwesome>
           <View style={styles.modalText}>
             <Text>
               1. Espitalia bans your account for 30 days in case of not showing
@@ -234,19 +234,26 @@ export default function Questions({ navigation, route }) {
               ) : null}
             </View>
           </View>
-          <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: '5%' }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'center',
+              margin: '5%',
+            }}>
             <CheckBox
               disabled={false}
               value={toggleCheckBox}
               onValueChange={newValue => setToggleCheckBox(newValue)}
-            // onPress={() => navigation.navigate('SignUp')}
+              // onPress={() => navigation.navigate('SignUp')}
             />
-            <Text style={styles.QuestionText}>
-              Agree to{'\b'}
-            </Text>
+            <Text style={styles.QuestionText}>Agree to{'\b'}</Text>
             <Pressable onPress={() => setShowModal(true)}>
               <Text
-                style={{ marginTop: 5, color: '#1c1bad', textDecorationLine: 'underline' }}>
+                style={{
+                  marginTop: 5,
+                  color: '#1c1bad',
+                  textDecorationLine: 'underline',
+                }}>
                 terms and conditions
               </Text>
             </Pressable>
@@ -254,7 +261,7 @@ export default function Questions({ navigation, route }) {
           <TouchableOpacity
             style={styles.RegisterButton}
             onPress={() => onPressHandler()}>
-            <Text style={{ color: '#fff' }}>Sign up</Text>
+            <Text style={{color: '#fff'}}>Sign up</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -346,7 +353,7 @@ const styles = StyleSheet.create({
     height: 50,
     width: 200,
     shadowColor: '#000000',
-    shadowOffset: { width: -2, height: 2 },
+    shadowOffset: {width: -2, height: 2},
     shadowOpacity: 0.2,
     shadowRadius: 3,
     elevation: 2,

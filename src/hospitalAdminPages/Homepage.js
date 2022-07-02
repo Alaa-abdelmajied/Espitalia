@@ -53,7 +53,7 @@ export default function Homepage({ navigation, route }) {
   return (
     <View style={styles.container}>
       <View style={styles.logo}>
-        <Image source={{ uri: 'https://images.assets-landingi.com/ezfQc3bO/logo_01.png' }} style={styles.img} />
+        {/* <Image source={{ uri: 'https://images.assets-landingi.com/ezfQc3bO/logo_01.png' }} style={styles.img} /> */}
       </View>
       <View style={styles.info}>
         <Text style={styles.label}>Hospital:{'\t'} <Text style={styles.data}>{route.params.name}</Text></Text>
