@@ -59,7 +59,11 @@ import HospitalAdminHomePage from './hospitalAdminPages/Homepage';
 import HospitalDoctorProfile from './hospitalAdminPages/DoctorProfile';
 import HospitalReceptionistProfile from './hospitalAdminPages/ReceptionistProfile';
 import MyProfileHospitalPage from './hospitalAdminPages/MyProfileHospitalPage';
-import { View } from 'react-native';
+
+import {LogBox} from 'react-native';
+
+LogBox.ignoreLogs(['Warning: ...']);
+LogBox.ignoreAllLogs();
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
