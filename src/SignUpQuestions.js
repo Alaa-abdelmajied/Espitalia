@@ -220,7 +220,7 @@ export default function Questions({navigation, route}) {
                   <Picker.Item label="I don't know" value="Unknown" />
                 </Picker>
               </View>
-              {allergic == 'yes' ? (
+              {allergic == 'Yes' ? (
                 <View>
                   <TextInput
                     style={styles.Input}
