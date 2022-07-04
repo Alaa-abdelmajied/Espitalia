@@ -316,7 +316,7 @@ export default function ProfileScreen({navigation, route}) {
           <View style={styles.header}></View>
           <Image
             style={styles.avatar}
-            source={{uri: 'https://bootdey.com/img/Content/avatar/avatar6.png'}}
+            source={require('../../images/doctor_logo.png')}
           />
           <View style={styles.body}>
             {/* <View style={styles.bodyContent}> */}
@@ -623,6 +623,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     position: 'absolute',
     marginTop: 80,
+    backgroundColor:'#fff'
   },
   body: {
     flexDirection: 'column',
