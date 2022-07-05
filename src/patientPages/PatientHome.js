@@ -216,9 +216,7 @@ export default function PatientHome({navigation}) {
                 <View style={styles.imageView}>
                   <Image
                     style={styles.doctorImg}
-                    source={{
-                      uri: 'https://bootdey.com/img/Content/avatar/avatar6.png',
-                    }}></Image>
+                    source={require('../../images/doctor_logo.png')}></Image>
                 </View>
                 <View style={styles.textView}>
                   <Text style={styles.name}>Dr. {card.name} </Text>
@@ -227,20 +225,28 @@ export default function PatientHome({navigation}) {
               </View>
               <View style={styles.doctor_content}>
                 <View style={styles.place}>
-                  <FontAwesome
-                    name={'hospital-o'}
-                    size={30}
-                    color="#1c1bad"
-                    style={{margin: 10}}></FontAwesome>
-                  <Text style={styles.cardText}>{card.hospitalName}</Text>
+                  <View style={{flex: 0.5}}>
+                    <FontAwesome
+                      name={'hospital-o'}
+                      size={30}
+                      color="#1c1bad"
+                      style={{margin: 5}}></FontAwesome>
+                  </View>
+                  <View style={{flex: 2}}>
+                    <Text style={styles.cardText}>{card.hospitalName}</Text>
+                  </View>
                 </View>
                 <View style={styles.place}>
-                  <Ionicons
-                    name={'location-sharp'}
-                    size={30}
-                    color="#1c1bad"
-                    style={{margin: 10}}></Ionicons>
-                  <Text style={styles.cardText}>{card.hospitalAddress}</Text>
+                  <View style={{flex: 0.5}}>
+                    <Ionicons
+                      name={'location-sharp'}
+                      size={30}
+                      color="#1c1bad"
+                      style={{margin: 5}}></Ionicons>
+                  </View>
+                  <View style={{flex: 2}}>
+                    <Text style={styles.cardText}>{card.hospitalAddress}</Text>
+                  </View>
                 </View>
                 <View style={styles.customRatingBar}>
                   <Rating
@@ -380,7 +386,7 @@ const styles = StyleSheet.create({
   card_header: {
     flexDirection: 'row',
     width: '100%',
-    height: '30%',
+    height: '31%',
     backgroundColor: '#1c1bad',
     alignItems: 'center',
     justifyContent: 'space-evenly',
@@ -392,6 +398,7 @@ const styles = StyleSheet.create({
     borderRadius: 60,
     borderWidth: 2,
     borderColor: '#fff',
+    backgroundColor: '#fff',
     // margin: '2%',
   },
 
@@ -423,7 +430,8 @@ const styles = StyleSheet.create({
 
   doctor_content: {
     height: '100%',
-    width: '100%',
+    width: '98%',
+    // backgroundColor: '#f0f',
   },
 
   place: {
@@ -437,7 +445,7 @@ const styles = StyleSheet.create({
 
   cardText: {
     color: '#000',
-    fontSize: 15,
+    fontSize: 13,
     margin: 5,
     // flex: 1,
   },

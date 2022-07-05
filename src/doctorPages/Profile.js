@@ -134,16 +134,6 @@ export default function UserProfileView({navigation}) {
             margin: 2,
             justifyContent: 'center',
           }}>
-          <FontAwesome name={'phone'} size={20} color={'#000'}></FontAwesome>
-          <Text style={styles.mainText}>0111345454</Text>
-        </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            margin: 2,
-            justifyContent: 'center',
-          }}>
           <Ionicons name={'key'} size={20} color={'#000'}></Ionicons>
           <Pressable
             onPress={() => {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 
 import {
   StyleSheet,
@@ -7,29 +7,37 @@ import {
   Pressable,
   TextInput,
   TouchableOpacity,
+  ScrollView,
+  Modal,
+  Alert,
 } from 'react-native';
 
-import { Picker } from '@react-native-picker/picker';
-import Svg, { Path } from 'react-native-svg';
-import { ScrollView } from 'react-native-gesture-handler';
+import {Picker} from '@react-native-picker/picker';
+import Svg, {Path} from 'react-native-svg';
+import CheckBox from '@react-native-community/checkbox';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import {showMessage} from 'react-native-flash-message';
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { Server_URL, Token_Secret, Credintials_Secret } from '@env';
+import {Server_URL, Token_Secret, Credintials_Secret} from '@env';
 import messaging from '@react-native-firebase/messaging';
 
-export default function Questions({ navigation, route }) {
+export default function Questions({navigation, route}) {
   const [diabetic, setDiabetic] = useState('Unknown');
   const [bloodType, setBloodType] = useState('Unknown');
   const [bloodPressure, setBloodPressure] = useState('Unknown');
   const [allergic, setAllergic] = useState('Unknown');
   const [allergies, setAllergies] = useState('');
+  const [toggleCheckBox, setToggleCheckBox] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(false);
 
-  const { email, name, password, phoneNumber, date, selectedGender } = route.params;
-  const [fcmToken, setFcmToken] = useState("");
+  const {email, name, password, phoneNumber, date, selectedGender} =
+    route.params;
+  const [fcmToken, setFcmToken] = useState('');
   useEffect(() => {
     createFcmtoken();
-  },[]);
-
+  }, []);
 
   const createFcmtoken = async () => {
     const authStatus = await messaging().requestPermission();
@@ -40,61 +48,100 @@ export default function Questions({ navigation, route }) {
     if (enabled) {
       await messaging()
         .getToken()
-        .then((fcmTokenGenerated) => {
+        .then(fcmTokenGenerated => {
           console.log('FCM Token -> ', fcmTokenGenerated);
           setFcmToken(fcmTokenGenerated);
         });
     } else console.log('Not Authorization status:', authStatus);
-  }
+  };
 
   const onPressHandler = async () => {
-    console.log("front",fcmToken);
-    axios
-      .post(`${Server_URL}:3000/patient/signup`, {
-        email: email,
-        password: password,
-        name: name,
-        phoneNumber: phoneNumber,
-        dateOfBirth: date,
-        gender: selectedGender,
-        diabetic: diabetic,
-        bloodType: bloodType,
-        bloodPressure: bloodPressure,
-        allergic: allergic,
-        allergies: allergies,
-        fcmToken: fcmToken,
-      })
-      .then(async function (response) {
-        const { token } = response.data;
-        try {
-          await EncryptedStorage.setItem(
-            Token_Secret,
-            JSON.stringify({ token: token }),
-          );
-          await EncryptedStorage.setItem(
-            Credintials_Secret,
-            JSON.stringify({
-              email: email,
-              password: password,
-              type: 'patient',
-            }),
-          );
-        } catch (err) {
-          Alert.alert('Error', err.code, [
-            { text: 'Exit', onPress: () => BackHandler.exitApp() },
-          ]);
-        }
-        navigation.navigate('OTP', {isForgotten: false, type: 'patient'});
-      })
-      .catch(function (error) {
-        const err = error.response.data;
-        //alert signup issue
-        console.log('alert');
-      });
+    console.log('front', fcmToken);
+    if (!toggleCheckBox) {
+      console.log('not toggled');
+      setErrorMessage(true);
+    } else {
+      axios
+        .post(`${Server_URL}:3000/patient/signup`, {
+          email: email,
+          password: password,
+          name: name,
+          phoneNumber: phoneNumber,
+          dateOfBirth: date,
+          gender: selectedGender,
+          diabetic: diabetic,
+          bloodType: bloodType,
+          bloodPressure: bloodPressure,
+          allergic: allergic,
+          allergies: allergies,
+          fcmToken: fcmToken,
+        })
+        .then(async function (response) {
+          const {token} = response.data;
+          try {
+            await EncryptedStorage.setItem(
+              Token_Secret,
+              JSON.stringify({token: token}),
+            );
+            await EncryptedStorage.setItem(
+              Credintials_Secret,
+              JSON.stringify({
+                email: email,
+                password: password,
+                type: 'patient',
+              }),
+            );
+          } catch (err) {
+            Alert.alert('Error', err.code, [
+              {text: 'Exit', onPress: () => BackHandler.exitApp()},
+            ]);
+          }
+          navigation.navigate('OTP', {isForgotten: false, type: 'patient'});
+        })
+        .catch(function (error) {
+          const err = error.response.data;
+          if (err.includes('E11000 duplicate key'))
+            showMessage({
+              message: 'This email already exists',
+              duration: 5000,
+              type: 'warning',
+            });
+          console.log('This email already exists');
+        });
+    }
   };
-  
+
   return (
     <ScrollView>
+      <Modal visible={showModal} animationType="fade" transparent={true}>
+        <View style={styles.modal}>
+          <FontAwesome
+            name={'close'}
+            size={28}
+            color={'#1c1bad'}
+            onPress={() => setShowModal(false)}
+            style={{margin: 5}}></FontAwesome>
+          <View style={styles.modalText}>
+            <Text>
+              1. Espitalia bans your account for 30 days in case of not showing
+              up in five appointments without cancelling in advance.
+            </Text>
+            <Text>
+              2. Espitalia saves your medical report and prescription for each
+              appointment and can only be viewed by you and the doctors whom you
+              book an appointment with.
+            </Text>
+            <Text>
+              3. Accepting a blood request allows the receptionist of a hospital
+              to see your name and phone number.
+            </Text>
+            <Text>
+              4. Espitalia is for personal use, it is not supposed to be used to
+              book an appointment for anyone except the user himself.
+            </Text>
+          </View>
+        </View>
+      </Modal>
       <View style={styles.WaveHeader}>
         <Svg>
           <Path
@@ -173,7 +220,7 @@ export default function Questions({ navigation, route }) {
                   <Picker.Item label="I don't know" value="Unknown" />
                 </Picker>
               </View>
-              {allergic == 'yes' ? (
+              {allergic == 'Yes' ? (
                 <View>
                   <TextInput
                     style={styles.Input}
@@ -184,10 +231,41 @@ export default function Questions({ navigation, route }) {
               ) : null}
             </View>
           </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'center',
+              margin: 8,
+            }}>
+            <CheckBox
+              disabled={false}
+              value={toggleCheckBox}
+              onValueChange={newValue => setToggleCheckBox(newValue)}
+              onChange={() => setErrorMessage(false)}
+            />
+            <Text style={styles.QuestionText}>Agree to{'\b'}</Text>
+            <Pressable onPress={() => setShowModal(true)}>
+              <Text
+                style={{
+                  marginTop: 5,
+                  color: '#1c1bad',
+                  textDecorationLine: 'underline',
+                }}>
+                terms and conditions
+              </Text>
+            </Pressable>
+          </View>
+          {errorMessage ? (
+            <View style={{marginHorizontal: 5, alignSelf: 'center'}}>
+              <Text style={styles.validationText}>
+                You need to agree to our terms and conditions before signing up
+              </Text>
+            </View>
+          ) : null}
           <TouchableOpacity
             style={styles.RegisterButton}
             onPress={() => onPressHandler()}>
-            <Text style={{ color: '#fff' }}>Sign up</Text>
+            <Text style={{color: '#fff'}}>Sign up</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -200,6 +278,42 @@ const styles = StyleSheet.create({
     // flex: 1,
     height: 200,
     width: '100%',
+  },
+
+  modal: {
+    height: 350,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 15,
+    width: '80%',
+    marginTop: '30%',
+    // margin: 300,
+    alignSelf: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#1c1bad',
+    shadowOpacity: 1,
+    shadowOffset: {
+      width: 10,
+      height: 15,
+    },
+    elevation: 10,
+    overflow: 'hidden',
+    padding: 5,
+  },
+
+  modalButton: {
+    backgroundColor: '#1c1bad',
+    borderRadius: 5,
+    width: 150,
+    height: 50,
+    justifyContent: 'center',
+    alignSelf: 'center',
+    // marginBottom: 20,
+  },
+  modalText: {
+    fontSize: 15,
+    color: '#fff',
+    textAlign: 'center',
   },
 
   RegisterRegion: {
@@ -243,7 +357,7 @@ const styles = StyleSheet.create({
     height: 50,
     width: 200,
     shadowColor: '#000000',
-    shadowOffset: { width: -2, height: 2 },
+    shadowOffset: {width: -2, height: 2},
     shadowOpacity: 0.2,
     shadowRadius: 3,
     elevation: 2,
@@ -261,13 +375,13 @@ const styles = StyleSheet.create({
 
   QuestionText: {
     color: '#000',
-    margin: 10,
+    marginTop: 5,
     // fontSize:15,
   },
 
   RegisterButton: {
     width: 130,
-    margin: '5%',
+    margin: 8,
     paddingTop: 15,
     paddingBottom: 15,
     borderRadius: 10,
@@ -277,7 +391,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     // color: '#fff'
   },
-
   Input: {
     height: 60,
     width: 300,
@@ -285,5 +398,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     textAlign: 'center',
     margin: 10,
+  },
+  validationText: {
+    fontSize: 15,
+    color: '#ff0000',
+    textAlign: 'center',
   },
 });

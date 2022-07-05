@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TextInput, StyleSheet, Pressable } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import FlashMessage from 'react-native-flash-message';
+import {showMessage} from 'react-native-flash-message';
 
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
@@ -106,7 +106,6 @@ export default function MyProfileHospitalPage({ route, navigation }) {
                     <Text style={styles.buttonText}>Change password</Text>
                 </Pressable>
             </View>
-            <FlashMessage position="top" icon="auto" />
         </ScrollView>
     );
 }

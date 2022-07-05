@@ -3,7 +3,6 @@ import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import OTPTextInput from 'react-native-otp-textinput';
 import Svg, {Path, stop, defs, linearGradient} from 'react-native-svg';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import FlashMessage from 'react-native-flash-message';
 import {showMessage} from 'react-native-flash-message';
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
@@ -119,7 +118,6 @@ export default function OTP({navigation, route}) {
           </Text>
         </TouchableOpacity>
       </View>
-      <FlashMessage position="top" icon="auto" />
     </View>
   );
 }

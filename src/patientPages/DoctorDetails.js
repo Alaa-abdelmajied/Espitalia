@@ -16,7 +16,7 @@ import {
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import FlashMessage, {showMessage} from 'react-native-flash-message';
+import {showMessage} from 'react-native-flash-message';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import {Rating} from 'react-native-ratings';
 import axios from 'axios';
@@ -76,10 +76,8 @@ export default function ProfileScreen({navigation, route}) {
     }
   }, [isFocused]);
 
-  const bookAppointment = async (date, from, to) => {
+  const bookAppointment = async (scheduleID, date, from, to) => {
     showAlert();
-    console.log(date, from, to);
-    console.log('pressed');
     try {
       const token = JSON.parse(
         await EncryptedStorage.getItem(Token_Secret),
@@ -88,6 +86,7 @@ export default function ProfileScreen({navigation, route}) {
         .post(
           `${Server_URL}:3000/patient/book`,
           {
+            scheduleID: scheduleID,
             drId: drID,
             appDate: date,
             appFrom: from,
@@ -100,7 +99,6 @@ export default function ProfileScreen({navigation, route}) {
           },
         )
         .then(function (response) {
-          console.log('done');
           hideAlert();
           showMessage({
             message: 'Appointment successfully booked',
@@ -112,7 +110,6 @@ export default function ProfileScreen({navigation, route}) {
           const err = error.response.data;
           if (err.includes('same doctor')) {
             hideAlert();
-            // Alert.alert('Booking failed', err);
             showMessage({
               message: err,
               type: 'danger',
@@ -125,7 +122,6 @@ export default function ProfileScreen({navigation, route}) {
               type: 'danger',
               duration: 4500,
             });
-            // Alert.alert('Booking failed', err);
           } else {
             hideAlert();
             showMessage({
@@ -133,7 +129,6 @@ export default function ProfileScreen({navigation, route}) {
               type: 'danger',
               duration: 4000,
             });
-            // Alert.alert('Booking failed', err);
           }
           console.log(err);
         });
@@ -186,7 +181,7 @@ export default function ProfileScreen({navigation, route}) {
               <View
                 style={{
                   flexDirection: 'row',
-                  width: '98%',
+                  width: '95%',
                   justifyContent: 'center',
                 }}>
                 <Ionicons
@@ -244,106 +239,123 @@ export default function ProfileScreen({navigation, route}) {
             </View>
           )}
         </View>
-        <FlashMessage position="top" icon="auto" />
       </View>
-      <View style={styles.appointmentsContainer}>
-        <ScrollView
-          horizontal={true}
-          style={styles.scrollViewStyle}
-          pagingEnabled
-          showsHorizontalScrollIndicator={false}
-          onScroll={Animated.event(
-            [{nativeEvent: {contentOffset: {x: scrollX}}}],
-            {useNativeDriver: false},
-          )}
-          scrollEventThrottle={16}>
-          {schedule.map((card, cardIndex) => {
-            return (
-              <Animated.View style={{width: windowWidth}} key={cardIndex}>
-                <View style={styles.scheduleCard}>
-                  <View style={styles.dateHeader}>
-                    <Text style={{color: '#fff', fontSize: 20}}>
-                      {card.displayDate}
-                    </Text>
+      <Text style={styles.title}>Schedule</Text>
+      {schedule.length != 0 ? (
+        <View style={styles.appointmentsContainer}>
+          <ScrollView
+            horizontal={true}
+            style={styles.scrollViewStyle}
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            onScroll={Animated.event(
+              [{nativeEvent: {contentOffset: {x: scrollX}}}],
+              {useNativeDriver: false},
+            )}
+            scrollEventThrottle={16}>
+            {schedule.map((card, cardIndex) => {
+              return (
+                <Animated.View style={{width: windowWidth}} key={cardIndex}>
+                  <View style={styles.scheduleCard}>
+                    <View style={styles.dateHeader}>
+                      <Text style={{color: '#fff', fontSize: 20}}>
+                        {card.displayDate}
+                      </Text>
+                    </View>
+                    <View style={{margin: 30, alignItems: 'center'}}>
+                      <Text style={{color: '#000', fontSize: 20}}>
+                        From: {card.from}
+                      </Text>
+                      <Text style={{color: '#000', fontSize: 20}}>
+                        To: {card.to}
+                      </Text>
+                    </View>
+                    <TouchableOpacity
+                      style={styles.bookButton}
+                      onPress={() =>
+                        bookAppointment(
+                          card.scheduleID,
+                          card.date,
+                          card.from,
+                          card.to,
+                        )
+                      }>
+                      <Text style={{color: '#fff'}}>Book</Text>
+                    </TouchableOpacity>
                   </View>
-                  <View style={{margin: 30, alignItems: 'center'}}>
-                    <Text style={{color: '#000', fontSize: 20}}>
-                      From: {card.from}
-                    </Text>
-                    <Text style={{color: '#000', fontSize: 20}}>
-                      To: {card.to}
-                    </Text>
-                  </View>
-                  <TouchableOpacity
-                    style={styles.bookButton}
-                    onPress={() =>
-                      bookAppointment(card.date, card.from, card.to)
-                    }>
-                    <Text style={{color: '#fff'}}>Book</Text>
-                  </TouchableOpacity>
-                </View>
-              </Animated.View>
-            );
-          })}
-        </ScrollView>
-        <View style={styles.indicatorContainer}>
-          {schedule.map((card, cardIndex) => {
-            const width = scrollX.interpolate({
-              inputRange: [
-                windowWidth * (cardIndex - 1),
-                windowWidth * cardIndex,
-                windowWidth * (cardIndex + 1),
-              ],
-              outputRange: [8, 16, 8],
-              extrapolate: 'clamp',
-            });
+                </Animated.View>
+              );
+            })}
+          </ScrollView>
+          <View style={styles.indicatorContainer}>
+            {schedule.map((card, cardIndex) => {
+              const width = scrollX.interpolate({
+                inputRange: [
+                  windowWidth * (cardIndex - 1),
+                  windowWidth * cardIndex,
+                  windowWidth * (cardIndex + 1),
+                ],
+                outputRange: [8, 16, 8],
+                extrapolate: 'clamp',
+              });
 
+              return (
+                <Animated.View
+                  style={[
+                    styles.normalDots,
+                    {width},
+                    {backgroundColor: '#1c1bad'},
+                  ]}
+                  key={cardIndex}
+                />
+              );
+            })}
+          </View>
+        </View>
+      ) : (
+        <Text style={{alignSelf: 'center', fontSize: 15}}>
+          No schedules found
+        </Text>
+      )}
+      <Text style={styles.title}>Ratings and Reviews</Text>
+      {comments.length != 0 ? (
+        <View style={styles.reviewsArea}>
+          {comments.map((reviewCard, cardIndex) => {
             return (
-              <Animated.View
-                style={[
-                  styles.normalDots,
-                  {width},
-                  {backgroundColor: '#1c1bad'},
-                ]}
-                key={cardIndex}
-              />
+              <View key={cardIndex} style={styles.commentsCard}>
+                <View style={{height: 150, width: '97%', alignSelf: 'center'}}>
+                  <Text style={styles.text}>{reviewCard.name}</Text>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      marginTop: 10,
+                    }}>
+                    <Rating
+                      type="custom"
+                      ratingBackgroundColor="#bfbfbf"
+                      tintColor="#fff"
+                      ratingCount={5}
+                      imageSize={25}
+                      startingValue={reviewCard.rate}
+                      fractions={1}
+                      readonly={true}
+                      style={{
+                        marginRight: 10,
+                      }}></Rating>
+                    <Text style={styles.text}>{reviewCard.date}</Text>
+                  </View>
+                  <Text style={styles.text}>{reviewCard.review}</Text>
+                </View>
+              </View>
             );
           })}
         </View>
-      </View>
-      <View style={styles.reviewsArea}>
-        <Text style={styles.title}>Ratings and Reviews</Text>
-        {comments.map((reviewCard, cardIndex) => {
-          return (
-            <View key={cardIndex} style={styles.commentsCard}>
-              <View style={{height: 150, width: '97%', alignSelf: 'center'}}>
-                <Text style={styles.text}>{reviewCard.name}</Text>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    marginTop: 10,
-                  }}>
-                  <Rating
-                    type="custom"
-                    ratingBackgroundColor="#bfbfbf"
-                    tintColor="#fff"
-                    ratingCount={5}
-                    imageSize={25}
-                    startingValue={reviewCard.rate}
-                    fractions={1}
-                    readonly={true}
-                    style={{
-                      marginRight: 10,
-                    }}></Rating>
-                  <Text style={styles.text}>{reviewCard.date}</Text>
-                </View>
-                <Text style={styles.text}>{reviewCard.review}</Text>
-              </View>
-            </View>
-          );
-        })}
-      </View>
+      ) : (
+        <Text style={{alignSelf: 'center', fontSize: 15}}>
+          No reviews found
+        </Text>
+      )}
       <AwesomeAlert
         show={alert}
         showProgress={true}
@@ -351,7 +363,6 @@ export default function ProfileScreen({navigation, route}) {
         closeOnTouchOutside={true}
         closeOnHardwareBackPress={false}
       />
-      {/* <FlashMessage position="top" icon="auto" /> */}
     </ScrollView>
   );
 }
@@ -521,7 +532,14 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: 'bold',
     color: '#000',
-    margin: 15,
+    margin: 10,
+    alignSelf:'center'
+  },
+    subtitle: {
+    fontSize: 16,
+    color: '#1c1bad',
+    margin: 5,
+    fontWeight: 'bold',
   },
 
   reviewsArea: {

@@ -10,7 +10,7 @@ import {
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Dialog from 'react-native-dialog';
-import FlashMessage, {showMessage} from 'react-native-flash-message';
+import {showMessage} from 'react-native-flash-message';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import axios from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
@@ -78,20 +78,14 @@ const Item = props => {
         <Text style={styles.infoText}>
           Hospital Name: {props.item.hospital_Name}
         </Text>
+        <Text style={styles.infoText}>
+          Hospital Address: {props.item.hospitalAddress}
+        </Text>
         <Text style={styles.infoText}>Blood Type: {props.item.bloodType} </Text>
         <Text style={styles.infoText}>Date: {date.toDateString()} </Text>
         <Text style={styles.infoText}>Time: {date.toLocaleTimeString()} </Text>
         {accept ? (
-          <View style={{flexDirection: 'column', alignSelf: 'center'}}>
-            <View style={{flexDirection: 'row'}}>
-              <FontAwesome
-                name={'phone'}
-                size={20}
-                color={'#4BB543'}
-                style={{marginVertical: 10}}></FontAwesome>
-              <Text style={styles.infoText}>01223109302</Text>
-            </View>
-
+          <View style={{alignSelf: 'center'}}>
             <FontAwesome
               name={'check-circle'}
               size={30}
@@ -132,7 +126,6 @@ const Item = props => {
         closeOnTouchOutside={true}
         closeOnHardwareBackPress={false}
       />
-      {/* <FlashMessage position="top" icon="auto" /> */}
     </TouchableOpacity>
   );
 };
@@ -141,7 +134,7 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: 'column',
     width: '95%',
-    height: 230,
+    height: 270,
     borderRadius: 15,
     backgroundColor: '#fff',
     alignSelf: 'center',

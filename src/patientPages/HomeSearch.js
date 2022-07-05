@@ -162,7 +162,14 @@ export default function Search({navigation}) {
           );
         }}
         ListEmptyComponent={
-          <Text style={{fontSize: 20, alignSelf: 'center'}}>No Results</Text>
+          <Text
+            style={{
+              fontSize: 18,
+              alignSelf: 'center',
+              margin: 15,
+            }}>
+            No results found
+          </Text>
         }
       />
 
@@ -201,7 +208,14 @@ export default function Search({navigation}) {
           );
         }}
         ListEmptyComponent={
-          <Text style={{fontSize: 20, alignSelf: 'center'}}>No Results</Text>
+          <Text
+            style={{
+              fontSize: 18,
+              alignSelf: 'center',
+              margin: 15,
+            }}>
+            No results found
+          </Text>
         }
       />
       <FlatList
@@ -233,7 +247,14 @@ export default function Search({navigation}) {
           );
         }}
         ListEmptyComponent={
-          <Text style={{fontSize: 20, alignSelf: 'center'}}>No Results</Text>
+          <Text
+            style={{
+              fontSize: 18,
+              alignSelf: 'center',
+              margin: 15,
+            }}>
+            No results found
+          </Text>
         }
       />
     </View>

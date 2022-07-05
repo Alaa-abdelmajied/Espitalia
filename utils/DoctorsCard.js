@@ -39,9 +39,8 @@ const DoctorsCard = ({card, navigation,hospitalName,hospitalAddress}) => {
       <View style={styles.card_header}>
         <Image
           style={styles.doctorImg}
-          source={{
-            uri: 'https://bootdey.com/img/Content/avatar/avatar6.png',
-          }}></Image>
+          source={require('../images/doctor_logo.png')}
+          ></Image>
         <View style={styles.textView}>
           <Text style={styles.name}>Dr. {card.name}</Text>
           <Text style={styles.speciality}>{card.specialization}</Text>
@@ -121,6 +120,7 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     borderColor: '#fff',
     margin: '2%',
+    backgroundColor:'#fff'
   },
 
   textView: {

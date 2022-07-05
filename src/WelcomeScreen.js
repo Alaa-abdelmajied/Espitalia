@@ -111,6 +111,9 @@ export default function HomeScreen({navigation}) {
         }
       })
       .catch(function (error) {
+        const err = error.response.data;
+        setShowButton(true);
+
         console.log('ERROR:', error);
       });
   };

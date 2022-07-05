@@ -4,138 +4,78 @@ import {
   Text,
   View,
   FlatList,
-  Image,
   ActivityIndicator,
   TouchableOpacity,
+  Image,
+  BackHandler
 } from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
 import { Server_URL, Token_Secret } from '@env';
 import Item from '../../utils/ItemCard';
 import { useIsFocused } from '@react-navigation/native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 
-export default function DonateBlood({ navigation }) {
+export default function AcceptedRequests({ navigation }) {
   const [bloodRequests, setBloodRequests] = useState([]);
-  const [skipNumber, setSkipNumber] = useState(0);
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const [refreshing, setRefreshing] = useState(false);
-  const [showModal, setShowModal] = useState(false);
   const [loadData, setLoadData] = useState(true);
   const isFocused = useIsFocused();
 
-  //first time the page is opened
-  //and when the page is closed
+
   useEffect(() => {
     setLoadData(true);
     if (isFocused) {
-      getRequests(skipNumber);
+      getRequests();
     } else {
-      setSkipNumber(0);
       setBloodRequests([]);
-      setRefreshing(false);
     }
   }, [isFocused]);
 
-  //load more when bottom is reached
-  useEffect(() => {
-    if (isFocused) {
-      getRequests(skipNumber);
-    }
-  }, [skipNumber]);
-
-  //refreshing
-  useEffect(() => {
-    if (isFocused && refreshing) {
-      getRequests(0);
-    }
-  }, [refreshing]);
-
-  const getRequests = async skipNumber => {
-    console.log('skip Number:', skipNumber);
-    const token = JSON.parse(
-      await EncryptedStorage.getItem(Token_Secret),
-    ).token;
-    await axios
-      .get(`${Server_URL}:3000/patient/getBloodRequests/${skipNumber}`, {
-        headers: {
-          'x-auth-token': token,
-        },
-      })
-      .then(response => {
-        if (skipNumber == 0) {
-          console.log(response.data);
+  const getRequests = async () => {
+    try {
+      const token = JSON.parse(
+        await EncryptedStorage.getItem(Token_Secret),
+      ).token;
+      await axios
+        .get(`${Server_URL}:3000/patient/acceptedBloodRequests`, {
+          headers: {
+            'x-auth-token': token,
+          },
+        })
+        .then(response => {
           setBloodRequests(response.data);
-        } else {
-          setBloodRequests(bloodRequests => [
-            ...bloodRequests,
-            ...response.data,
-          ]);
-        }
-        setRefreshing(false);
-        setLoadData(false);
-      })
-      .catch(function (error) {
-        console.log(error.message);
-        setRefreshing(false);
-        setLoadData(false);
-      });
-  };
-
-  const checkForUpdates = async () => {
-    await axios
-      .get(`${Server_URL}:3000/patient/isBloodReqUpdated/${currentDate}`)
-      .then(response => {
-        setCurrentDate(new Date());
-        setSkipNumber(response.data.newEntries + bloodRequests.length);
-      })
-      .catch(function (error) {
-        console.log(error.message);
-      });
-  };
-
-  const onEndReachedHandler = () => {
-    // setLoadMore(true);
-    checkForUpdates();
-    console.log(currentDate);
-  };
-
-  const onRefreshing = () => {
-    setCurrentDate(new Date());
-    setRefreshing(true);
-  };
-
-  const onPressAccepted = () => {
-    navigation.navigate('AcceptedBloodReq');
+          setLoadData(false);
+        })
+        .catch(function (error) {
+          console.log(error.message);
+          setLoadData(false);
+        });
+    } catch (err) {
+      Alert.alert('Error', err.code, [
+        { text: 'Exit', onPress: () => BackHandler.exitApp() },
+      ]);
+    }
   }
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Image
-          style={styles.Image}
-          source={require('../../images/app_logo-removebg-preview.png')}></Image>
-        <Text style={styles.headerText}>espitalia</Text>
+        <TouchableOpacity
+          style={{ flex: 1, alignSelf: 'center', marginLeft: 5 }}
+          onPress={() => navigation.goBack()}>
+          <Ionicons name={'arrow-back'} size={30} color="#fff"></Ionicons>
+        </TouchableOpacity>
+        <View
+          style={{ flex: 12, flexDirection: 'row', justifyContent: 'center' }}>
+          <Image
+            style={styles.image}
+            source={require('../../images/app_logo-removebg-preview.png')}></Image>
+          <Text style={styles.headerText}>espitalia</Text>
+        </View>
       </View>
-      <TouchableOpacity
-        onPress={onPressAccepted}
-        style={{
-          alignSelf: 'center',
-          borderRadius: 15,
-          backgroundColor: '#1c1bad',
-          padding: 5,
-          margin: 10,
-        }}>
-        <Text style={{ fontSize: 18, color: '#fff' }}>Accepted requests</Text>
-      </TouchableOpacity>
       <FlatList
         data={bloodRequests}
-        keyExtractor={item => {
-          return item.id;
-        }}
-        onRefresh={onRefreshing}
-        refreshing={refreshing}
-        onEndReached={onEndReachedHandler}
-        onEndReachedThreshold={0.1}
+        keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => <Item item={item} />}
         ListEmptyComponent={
           loadData ? (
@@ -144,13 +84,14 @@ export default function DonateBlood({ navigation }) {
             </View>
           ) : (
             <Text
-            style={{
-              fontSize: 18,
-              alignSelf: 'center',
-              margin: 20,
-            }}>
-            No blood donation requests
-          </Text>
+              style={{
+                fontSize: 20,
+                alignSelf: 'center',
+                color: '#000',
+                margin: '10%',
+              }}>
+              No blood requests accepted :)
+            </Text>
           )
         }
       />
@@ -174,11 +115,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     alignSelf: 'center',
   },
-  Image: {
+
+  image: {
     width: 50,
     height: 50,
     alignSelf: 'center',
   },
+
   appointmentsCard: {
     flexDirection: 'column',
     width: '95%',
@@ -213,6 +156,7 @@ const styles = StyleSheet.create({
     margin: 10,
     fontSize: 15,
   },
+
   buttonView: {
     alignItems: 'center',
     justifyContent: 'center',

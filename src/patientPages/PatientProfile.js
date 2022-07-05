@@ -366,13 +366,11 @@ export default function Profile({navigation}) {
           <View style={styles.lineStyle} />
           <Text style={styles.subtitle}>OLD APPOINTMENTS</Text>
           {empty ? (
-            <Text style={{color: '#000', fontSize: 18, margin: 10}}>
-              "{noAppointments}"
+            <Text style={{alignSelf: 'center', fontSize: 15}}>
+              No old appointments found
             </Text>
           ) : (
-            <ScrollView
-              horizontal={true}
-              showsHorizontalScrollIndicator={false}>
+            <View>
               {oldAppointments.map(item => {
                 return (
                   <TouchableOpacity
@@ -392,10 +390,8 @@ export default function Profile({navigation}) {
                   </TouchableOpacity>
                 );
               })}
-            </ScrollView>
+            </View>
           )}
-          <View style={styles.lineStyle} />
-          <Text style={styles.subtitle}>Blood Donations</Text>
         </View>
       </View>
     </ScrollView>
@@ -437,7 +433,7 @@ const styles = StyleSheet.create({
   bodyContent: {
     flex: 1,
     alignItems: 'center',
-    paddingTop: 30,
+    padding: 30,
   },
   dataView: {
     flexDirection: 'row',
@@ -447,18 +443,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#1c1bad',
     margin: 5,
-    // marginTop: 10,
-    // marginBottom: 5,
     fontWeight: 'bold',
   },
   description: {
     fontSize: 16,
     color: '#696969',
-    //marginTop:10,
-    // marginRight: 200,
-    // textAlign: 'center',
     alignContent: 'center',
-    // alignItems: 'flex-start'
   },
   lineStyle: {
     width: 300,
@@ -468,18 +458,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#000',
   },
   appointmentsCard: {
-    // flex: 1,
     alignItems: 'center',
-    // flexDirection: 'column',
+    flexDirection: 'column',
     justifyContent: 'center',
-    // alignItems: 'flex-start',
-    // marginBottom: 10,
-    width: '10%',
-    // height: '100%',
+    width: '95%',
+    height: 230,
     borderRadius: 15,
     backgroundColor: '#fff',
     alignSelf: 'center',
-    // marginLeft: 10,
     margin: 4,
     shadowColor: '#000',
     shadowOpacity: 1,
@@ -487,23 +473,15 @@ const styles = StyleSheet.create({
       width: 3,
       height: 3,
     },
-    elevation: 2,
-    overflow: 'hidden',
-    // margin: '2%'
   },
-
   infoView: {
     flex: 1,
     flexDirection: 'column',
     height: '90%',
     alignSelf: 'center',
     backgroundColor: '#fff',
-    // borderWidth: 2,
-    // marginTop:'2%',
-    // marginBottom: '5%',
     justifyContent: 'center',
-    margin: '1%',
-    // borderRadius: 5,
+    margin: 2,
   },
   infoText: {
     color: '#000',
@@ -516,7 +494,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#1c1bad',
     borderRadius: 5,
     borderWidth: 0.5,
-    // borderColor: '#fff',
     width: 135,
     margin: 5,
     alignSelf: 'flex-end',
