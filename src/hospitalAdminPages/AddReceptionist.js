@@ -166,6 +166,9 @@ const AddReceptionist = ({ navigation, route }) => {
                 data: {
                     name: name,
                     email: email,
+                    username: email,
+                    education: '',
+                    from:"",
                     phoneNumber: phoneNumber,
                     workingDays: makeValidWorkingDays()
                 },

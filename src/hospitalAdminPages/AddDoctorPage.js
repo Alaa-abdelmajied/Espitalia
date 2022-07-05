@@ -204,6 +204,7 @@ const AddDoctorPage = ({ navigation, route }) => {
                 data: {
                     name: name,
                     specialization: selectedSpecialization,
+                    password: "password",
                     email: email,
                     workingDays: makeValidWorkingDays()
                 },
